@@ -4,7 +4,7 @@
 
 This repository includes:
 
-1.   Lab reports, homework solutions and other documents I written for my undergraduate courses at Univ. of Sci. and Tech. of China.
+1.   Lab reports, homework solutions and other documents I wrote for my undergraduate courses at Univ. of Sci. and Tech. of China.
 2.   Tools, scripts, apps and other tiny stuffs I coded for my own use during this period of time.
 
 ## Table of Contents
@@ -35,9 +35,10 @@ This repository includes:
 ### 🔨 Miscellaneous
 
 -   [Latex templates](./Misc/lateX%20templates/)
--   [HTML / Markdown to PDF ](https://github.com/HasiNed/htmlolo)
--   [Linux Dockerfile](./Misc/docker%20templates)
--   [Front-end love letter](./Misc/vue3%20kokuhaku/)
+-   [Docker templates](./Misc/docker%20templates)
+-   [A HTML / Markdown to PDF converter](https://github.com/HasiNed/htmlolo)
+-   [A front-end love letter](./Misc/vue3%20kokuhaku/)
+-   [An incomplete 3D engine](./Misc/opengl%20learning/)
 
 ## Notes
 
