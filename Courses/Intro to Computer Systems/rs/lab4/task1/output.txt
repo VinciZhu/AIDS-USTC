@@ -1,0 +1,134 @@
+attempting to assemble ./task1/gen/0/0.asm into ./task1/gen/0/0.obj
+assembly successful
+
+---TEST FAILED---
+./task1/gen/0/0.txt
+-----------------
+
+attempting to assemble ./task1/gen/1/1.asm into ./task1/gen/1/1.obj
+./task1/gen/1/1.asm:15:5: error: could not find label
+JSR SUB1
+    ^~~~
+
+error: assembly failed (pass 2)
+
+---TEST FAILED---
+./task1/gen/1/1.txt
+-----------------
+
+attempting to assemble ./task1/gen/2/2.asm into ./task1/gen/2/2.obj
+assembly successful
+
+---TEST FAILED---
+./task1/gen/2/2.txt
+-----------------
+
+attempting to assemble ./task1/gen/3/3.asm into ./task1/gen/3/3.obj
+./task1/gen/3/3.asm:15:5: error: could not find label
+JSR SUB1
+    ^~~~
+
+error: assembly failed (pass 2)
+
+---TEST FAILED---
+./task1/gen/3/3.txt
+-----------------
+
+attempting to assemble ./task1/gen/4/4.asm into ./task1/gen/4/4.obj
+assembly successful
+
+---TEST FAILED---
+./task1/gen/4/4.txt
+-----------------
+
+attempting to assemble ./task1/gen/5/5.asm into ./task1/gen/5/5.obj
+./task1/gen/5/5.asm:15:5: error: could not find label
+JSR SUB1
+    ^~~~
+
+error: assembly failed (pass 2)
+
+---TEST FAILED---
+./task1/gen/5/5.txt
+-----------------
+
+attempting to assemble ./task1/gen/6/6.asm into ./task1/gen/6/6.obj
+assembly successful
+
+---TEST FAILED---
+./task1/gen/6/6.txt
+-----------------
+
+attempting to assemble ./task1/gen/7/7.asm into ./task1/gen/7/7.obj
+./task1/gen/7/7.asm:15:5: error: could not find label
+JSR SUB1
+    ^~~~
+
+error: assembly failed (pass 2)
+
+---TEST FAILED---
+./task1/gen/7/7.txt
+-----------------
+
+attempting to assemble ./task1/gen/8/8.asm into ./task1/gen/8/8.obj
+assembly successful
+
+---TEST FAILED---
+./task1/gen/8/8.txt
+-----------------
+
+attempting to assemble ./task1/gen/9/9.asm into ./task1/gen/9/9.obj
+assembly successful
+
+---TEST PASSED---
+./task1/gen/9/9.txt
+-----------------
+
+attempting to assemble ./task1/gen/10/10.asm into ./task1/gen/10/10.obj
+assembly successful
+
+---TEST FAILED---
+./task1/gen/10/10.txt
+-----------------
+
+attempting to assemble ./task1/gen/11/11.asm into ./task1/gen/11/11.obj
+assembly successful
+
+
+--- Access violation---
+
+
+---TEST FAILED---
+./task1/gen/11/11.txt
+-----------------
+
+attempting to assemble ./task1/gen/12/12.asm into ./task1/gen/12/12.obj
+assembly successful
+
+---TEST FAILED---
+./task1/gen/12/12.txt
+-----------------
+
+attempting to assemble ./task1/gen/13/13.asm into ./task1/gen/13/13.obj
+assembly successful
+
+---TEST FAILED---
+./task1/gen/13/13.txt
+-----------------
+
+attempting to assemble ./task1/gen/14/14.asm into ./task1/gen/14/14.obj
+assembly successful
+warning: 32112: Skipping 'Updating Keyboard' scheduled for 32110
+warning: 32112: Skipping 'Updating Display' scheduled for 32110
+warning: 32112: Skipping 'No interrupt of higher priority pending' scheduled for 32111
+
+---TEST FAILED---
+./task1/gen/14/14.txt
+-----------------
+
+attempting to assemble ./task1/gen/15/15.asm into ./task1/gen/15/15.obj
+assembly successful
+
+---TEST FAILED---
+./task1/gen/15/15.txt
+-----------------

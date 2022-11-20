@@ -1,0 +1,15 @@
+Case 1   F(24)    =    29602   Wrong answer!
+Case 2   F(144)   =    29458   Wrong answer!
+Case 3   F(456)   =    28674   Wrong answer!
+Case 4   F(1088)  =    28189   Wrong answer!
+Case 5   F(1092)  =    28474   Wrong answer!
+Case 6   F(2096)  =    28413   Wrong answer!
+Case 7   F(4200)  =    26434   Wrong answer!
+Case 8   F(8192)  =    23965   Wrong answer!
+Case 9   F(12000) =    21170   Wrong answer!
+Case 10  F(14000) =    20477   Wrong answer!
+correctness: wrong
+instruction count: 19198100
+average instruction count: 1.91981e+06
+line count: 36
+student number: PB????????

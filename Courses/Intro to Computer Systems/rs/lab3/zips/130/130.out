@@ -1,0 +1,15 @@
+Case 1   F(24)    =    706     
+Case 2   F(144)   =    642     
+Case 3   F(456)   =    66      
+Case 4   F(1088)  =    2       
+Case 5   F(1092)  =    290     
+Case 6   F(2096)  =    898     
+Case 7   F(4200)  =    322     
+Case 8   F(8192)  =    514     
+Case 9   F(12000) =    258     
+Case 10  F(14000) =    898     
+correctness: correct
+instruction count: 431158
+average instruction count: 43115.8
+line count: 40
+student number: PB2006??57
