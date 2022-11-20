@@ -1,0 +1,146 @@
+\documentclass[11pt,notitlepage]{article}
+\usepackage{fancyhdr}
+\usepackage{fancybox}
+\usepackage{graphicx}
+\usepackage{pdfpages}
+\usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\headrulewidth}{1.5pt}
+\renewcommand{\footrulewidth}{1.5pt}
+\usepackage[framemethod=TikZ]{mdframed}
+\usepackage{amssymb,amsmath}
+\usepackage{amsthm}
+\usepackage{bm}
+\usepackage{thmtools}
+\usepackage{caption,subcaption}
+\usepackage[breakable,skins]{tcolorbox}
+\RequirePackage{ifthen,currfile-abspath}
+\getabspath{\jobname.log}
+\ifthenelse{\equal{\theabsdir}{\thepwd}}
+{}{\PassOptionsToPackage{outputdir=\theabsdir}{minted}}
+\usepackage{minted}
+\setminted{autogobble,breaklines,fontsize=\small}
+% \usemintedstyle{bw}
+\setlength{\topmargin}{-2pt}
+\setlength{\textheight}{9in}
+\setlength{\headheight}{13.59999pt}
+\setlength{\oddsidemargin}{0in}
+\setlength{\textwidth}{6.5in}
+\fancypagestyle{plain}{
+	\fancyhf{}
+	\cfoot{\thepage}
+	\renewcommand{\headrulewidth}{0pt}
+	\renewcommand{\footrulewidth}{1.5pt}
+}
+\pagestyle{fancy}
+%%%%%%%%%%%%%%%%%%%%%%%
+%% Define the Exercise environment %%
+%%%%%%%%%%%%%%%%%%%%%%%%
+\mdtheorem[
+	topline=false,
+	rightline=false,
+	leftline=false,
+	bottomline=false,
+	leftmargin=-10,
+	rightmargin=-10
+]{exercise}{Exercise}
+%%%%%%%%%%%%%%%%%%%%%%%
+%% End of the Exercise environment %%
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+%% Define the Problem environment %%
+%%%%%%%%%%%%%%%%%%%%%%%
+\mdtheorem[
+	topline=false,
+	rightline=false,
+	leftline=false,
+	bottomline=false,
+	leftmargin=-10,
+	rightmargin=-10
+]{problem}{Problem}
+%%%%%%%%%%%%%%%%%%%%%%%
+%% End of the Exercise environment %%
+%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%
+%% Define the Solution Environment %%
+%%%%%%%%%%%%%%%%%%%%%%%
+\declaretheoremstyle[
+	spaceabove=\parsep,
+	spacebelow=\parsep,
+	headfont=\normalfont\bfseries,
+	notefont=\mdseries,
+	notebraces={(}{)},
+	headpunct={: \\},
+	headindent={},
+	postheadspace=4pt,
+	bodyfont=\normalfont,
+	qed=$\blacksquare$,
+]{mystyle}
+\declaretheorem[style=mystyle,title=Solution,numbered=no]{solution}
+% \tcolorboxenvironment{solution}{ 
+%     breakable, blank, borderline={0.5pt}{0pt}{black},
+% }
+%%%%%%%%%%%%%%%%%%%%%%%
+%% End of the Solution environment
+%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand{\eqref}[1]{Eq.~(\ref{#1})}
+\newcommand{\figref}[1]{Fig.~\ref{#1}}
+
+
+\newcommand{\proj}[2]{\Pi_{#2} \left(#1\right)}
+\newcommand{\rank}[1]{ \textbf{rank} \left(#1\right) }
+\newcommand{\tr}{ \operatorname{tr} }
+\newcommand{\diag}{ \operatorname{diag} }
+\newcommand{\adj}{ \operatorname{adj} }
+\newcommand{\cof}{ \operatorname{cof} }
+\newcommand{\sgn}{ \operatorname{sgn} }
+\newcommand{\Var}[1]{ \operatorname{Var} \left(#1\right) }
+\newcommand{\Cov}[1]{ \operatorname{Cov} \left(#1\right) }
+
+\newcommand{\mb}[1]{\mathbf{#1}}
+\newcommand{\diff}{\text{d}}
+
+\DeclareMathOperator*{\argmin}{\bf argmin\,}
+\DeclareMathOperator*{\argmax}{\bf argmax\,}
+\DeclareMathOperator*{\relint}{\bf relint\,}
+\DeclareMathOperator*{\relbd}{\bf relbd\,}
+\DeclareMathOperator*{\dom}{\bf dom\,}
+\DeclareMathOperator*{\intp}{\bf int\,}
+\DeclareMathOperator*{\cl}{\bf cl\,}
+\DeclareMathOperator*{\bd}{\bf bd\,}
+\DeclareMathOperator*{\lspan}{\bf span\,}
+\DeclareMathOperator*{\aff}{\bf aff\,}
+\DeclareMathOperator*{\cone}{\bf cone\,}
+\DeclareMathOperator*{\conv}{\bf conv\,}
+\DeclareMathOperator*{\epi}{\bf epi\,}
+
+% Definition environment	
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+% head
+\lhead{\textbf{\name}}
+\rhead{\textbf{\id}}
+\chead{\textbf{Homework \hwno}}
+
+% title
+\renewcommand{\maketitle}{
+	\vspace*{-4\baselineskip}
+	\thispagestyle{plain}
+	\begin{center}
+		{\bf\large \course}\\
+		\semester\\
+		\school
+	\end{center}
+	\noindent
+	Lecturer: \lecturer\hfill
+	Homework \hwno\\
+	Name: \name\hfill
+	ID: \id\\
+	\noindent
+	\rule{\textwidth}{2pt}
+	\medskip
+	\textbf{Notice, }to get the full credits, please present your solutions step by step.
+}

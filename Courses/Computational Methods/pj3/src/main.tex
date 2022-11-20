@@ -1,0 +1,377 @@
+\documentclass{nedsart}
+
+\setinfo{
+    type    =   {实验报告},
+    course  =   {计算方法B},
+    title   =   {Project 3},
+    author  =   {朱云沁},
+    id      =   {PB20061372},
+    date    =   {2022-04-16},
+}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{实验题目}
+
+\begin{project}\label{project:1}
+    用Newton迭代法求解非线性方程组
+    \begin{equation}\label{eq:nonlinear}
+        \begin{dcases}
+            f(x, y) = x^2 + y^2 - 1 = 0 \\
+            g(x, y) = x^3 - y = 0
+        \end{dcases}
+    \end{equation}
+    \par 取$\pmat{x_0\\y_0} = \pmat{0.8\\0.6}$, 误差控制$\max\{|\Delta{x}|, |\Delta{y}|\} \leq 10^{-5}$.
+    \par 输入: 初始点$(x_0, y_0)$, 精度控制值$\varepsilon$, 定义函数$f(x, y), g(x, y)$.
+    \par 输出: 迭代次数$k$, 第k步的迭代解$(x_k, y_k)$.
+\end{project}
+
+\begin{project}\label{project:2}
+    用二阶Runge-Kutta公式求解常微分方程初值问题
+    \begin{equation}\label{eq:diff}
+        \begin{dcases}
+            y'(x) = f(x, y), & a \leq x \leq y \\
+            y(a) = y_0
+        \end{dcases}
+    \end{equation}
+    \par 求解以下问题
+    \begin{equation}\label{eq:ysin}
+        \begin{dcases}
+            y'(x) = ysin(\pi x) \\
+            y(0) = 1
+        \end{dcases}
+    \end{equation}
+    \par 输入: 区间剖分点数$n$，区间端点$a, b$，定义函数$y'(x) = f(x, y)$.
+    \par 输出: $y_k, k = 1,2,\cdots,n$.
+\end{project}
+
+\begin{project}\label{project:3}
+    用改进的Euler公式求解常微分方程组初值问题. 已知计算公式为
+    \begin{equation}\label{eq:euler}
+        \begin{gathered}
+            \pmat{\bar{y}_{n+1} \\ \bar{z}_{n+1}} = \pmat{y_n \\ z_n} + h \pmat{f(x_n, y_n, z_n) \\ g(x_n, y_n, z_n)} \\
+            \pmat{y_{n+1} \\ z_{n+1}} = \pmat{y_n \\ z_n} + \frac{h}{2} \left[ \pmat{f(x_n, y_n, z_n) \\ g(x_n, y_n, z_n)} + \pmat{f(x_{n+1}, \bar{y}_{n+1}, \bar{z}_{n+1}) \\ g(x_{n+1}, \bar{y}_{n+1}, \bar{z}_{n+1})} \right]
+        \end{gathered}
+    \end{equation}
+    \par 求解以下问题
+    \begin{equation}\label{eq:eulerprob}
+        \begin{dcases}
+            \diff{u}{t} = 0.09u \left( 1 - \frac{u}{20} \right) - 0.45uv \\
+            \diff{v}{t} = 0.06v \left( 1 - \frac{v}{15} \right) - 0.001uv \\
+            u(0) = 1.6 \\
+            v(0) = 1.2 \\
+        \end{dcases}
+    \end{equation}
+    \par 输入: 区间剖分点数$N$，区间端点$a, b$，定义函数$y'(x) = f(x, y, z), z'(x) = g(x, y, z)$.
+    \par 输出: $(y_k, z_k), k = 1,2,\cdots,N$.
+\end{project}
+
+\section{实验结果}
+
+\subsection{数值结果}
+
+\begin{table}[H]
+    \centering
+    \caption{Newton迭代法求解(\ref{eq:nonlinear})式非线性方程组}
+    \label{tab:newton}
+    \includecsv{../assets/output/newton.csv}{
+        \csvcoli & 
+        \roundnum{7}{\csvcolii} & 
+        \roundnum{7}{\csvcoliii} & 
+        \roundnum{4}{\csvcoliv} &
+        \roundnum{4}{\csvcolv} &
+        \roundnum{4}{\csvcolvi} &
+        \roundnum{4}{\csvcolvii}
+    }{ 
+        $k$ & 
+        $x_k$ & 
+        $y_k$ & 
+        $f(x_k,y_k)$ &
+        $g(x_k,y_k)$ &
+        $\Delta x_k$ &
+        $\Delta y_k$
+        \small
+    }{*7c}
+\end{table}
+    
+\begin{table}[H]
+    \centering
+    \caption{二阶Runge-Kutta公式(见(\ref{eq:ralston})式)求解(\ref{eq:ysin})式常微分方程初值问题}
+    \label{tab:rk}
+    \includecsv{../assets/output/runge-kutta.csv}{
+        \roundnum{1}{\csvcolii} & 
+        \roundnum{7}{\csvcoliii} & 
+        \roundnum{7}{\csvcoliv} &
+        \roundnum{7}{\csvcolv} &
+        \roundnum{7}{\csvcolvi} &
+        \roundnum{7}{\csvcolvii}
+    }{  
+        $x$ & 
+        $y|_{n=10}$ &
+        $y|_{n=20}$ &
+        $y|_{n=40}$ &
+        $y|_{n=80}$ &
+        $y|_{n=160}$
+    }{*6c}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{改进的Euler公式求解(\ref{eq:eulerprob})式常微分方程组初值问题}
+    \label{tab:euler}
+    \includecsv{../assets/output/euler.csv}{
+        \roundnum{1}{\csvcolii} & 
+        \roundnum{7}{\csvcoliii} & 
+        \roundnum{7}{\csvcolv} & 
+        \roundnum{7}{\csvcolvii} &
+        \roundnum{7}{\csvcoliv} & 
+        \roundnum{7}{\csvcolvi} & 
+        \roundnum{7}{\csvcolviii} 
+    }{  
+        $x$ & 
+        $u|_{N=5}$ &
+        $u|_{N=10}$ &
+        $u|_{N=200}$ &
+        $v|_{N=5}$ &
+        $v|_{N=10}$ &
+        $v|_{N=200}$
+    }{*7c}
+\end{table}
+
+\subsection{图示结果}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{../assets/output/runge-kutta.pdf}
+    \caption{二阶Runge-Kutta公式求解(\ref{eq:ysin})式常微分方程初值问题($a=0,b=7$)}
+    \label{fig:rk}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{../assets/output/euler.pdf}
+    \caption{改进的Euler公式求解(\ref{eq:eulerprob})式常微分方程组初值问题($a=1,b=6$)}
+    \label{fig:euler}
+\end{figure}
+
+\section{算法分析}
+
+\subsection{Newton迭代法}
+
+\def\bX{\mathbf{x}}
+\def\bF{\mathbf{f}}
+\def\jacobi{\mathbf{J}_\bF}
+
+对于一般的非线性方程组
+\begin{equation}
+    \bF(\mathbf{x}) = \pmat{f_1(x_1, x_2, \cdots, x_n) \\ f_2(x_1, x_2, \cdots, x_n) \\ \vdots \\ f_n(x_1, x_2, \cdots, x_n)} = \mathbf{0}
+\end{equation}
+将$f_i(\bX), i=1,2,\cdots,n$在$\bX^{(0)} = (x^{(0)}_1, x^{(0)}_2, \cdots, x^{(0)}_n)^\rmt$处作$n$元Taylor展开, 得
+\begin{equation}
+    f_i(\bX) = f_i(\bX^{(0)}) + \nabla f_i(\bX^{(0)})^\rmt (\bX - \bX^{(0)}) + \frac{1}{2} \bX^\rmt \nabla^2 {f_i(\bX^{(0)})} \bX + \cdots
+\end{equation}
+作一阶近似
+\begin{equation}
+    0 \approx f_i(\bX^{(0)}) + \nabla f_i(\bX^{(0)})^\rmt (\bX - \bX^{(0)})
+\end{equation}
+进而
+\begin{equation}
+    \mathbf{0} \approx \bF(\bX^{(0)}) + \jacobi (\bX^{(0)}) (\bX - \bX^{(0)})
+\end{equation}
+其中$\jacobi (\bX^{(0)}) = (\nabla f_1(\bX^{(0)}), \nabla f_2(\bX^{(0)}), \cdots, \nabla f_n(\bX^{(0)}))^\rmt$为向量值函数$\bF(\mathbf{x})$的Jacobi矩阵. 用$\bX^{k}, \bX^{k+1}$替换$\bX^{0}, \bX$, 得Newton迭代公式
+\begin{equation}
+    \bX^{k+1} = \bF(\bX^{k}) - \jacobi^{-1} (\bX^{k}) \bF(\bX^{k})
+\end{equation}
+可以证明, 当$||\jacobi(\bX)||_\infty < 1$且初始值充分接近$\bX$时, Newton迭代收敛. 通常以如下形式计算
+\begin{equation}\label{eq:newton}
+    \begin{gathered}
+        \jacobi (\bX^{(k)}) \Delta \bX^{(k+1)} = - \bF(\bX^{(k)}) \\
+        \bX^{(k+1)} = \bX^{(k)} + \Delta \bX^{(k+1)} 
+    \end{gathered}
+\end{equation}
+当$||\Delta \bX^{(k)}||_\infty < \varepsilon$时, 满足精度, 结束迭代.
+
+对于(\ref{eq:nonlinear})式问题, 求得$\jacobi = \begin{pmatrix}
+    2x & 2y \\
+    3x^2 & -1
+\end{pmatrix}$, 从而由(\ref{eq:newton})式有
+\begin{equation}\label{eq:newtonsln}
+    \pmat{\Delta x_{k+1} \\ \Delta y_{k+1}} = \frac{1}{-6x_k^2y_k-2x_k} \pmat{2x_k^3y_k+x_k^2-y_k^2-1 \\ x_k^4+3x_k^2y_k^2-3x_k^2+2x_ky_k} 
+\end{equation}
+
+对形如(\ref{eq:nonlinear})式的一般二阶非线性方程组, 给出算法如下:\par
+\begin{algorithm}[H]
+    \caption{Newton迭代法求解非线性方程组}
+    \KwData{初始点$(x_0, y_0)$, 精度控制值$\varepsilon$, 定义函数$f(x, y), g(x, y)$.}
+    \KwResult{迭代次数$k$, 第k步的迭代解$(x_k, y_k)$.}
+    
+    \For(\tcp*[f]{$\mathtt{M}$为最大迭代次数.}){$k \leftarrow 1$ \KwTo $\mathtt{M}$}{
+        计算$\jacobi (x, y)$\;\label{ln:cal}
+        求解$\jacobi (x, y)(\Delta x, \Delta y)^\rmt = -(f(x, y), g(x, y))^\rmt$\;\label{ln:solve}
+        \If{$\max\{|\Delta x|, |\Delta y|\} < \varepsilon$}{
+            \KwRet $k, (x, y)$\;
+        }
+        $(x, y) \leftarrow (x + \Delta x, y + \Delta y)$
+    }
+    \KwRet \texttt{NULL}\tcp*{$x_0$附近无解}
+\end{algorithm}
+
+对于上述算法第 \ref{ln:cal} 到 \ref{ln:solve} 行, 若无法求得形如(\ref{eq:newtonsln})式的公式解, 应当采用数值微分方法(弦截法).
+
+\subsection{显式Runge-Kutta方法}
+
+对于形如(\ref{eq:diff})式的初值问题, $s$阶显式Runge-Kutta方法可写为
+\begin{equation}\label{eq:runge}
+    \begin{dcases}
+        y_{n+1} = y_n + h \sum_{i=1}^s c_i k_i \\
+        k_1 = f(x_n, y_n) \\
+        k_2 = f(x_n + a_2 h, y_n + b_{21} h k_1) \\
+        k_3 = f(x_n + a_3 h, y_n + b_{31} h k_1 + b_{32} h k_2) \\
+        \hspace{1.5em}\vdots \\
+        k_s = f(x_n + a_s h, y_n + b_{s1} h k_1 + b_{s2} h k_2 + \cdots + b_{s,s-1} h k_{s-1}) \\
+    \end{dcases}
+\end{equation}
+
+为了构造二阶公式, 首先将$y(x)$在$x+h$处作Taylor展开
+\begin{equation}\label{eq:taylor}
+    y(x+h) = y(x) + h y'(z) + \frac{h^2}{2} y''(x) + O(h^3)
+\end{equation}
+由微分方程, 有
+\begin{equation}
+    \begin{array}{l}
+        y'(x_n) = f(x_n, y(x_n)) \\
+        y''(x_n) = f_x(x_n, y(x_n)) + f_y(x_n, y(x_n))f(x_n, y(x_n)) \\
+    \end{array}
+\end{equation}
+带入(\ref{eq:taylor})式并截断余项, 得
+\begin{equation}
+    y(x_{n+1}) \approx y(x_n) + h f(x_n, y(x_n)) + \frac{h^2}{2} \left(f_x(x_n, y(x_n)) + f_y(x_n, y(x_n))f(x_n, y(x_n))\right)
+\end{equation}
+于是有二阶近似公式
+\begin{equation}\label{eq:rk1}
+    \tilde{y}_{n+1} = y_n + h f(x_n, y_n) + \frac{h^2}{2} \left(f_x(x_n, y_n) + f_y(x_n, y_n)f(x_n, y_n)\right)
+\end{equation}
+另一方面, 由(\ref{eq:runge})式定义的近似公式为
+\begin{equation}\label{eq:rk2}
+    \begin{aligned}
+        y_{n+1} & = y_n + h c_1 f(x_n, y_n) + h c_2 f(x_n + a_2 h, y_n + b_{21} h f(x_n, y_n)) \\
+                & = y_n + h (c_1 + c_2) f(x_n, y_n) + h^2 c_2 a_2 f_x(x_n, y_n) + h^2 c_2 b_{21} f_y(x_n, y_n) f(x_n, y_n) + O(h^3)
+    \end{aligned}
+\end{equation}
+为了使(\ref{eq:rk2})式有局部截断误差$O(h^3)$, 应有$y(x_{n+1}) - \tilde{y}(x_{n+1}) = O(h^3)$, 于是
+\begin{equation}
+    \begin{dcases}
+        c_1 + c_2 = 1 \\
+        c_2 a_2 = \frac{1}{2} \\
+        c_2 b_{12} = \frac{1}{2}
+    \end{dcases}
+\end{equation}
+
+令$c_1=c_2=\frac{1}{2}$, 得到常见二阶Runge-Kutta公式
+\begin{equation}
+    \begin{dcases}
+        y_{n+1} = y_n + h \left(\frac{1}{2} k_1 + \frac{1}{2} k_2\right) \\
+        k_1 = f(x_n, y_n) \\
+        k_2 = f(x_n + h, y_n + h k_1)
+    \end{dcases}
+\end{equation}
+或写为预估-矫正的形式
+\begin{equation}\label{eq:euler1}
+    \begin{dcases}
+        \bar{y}_{n+1} = y_n + h f(x_n, y_n) \\
+        y_{n+1} = y_n + h \left(\frac{1}{2} f(x_n, y_n) + \frac{1}{2} f(x_{n+1}, \bar{y}_{n+1})\right)
+    \end{dcases}
+\end{equation}
+称作改进的Euler公式.
+
+另外两种常见的二阶Runge-Kutta公式是
+\begin{equation}
+    \begin{dcases}
+        y_{n+1} = y_n + h k_2 \\
+        k_1 = f(x_n, y_n) \\
+        k_2 = f(x_n + \frac{1}{2} h, y_n + \frac{1}{2} k_1)
+    \end{dcases}
+\end{equation}
+称作(显式)中点公式.
+\begin{equation}
+    \begin{dcases}\label{eq:ralston}
+        y_{n+1} = y_n + h \left(\frac{1}{4} k_1 + \frac{3}{4} k_2\right) \\
+        k_1 = f(x_n, y_n) \\
+        k_2 = f(x_n + \frac{2}{3} h, y_n + \frac{2}{3} k_1)
+    \end{dcases}
+\end{equation}
+具有最小的局部截断误差限.
+
+对于一般的$s$阶显式Runge-Kutta公式, 给出如下算法:
+
+\begin{algorithm}[H]
+    \caption{$s$阶显式Runge-Kutta公式求解常微分方程初值问题}
+    \KwData{区间剖分点数$N$，区间端点$a, b$，定义函数$y'(x) = f(x, y)$.}
+    \KwResult{$y_k, k = 1,2,\cdots,n$.}
+
+    $h \leftarrow \frac{b - a}{n}, x_0 \leftarrow a$\;
+    \For{$k \leftarrow 0$ \KwTo $n-1$}{
+        $x_{k+1} \leftarrow x_k + h$\;
+        \For{$i \leftarrow 1$ \KwTo $s$}{
+            $k_i \leftarrow f(x_k + a_i h, y_k + h \sum_{j=1}^{i-1} b_{ij}k_j)$\;
+        }
+        $y_{n+1} \leftarrow y_n + h \sum_{i=1}^s c_i k_i$\;
+    }
+    \KwRet $y_k, k = 1,2,\cdots,n$\;
+\end{algorithm}
+
+将(\ref{eq:euler1})式应用到向量值函数$\mathbf{y}(x)=(y,z)^\rmt$, 立即得到求解二阶常微分方程组初值问题的(\ref{eq:euler})式. 算法如下:
+
+\begin{algorithm}[H]
+    \caption{改进的Euler公式求解常微分方程组初值问题}
+    \KwData{区间剖分点数$N$，区间端点$a, b$，定义函数$y'(x) = f(x, y)$.}
+    \KwResult{$(y_k, z_k), k = 1,2,\cdots,N$.}
+
+    $h \leftarrow \frac{b - a}{N}, x_0 \leftarrow a$\;
+    \For{$k \leftarrow 0$ \KwTo $N-1$}{
+        $x_{k+1} \leftarrow x_k + h$\;
+        $y_{k+1} \leftarrow y_k + h f(x_k, y_k, z_k)$\;
+        $z_{k+1} \leftarrow z_k + h g(x_k, y_k, z_k)$\;
+        $\pmat{y_{k+1} \\ z_{k+1}} \leftarrow \pmat{y_k + \frac{h}{2} (f(x_k, y_k, z_k) + f(x_{k+1}, y_{k+1}, z_{k+1})) \\ z_k + \frac{h}{2} (g(x_k, y_k, z_k) + g(x_{k+1}, y_{k+1}, z_{k+1}))}$\;
+    }
+    \KwRet $(y_k, z_k), k = 1,2,\cdots,N$\;
+\end{algorithm}
+
+\section{结果分析}
+
+\begin{itemize}
+    \item 由表 \ref{tab:newton} 知, 对(\ref{eq:nonlinear})式作3次Newton迭代得到的解$(x_3,y_3)$满足$\max\{|\Delta{x_3}|, |\Delta{y_3}|\} \leq 10^{-5}$, 符合精度要求. 根据原始数据, 程序 \ref{project:1} 求得问题的解为$$
+    \begin{gathered}
+        x = 0.8260313576552345 \\
+        y = 0.5636241621608473
+    \end{gathered}$$而$(0.8,0.6)$附近实际的解为
+    $$\begin{gathered}
+        x = \sqrt{\sqrt[3]{\frac{9+\sqrt{93}}{18}}-\sqrt[3]{\frac{2}{3(9+\sqrt{93})}}} \approx 0.826031357654187 \\
+        y = x^3 \approx 0.563624162161259
+    \end{gathered}$$按$\infty$-范数定义的相对误差约为$1.27\times10^{-12}$, 可见使用Newton迭代法求解该问题的精度极高, 与此同时需要的迭代次数较少.
+    \item 由表 \ref{tab:rk} 和图 \ref{fig:rk} 知, 用(\ref{eq:ralston})式定义的二阶显式Runge-Kutta公式计算(\ref{eq:ysin})式的常微分方程初值问题, 所得到解的截断误差受区间剖分点数影响较大. 随步长减小, 截断误差收敛, 得到的解接近真实解$y=e^{\frac{1-\cos{\pi x}}{\pi}}$. 根据原始数据, 当$n=160,h=0.04375$时, Runge-Kutta公式计算得区间右端点的解为$$y=1.8894994705275012$$$x=7$时真实解为$$y = e^{\frac{2}{\pi}} \approx 1.89008116457222198$$相对误差约为$-0.03\%$; 然而, 当$n=10,h=0.7$时, 每次单步计算均造成较大误差, 在区间右端点绝对误差达到$-1.06039310047$, 严重偏离真实解. 上述一系列现象映证了二阶Runge-Kutta方法具有$O(h^3)$局部截断误差和$O(h^2)$总体截断误差.
+    \item 由表 \ref{tab:euler} 和图 \ref{fig:euler} 知, 用改进的Euler公式, 即(\ref{eq:euler1})式的二阶Runge-Kutta方法计算(\ref{eq:eulerprob})式的常微分方程组初值问题, 随步长减小, 截断误差收敛于0, 求得的解有较好的预测效果. 映证了二阶Runge-Kutta公式的截断误差理论、Euler方法与Runge-Kutta方法的统一性, 以及将以上方法应用于向量值函数的可行性.
+\end{itemize}
+
+
+
+
+\setupappendix
+
+\clearpage
+\section{Python程序代码}
+
+\subsection{用Newton迭代法求解非线性方程组}
+\includecode[python]{newton.py}
+
+\subsection{用二阶Runge-Kutta公式求解常微分方程初值问题}
+\includecode[python]{runge-kutta.py}
+
+\subsection{用改进的Euler公式求解常微分方程组初值问题}
+\includecode[python]{euler.py}
+
+\end{document}

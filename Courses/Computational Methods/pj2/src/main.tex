@@ -1,0 +1,212 @@
+\documentclass{nedsart}
+
+\setinfo{
+    type    =   {实验报告},
+    course  =   {计算方法B},
+    title   =   {Project 2},
+    author  =   {朱云沁},
+    id      =   {PB20061372},
+    date    =   {2022-04-05},
+}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{实验题目}
+
+编写程序, 用复化Simpson自动控制误差方式计算积分$\int_{a}^{b} f(x) \,dx$.
+
+\textbf{输入}: 积分区间$[a,b]$, 精度控制值$\epsilon$, 定义函数$f(x)$.
+
+\textbf{输出}: 积分值$S$.
+
+利用$\int_{1}^{2} \ln{x} \,dx$, $\epsilon=\text{1e-4}$验证结果.
+
+\section{实验结果}
+
+\subsection{数值结果}
+
+\begin{table}[H]
+    \centering
+    \label{tab:simpson}
+    \csvautobooktabular{../assets/output/simpson.csv}
+    \caption{复化Simpson公式计算$\int_1^2 \ln{x} \,dx$}
+\end{table}
+
+\subsection{图示结果}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{../assets/output/simpson.pdf}
+    \caption{复化Simpson公式计算$\int_1^b \ln{x} \,dx$}
+    \label{fig:simpson}
+\end{figure}
+
+\section{算法分析}
+
+\subsection{Simpson积分}
+
+记\begin{equation}
+    I(f) = \int_{a}^{b} f(x) \,dx
+\end{equation}
+
+将积分区间$[a,b]$\,$n$等分, 记步长为$h = \frac{b-a}{n}$, 取等分点为$\{x_i = a+ih, i = 0,1,\cdots ,n\}$为数值积分节点, 构造Lagrange插值多项式$L_n(x)$, 则
+\begin{equation}
+    I(f) \approx I_n(f) = \int_{a}^{b} L_n(x) \,dx = (b-a) \sum_{i=0}^n C_i^{(n)}f(x_i)
+\end{equation}
+\begin{equation}
+    C_i^{(n)}= \frac{(-1)^{n-i}}{i!(n-i)!n} \int_{0}^{n} t(t-1) \cdots (t-i+1)(t-i-1) \cdots (t-n) \,dt
+\end{equation}
+称$I_n(x)$为Newton-Cotes积分, $C_i^{(n)}$为Newton-Cotes系数.
+% 积分误差$E_n(f)$满足:
+
+% 1)若$n$为奇数, $f\in C^{n+1}{[a,b]}$,
+% \begin{equation}
+%     E_n(f) = \frac{f^{(n+1)}(\eta)}{(n+1)!} \int_{a}^{b} (x-x_0)(x-x_1) \cdots (x-x_n) \,dx
+% \end{equation}
+
+% 2)若$n$为偶数, $f\in C^{n+2}{[a,b]}$,
+% \begin{equation}
+%     E_n(f) = \frac{f^{(n+2)}(\eta)}{(n+2)!} \int_{a}^{b} x(x-x_0)(x-x_1) \cdots (x-x_n) \,dx
+% \end{equation}
+
+在Newton-Cotes积分中, 取$n = 2$, 有
+\begin{equation}
+    \label{simpson}
+    S(f) = I_2(f) = \frac{b-a}{6} \left[f(a) + 4 f\left(\frac{a+b}{2}\right) + f(b)\right]
+\end{equation}
+称$S(f)$为Simpson积分. 设$f\in C^4{[a,b]}$, 则误差为
+\begin{equation}
+    E_2(f) = -\frac{(b-a)^5}{2880} f^{(4)}(\xi ),\ a \leq \xi \leq b
+\end{equation}
+
+\subsection{复化Simpson积分}
+
+由于插值的Runge现象, 高阶Newton-Cotes积分不能保证收敛性. 此外, 当$n>7$时, Newton-Cotes积分的计算公式不稳定. 因此实际计算中常用低阶复化积分.
+
+将积分区间$[a,b]$\,$n$等分, 其中$n$为偶数. 记$h = \frac{b-a}{n}$, $x_i = a+ih, i = 0,1,\cdots ,n$. 对每个子区间$[x_{2i},x_{2i+1}]$应用Simpson积分公式, 得复化Simpson积分$S_n(f)$的计算公式
+\begin{equation}
+    \label{csimpson}
+    S_n(f) = \frac{h}{3} \left[f(a) + 4 \sum_{i=1}^{n/2} f(x_{2i-1}) +2 \sum_{i=1}^{n/2-1} f(x_{2i}) + f(b)\right]
+\end{equation}
+设$f\in C^4{[a,b]}$, 则截断误差为
+\begin{equation}
+    \label{serror1}
+    I(f)-S_n(f) = -\frac{b-a}{180} h^4 f^{(4)}(\xi ),\ a \leq \xi \leq b
+\end{equation}
+
+记$[x_i,x_{i+1}]$的中点为$x_{i+1/2}$, 进而将积分区间$2n$等分, 得复化Simpson积分$S_{2n}(f)$, 其截断误差
+\begin{equation}
+    \label{serror2}
+    I(f)-S_{2n}(f) = -\frac{b-a}{180} \left(\frac{h}{2}\right)^4 f^{(4)}(\eta ),\ a \leq \eta \leq b
+\end{equation}
+作近似$f^{(4)}(\xi ) \approx f^{(4)}(\eta )$, 由(\ref{serror1})式和(\ref{serror2})式得后验误差估计方法
+\begin{equation}
+    I(f)-S_{2n}(f) \approx \frac{1}{15}(S_{2n}(f)-S_n(f))
+\end{equation}
+
+\subsection{自适应复化Simpson积分算法}
+
+由上述讨论可知, 当分点无限增多, 复化Simpson积分收敛到$I(f)$. 对任给的误差限$\epsilon$, 令区间段数$n$不断倍增, 依次计算复化Simpson数值积分, 直到
+\begin{equation}
+    |S_{2n}(f)-S_n(f)| < 15\epsilon
+\end{equation}
+可以认为, 此时已满足精度要求. 据此, 给出自动控制误差的复化积分算法如下
+
+\begin{algorithm}[H]
+    \KwData{积分区间$[a,b]$; 精度控制值$\epsilon$; 定义函数$f(x)$.}
+    \KwResult{积分值$I(f)=\mathtt{S1}$.}
+    
+    $n \leftarrow 1, \ h \leftarrow b-a$\;
+    $\mathtt{S1} \leftarrow S_1(x)$\tcp*{按(\ref{simpson})式计算.}
+    $\mathtt{S2} \leftarrow +\infty$\;
+    \While{$|\mathtt{S2}-\mathtt{S1}| < 15\epsilon$}{
+        $n \leftarrow 2n, \ h \leftarrow h/2$\;
+        $\mathtt{S2} \leftarrow \mathtt{S1} $\;
+        $\mathtt{S1} \leftarrow S_{n}(x)$\tcp*{按(\ref{csimpson})式计算.}
+    }
+
+    \caption{自适应复化Simpson积分算法}
+\end{algorithm}
+
+\section{结果分析}
+
+\begin{itemize}
+    \item 根据表~\ref{tab:simpson}, 当$n = 1$时, 后验误差$\frac{1}{15}|S_2(\ln{x})-S_1(\ln{x}| > \text{1e-4}$, 不满足精度要求; 当$n = 2$时, 后验误差$\frac{1}{15}|S_4(\ln{x})-S_2(\ln{x})| < \text{1e-4}$, 满足精度要求. 故自适应复化Simpson算法得到的数值积分结果为
+    $$S=S_4(\ln{x})=\text{0.386259562814567}$$ 
+    \item 由图~\ref{fig:simpson} 可知, 在积分上限$b \in (1, 100)$范围内,复化Simpson积分$S_n(\ln{x})$随$n$增大逐渐趋于自适应算法的结果, 映证了复化Simpson公式的收敛性.
+    \item 接上一条, 当积分上限$b$逐渐增大, 固定分点数的复化Simpson公式的截断误差逐渐累积而增大, 映证了增加分点数的必要性. 
+    \item 比较表~\ref{tab:trapezoid} (见附录)和表~\ref{tab:simpson}, 图~\ref{fig:trapezoid} 和图~\ref{fig:simpson}, 可知在计算$\int_1^b \ln{x} \,dx$时, Simpson公式较梯形公式在自适应算法下收敛更快, 映证了Newton-Cotes型数值积分的精度理论. 然而在同样的分点数下, Simpson积分的误差不一定比梯形积分小, 说明高阶Newton-Cotes型数值积分不能保证收敛性.
+\end{itemize}
+
+\setupappendix
+
+\section{其他数值积分方法的结果}
+
+\subsection{复化梯形积分}
+
+\begin{table}[H]
+    \centering
+    \csvautobooktabular{../assets/output/trapezoid.csv}
+    \caption{复化梯形公式计算$\int_1^2 \ln{x} \,dx$}
+    \label{tab:trapezoid}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{../assets/output/trapezoid.pdf}
+    \caption{复化梯形公式计算$\int_1^b \ln{x} \,dx$}
+    \label{fig:trapezoid}
+\end{figure}
+
+\subsection{Romberg积分}
+
+\begin{table}[H]
+    \centering
+    \csvautobooktabular{../assets/output/romberg.csv}
+    \caption{Romberg算法计算$\int_1^2 \ln{x} \,dx$}
+    \label{tab:romberg}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{../assets/output/romberg.pdf}
+    \caption{Romberg算法计算$\int_1^b \ln{x} \,dx$}
+    \label{fig:romberg}
+\end{figure}
+
+\subsection{Gauss-Legendre积分}
+
+\begin{table}[H]
+    \centering
+    \label{tab:gauss-legendre}
+    \csvautobooktabular{../assets/output/gauss-legendre.csv}
+    \caption{Gauss-Legendre公式计算$\int_{-3}^1 (x^5+x) \,dx$和$\int_1^2 \ln{x} \,dx$}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{../assets/output/gauss-legendre.pdf}
+    \caption{Gauss-Legendre公式计算$\int_1^b \ln{x} \,dx$}
+    \label{fig:gauss-legendre}
+\end{figure}
+
+\section{Python程序代码}
+
+\subsection{复化Simpson积分}
+\pylistings[]{simpson.py}
+
+\subsection{复化梯形积分}
+\pylistings[]{trapezoid.py}
+
+\subsection{Romberg积分}
+\pylistings[]{romberg.py}
+
+\subsection{Gauss-Legendre积分}
+\pylistings[]{gauss-legendre.py}
+
+
+\end{document}

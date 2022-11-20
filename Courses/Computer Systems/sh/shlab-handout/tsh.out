@@ -1,0 +1,220 @@
+make[1]: Entering directory '/workspaces/Repositories/Computer System/labs/sh/shlab-handout'
+./sdriver.pl -t trace01.txt -s ./tsh -a "-p"
+#
+# trace01.txt - Properly terminate on EOF.
+#
+./sdriver.pl -t trace02.txt -s ./tsh -a "-p"
+#
+# trace02.txt - Process builtin quit command.
+#
+./sdriver.pl -t trace03.txt -s ./tsh -a "-p"
+#
+# trace03.txt - Run a foreground job.
+#
+tsh> quit
+./sdriver.pl -t trace04.txt -s ./tsh -a "-p"
+#
+# trace04.txt - Run a background job.
+#
+tsh> ./myspin 1 &
+[1] (1115) ./myspin 1 &
+./sdriver.pl -t trace05.txt -s ./tsh -a "-p"
+#
+# trace05.txt - Process jobs builtin command.
+#
+tsh> ./myspin 2 &
+[1] (1172) ./myspin 2 &
+tsh> ./myspin 3 &
+[2] (1178) ./myspin 3 &
+tsh> jobs
+[1] (1172) Running ./myspin 2 &
+[2] (1178) Running ./myspin 3 &
+./sdriver.pl -t trace06.txt -s ./tsh -a "-p"
+#
+# trace06.txt - Forward SIGINT to foreground job.
+#
+tsh> ./myspin 4
+Job [1] (1295) terminated by signal 2
+./sdriver.pl -t trace07.txt -s ./tsh -a "-p"
+#
+# trace07.txt - Forward SIGINT only to foreground job.
+#
+tsh> ./myspin 4 &
+[1] (1351) ./myspin 4 &
+tsh> ./myspin 5
+Job [2] (1357) terminated by signal 2
+tsh> jobs
+[1] (1351) Running ./myspin 4 &
+./sdriver.pl -t trace08.txt -s ./tsh -a "-p"
+#
+# trace08.txt - Forward SIGTSTP only to foreground job.
+#
+tsh> ./myspin 4 &
+[1] (1405) ./myspin 4 &
+tsh> ./myspin 5
+Job [2] (1411) stopped by signal 20
+tsh> jobs
+[1] (1405) Running ./myspin 4 &
+[2] (1411) Stopped ./myspin 5 
+./sdriver.pl -t trace09.txt -s ./tsh -a "-p"
+#
+# trace09.txt - Process bg builtin command
+#
+tsh> ./myspin 4 &
+[1] (1459) ./myspin 4 &
+tsh> ./myspin 5
+Job [2] (1465) stopped by signal 20
+tsh> jobs
+[1] (1459) Running ./myspin 4 &
+[2] (1465) Stopped ./myspin 5 
+tsh> bg %2
+[2] (1465) ./myspin 5 
+tsh> jobs
+[1] (1459) Running ./myspin 4 &
+[2] (1465) Running ./myspin 5 
+./sdriver.pl -t trace10.txt -s ./tsh -a "-p"
+#
+# trace10.txt - Process fg builtin command. 
+#
+tsh> ./myspin 4 &
+[1] (1531) ./myspin 4 &
+tsh> fg %1
+Job [1] (1531) stopped by signal 20
+tsh> jobs
+[1] (1531) Stopped ./myspin 4 &
+tsh> fg %1
+tsh> jobs
+./sdriver.pl -t trace11.txt -s ./tsh -a "-p"
+#
+# trace11.txt - Forward SIGINT to every process in foreground process group
+#
+tsh> ./mysplit 4
+Job [1] (1570) terminated by signal 2
+tsh> /bin/ps a
+  PID TTY      STAT   TIME COMMAND
+  546 pts/1    Ssl    0:00 /usr/bin/qemu-x86_64 /usr/bin/zsh /usr/bin/zsh
+  744 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /usr/bin/make make all test rtest
+  935 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /bin/sh /bin/sh -c make tests > tsh.out 2>&1
+  948 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /usr/bin/make make tests
+ 1558 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /bin/sh /bin/sh -c ./sdriver.pl -t trace11.txt -s ./tsh -a "-p"
+ 1561 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /usr/bin/perl /usr/bin/perl ./sdriver.pl -t trace11.txt -s ./tsh -a -p
+ 1564 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 ./tsh ./tsh -p
+./sdriver.pl -t trace12.txt -s ./tsh -a "-p"
+#
+# trace12.txt - Forward SIGTSTP to every process in foreground process group
+#
+tsh> ./mysplit 4
+Job [1] (1617) stopped by signal 20
+tsh> jobs
+[1] (1617) Stopped ./mysplit 4 
+tsh> /bin/ps a
+  PID TTY      STAT   TIME COMMAND
+  546 pts/1    Ssl    0:00 /usr/bin/qemu-x86_64 /usr/bin/zsh /usr/bin/zsh
+  744 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /usr/bin/make make all test rtest
+  935 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /bin/sh /bin/sh -c make tests > tsh.out 2>&1
+  948 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /usr/bin/make make tests
+ 1605 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /bin/sh /bin/sh -c ./sdriver.pl -t trace12.txt -s ./tsh -a "-p"
+ 1608 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /usr/bin/perl /usr/bin/perl ./sdriver.pl -t trace12.txt -s ./tsh -a -p
+ 1611 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 ./tsh ./tsh -p
+ 1617 pts/1    Tl     0:00 /usr/bin/qemu-x86_64 ./mysplit ./mysplit 4
+ 1620 pts/1    Tl     0:00 /usr/bin/qemu-x86_64 ./mysplit ./mysplit 4
+./sdriver.pl -t trace13.txt -s ./tsh -a "-p"
+#
+# trace13.txt - Restart every stopped process in process group
+#
+tsh> ./mysplit 4
+Job [1] (1652) stopped by signal 20
+tsh> jobs
+[1] (1652) Stopped ./mysplit 4 
+tsh> /bin/ps a
+  PID TTY      STAT   TIME COMMAND
+  546 pts/1    Ssl    0:00 /usr/bin/qemu-x86_64 /usr/bin/zsh /usr/bin/zsh
+  744 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /usr/bin/make make all test rtest
+  935 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /bin/sh /bin/sh -c make tests > tsh.out 2>&1
+  948 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /usr/bin/make make tests
+ 1637 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /bin/sh /bin/sh -c ./sdriver.pl -t trace13.txt -s ./tsh -a "-p"
+ 1640 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /usr/bin/perl /usr/bin/perl ./sdriver.pl -t trace13.txt -s ./tsh -a -p
+ 1643 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 ./tsh ./tsh -p
+ 1652 pts/1    Tl     0:00 /usr/bin/qemu-x86_64 ./mysplit ./mysplit 4
+ 1655 pts/1    Tl     0:00 /usr/bin/qemu-x86_64 ./mysplit ./mysplit 4
+tsh> fg %1
+tsh> /bin/ps a
+  PID TTY      STAT   TIME COMMAND
+  546 pts/1    Ssl    0:00 /usr/bin/qemu-x86_64 /usr/bin/zsh /usr/bin/zsh
+  744 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /usr/bin/make make all test rtest
+  935 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /bin/sh /bin/sh -c make tests > tsh.out 2>&1
+  948 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /usr/bin/make make tests
+ 1637 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /bin/sh /bin/sh -c ./sdriver.pl -t trace13.txt -s ./tsh -a "-p"
+ 1640 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 /usr/bin/perl /usr/bin/perl ./sdriver.pl -t trace13.txt -s ./tsh -a -p
+ 1643 pts/1    Sl+    0:00 /usr/bin/qemu-x86_64 ./tsh ./tsh -p
+./sdriver.pl -t trace14.txt -s ./tsh -a "-p"
+#
+# trace14.txt - Simple error handling
+#
+tsh> ./bogus
+./bogus: Command not found
+tsh> ./myspin 4 &
+[1] (1731) ./myspin 4 &
+tsh> fg
+fg command requires PID or %jobid argument
+tsh> bg
+bg command requires PID or %jobid argument
+tsh> fg a
+fg: argument must be a PID or %jobid
+tsh> bg a
+bg: argument must be a PID or %jobid
+tsh> fg 9999999
+(9999999): No such process
+tsh> bg 9999999
+(9999999): No such process
+tsh> fg %2
+%2: No such job
+tsh> fg %1
+Job [1] (1731) stopped by signal 20
+tsh> bg %2
+%2: No such job
+tsh> bg %1
+[1] (1731) ./myspin 4 &
+tsh> jobs
+[1] (1731) Running ./myspin 4 &
+./sdriver.pl -t trace15.txt -s ./tsh -a "-p"
+#
+# trace15.txt - Putting it all together
+#
+tsh> ./bogus
+./bogus: Command not found
+tsh> ./myspin 10
+Job [1] (1823) terminated by signal 2
+tsh> ./myspin 3 &
+[1] (1835) ./myspin 3 &
+tsh> ./myspin 4 &
+[2] (1841) ./myspin 4 &
+tsh> jobs
+[1] (1835) Running ./myspin 3 &
+[2] (1841) Running ./myspin 4 &
+tsh> fg %1
+Job [1] (1835) stopped by signal 20
+tsh> jobs
+[1] (1835) Stopped ./myspin 3 &
+[2] (1841) Running ./myspin 4 &
+tsh> bg %3
+%3: No such job
+tsh> bg %1
+[1] (1835) ./myspin 3 &
+tsh> jobs
+[1] (1835) Running ./myspin 3 &
+[2] (1841) Running ./myspin 4 &
+tsh> fg %1
+tsh> quit
+./sdriver.pl -t trace16.txt -s ./tsh -a "-p"
+#
+# trace16.txt - Tests whether the shell can handle SIGTSTP and SIGINT
+#     signals that come from other processes instead of the terminal.
+#
+tsh> ./mystop 2
+Job [1] (1910) stopped by signal 20
+tsh> jobs
+[1] (1910) Stopped ./mystop 2
+tsh> ./myint 2
+Job [2] (1928) terminated by signal 2
+make[1]: Leaving directory '/workspaces/Repositories/Computer System/labs/sh/shlab-handout'

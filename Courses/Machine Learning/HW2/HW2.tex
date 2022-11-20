@@ -1,0 +1,1267 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Course info
+\newcommand{\school}{\text{University of Science and Technology of China}}
+\newcommand{\course}{\text{Introduction to Machine Learning}}
+\newcommand{\semester}{\text{Fall 2022}}
+\newcommand{\lecturer}{\text{Jie Wang}}
+% Homework info
+\newcommand{\posted}{\text{Oct. 11, 2022}}
+\newcommand{\due}{\text{Oct. 25, 2022}}
+\newcommand{\hwno}{\text{2}}
+% Student info
+\newcommand{\name}{\text{Yunqin Zhu}}
+\newcommand{\id}{\text{PB20061372}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{../common/HW.tex}
+\begin{document}
+\maketitle
+
+
+\begin{exercise}[Linear regression ]
+    Consider a data set $\{ (x_i ,y_i) \}_{i=1}^{n}$, where $x_i,y_i\in \mathbb{R}$.
+    \begin{enumerate}
+        \item If we want to fit the data by a linear model
+            \begin{align}\label{eqn:linear}
+                y =  w_0 + w_1 x,
+            \end{align}
+            please find $\hat{w}_0$ and $\hat{w}_1$ by the least squares approach (you need to find expressions of $\hat{w}_0$ and $\hat{w}_1$ by $\{ (x_i ,y_i) \}_{i=1}^{n}$, respectively).
+            
+            \begin{solution}
+                Denote $\mb{X} = \begin{pmatrix} 1 & x_1 \\ 1 & x_2 \\ \vdots & \vdots \\ 1 & x_n \end{pmatrix}$, $\mb{y} = \begin{pmatrix} y_1 \\ y_2 \\ \vdots \\ y_n \end{pmatrix}$ and $\mb{w} = \begin{pmatrix} w_0 \\ w_1 \end{pmatrix}$. 
+                The average fitting error is defined as 
+                $L_S(\mb{w}) = \frac{1}{n}\|\mb{y}-\mb{Xw}\|^2.$
+                The least squares solution is given by $\hat{\mb{w}}_{LS} \in \argmin_\mb{w} L_S(\mb{w})$. Since \begin{gather*}
+                    \nabla_\mb{w} L_S(\mb{w}) = -\frac{2}{n} \mb{X}^\top (\mb{y}-\mb{Xw})=\mb{0} \implies \mb{X}^\top\mb{X}\mb{w} = \mb{X}^\top\mb{y},\\
+                    \nabla_\mb{ww}^2 L_S(\mb{w}) = \frac{2}{n} \mb{X}^\top\mb{X}\ge 0,
+                \end{gather*}
+                we know $\hat{\mb{w}}_{LS}$ can be any solution of the normal equation, i.e. $$\hat{\mb{w}}_{LS} = \left(\mb{X}^\top\mb{X}\right)^+\mb{X}^\top\mb{y} + \left(\mb{I}-\left(\mb{X}^\top\mb{X}\right)^+\mb{X}^\top\mb{X}\right)\mb{u}, \ \forall \mb{u} \in \mathbb{R}^n, $$ where $\left(\mb{X}^\top\mb{X}\right)^+$ denotes the Moore-Penrose pseudoinverse of $\mb{X}^\top\mb{X}$.
+                Suppose $\mb{X}$ has full column rank. Then $\left(\mb{X}^\top\mb{X}\right)^+ = \left(\mb{X}^\top\mb{X}\right)^{-1}$, and thus $$\hat{\mb{w}}_{LS} = \left(\mb{X}^\top\mb{X}\right)^{-1}\mb{X}^\top\mb{y} =\begin{pmatrix}
+                        n                       & \sum\limits_{i=1}^n x_i    \\
+                        \sum\limits_{i=1}^n x_i & \sum\limits_{i=1}^n x_i^2
+                    \end{pmatrix}^{-1}\begin{pmatrix}
+                        \sum\limits_{i=1}^n y_i \\
+                        \sum\limits_{i=1}^n x_iy_i
+                    \end{pmatrix}
+                $$
+                Specifically, 
+                \begin{align}\label{eqn:linear-sol}
+                    \hat{w}_0 = \frac{\sum\limits_{i=1}^n x_i^2 \sum\limits_{i=1}^n y_i - \sum\limits_{i=1}^n x_i \sum\limits_{i=1}^n x_iy_i}{n\sum\limits_{i=1}^n x_i^2-\left(\sum\limits_{i=1}^n x_i\right)^2}, \quad 
+                    \hat{w}_1 = \frac{n \sum\limits_{i=1}^n x_iy_i - \sum\limits_{i=1}^n x_i \sum\limits_{i=1}^n y_i}{n\sum\limits_{i=1}^n x_i^2-\left(\sum\limits_{i=1}^n x_i\right)^2}.
+                \end{align}
+                \qedhere
+            \end{solution}
+            
+        \item \textbf{Programming Exercise:} We provide you a data set $\{ (x_i ,y_i) \}_{i=1}^{30}$. Consider the model in (\ref{eqn:linear}) and the one as follows:
+            \begin{align}\label{eqn:linear-quadratic}
+                y =  w_0 + w_1 x+ w_2 x^2.
+            \end{align}
+            Which model do you think fits better the data? Please detail your approach first and then implement it by your favorite programming language. The required output includes
+            \begin{enumerate}
+                \item your detailed approach step by step;
+                \item your code with detailed comments according to your planned approach;
+                \item a plot showing the data and the fitting models;
+                \item the model you finally choose ($\hat{w}_0$ and $\hat{w}_1$ if you choose the model in (\ref{eqn:linear}), or $\hat{w}_0$, $\hat{w}_1$, and $\hat{w}_2$ if you choose the model in (\ref{eqn:linear-quadratic})).
+            \end{enumerate}
+            
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item First, we fit the linear model by computing (\ref{eqn:linear-sol}). The results are $\hat{w}_0 = 1.000387$ and $\hat{w}_1 = 0.430838$.
+                        
+                        Next, to fit the quadratic model, we define the design matrix as $\mb{X} = \begin{pmatrix} 1 & x_1 & x_1^2 \\ 1 & x_2 & x_2^2 \\ \vdots & \vdots & \vdots \\ 1 & x_n & x_n^2 \end{pmatrix}$ and let $\mb{w} = \begin{pmatrix} w_0 \\ w_1 \\ w_2 \end{pmatrix}$. 
+                        Analogously, by solving the normal equation $\mb{X}^\top\mb{X}\mb{w} = \mb{X}^\top\mb{y}$ which has the unique solution $\hat{\mb{w}}_{LS} = \left(\mb{X}^\top\mb{X}\right)^{-1}\mb{X}^\top\mb{y}$, we get the coefficients $\hat{w}_0 = 1.029568$, $\hat{w}_1 = 0.386143$ and $\hat{w}_2 = -0.142151$.
+                        
+                        After that, we compute the predicted values $\hat{y}_i, i=1,\ldots,30$ for the linear and the quadratic model respectively, and compare $L_S(\hat{\mb{w}}_{LS})$ for the two models. 
+                        
+                        The average fitting error of the linear model is $L_S(\hat{\mb{w}}_{LS}) = 0.009405$, while the quadratic model has smaller $L_S(\hat{\mb{w}}_{LS}) = 0.008083$, implying that it fits better than the linear one.
+                        
+                        Accordingly, we choose the quadratic model, i.e. the model in (\ref{eqn:linear-quadratic}), as the final model.
+                        
+                    \item The python code is as follows:
+                        
+                        \begin{minted}{python}
+                        # %%
+                        import numpy as np
+                        import matplotlib as mpl
+                        import matplotlib.pyplot as plt
+                        import pandas as pd
+                        mpl.rcParams['mathtext.fontset'] = 'cm'
+
+                        # %%
+                        df = pd.read_csv('HW2_DataSet/Ex1 data', sep='\t', header=None, names=['x', 'y']).sort_values('x')
+                        df['x^2'] = df['x'] ** 2
+                        df['1'] = 1
+                        df
+
+                        # %%
+                        # solve normal equation
+                        def linear_reg(X, y):
+                            return np.linalg.inv(X.T @ X) @ X.T @ y
+
+
+                        # linear model
+                        X = df[['1', 'x']].values
+                        y = df['y'].values
+                        w = linear_reg(X, y)
+                        df['linear'] = X @ w
+                        mse = np.mean((df['linear'] - df['y'])**2)
+                        print(f'Linear Model: \n w0 = {w[0]} \n w1 = {w[1]} \n MSE = {mse} \n')
+
+                        # quadratic model
+                        X = df[['1', 'x', 'x^2']].values
+                        y = df['y'].values
+                        w = linear_reg(X, y)
+                        df['quadratic'] = X @ w
+                        mse = np.mean((df['quadratic'] - df['y'])**2)
+                        print(
+                            f'Quadratic Model: \n w0 = {w[0]} \n w1 = {w[1]} \n w2 = {w[2]} \n MSE = {mse} \n'
+                        )
+
+                        # %%
+                        # plot
+                        plt.plot(df['x'], df['y'], 'o', mfc='none', label='Data')
+                        plt.plot(df['x'], df['linear'], label='Linear Reg.')
+                        plt.plot(df['x'], df['quadratic'], label='Quad. Reg.')
+                        plt.legend()
+                        plt.xlabel(r'$x$')
+                        plt.ylabel(r'$y$')
+
+                        plt.savefig('HW2_Ex1.pdf')
+                        plt.show()
+                        \end{minted}
+                        \pagebreak
+                    \item A plot of the data and the fitting models is shown in Figure \ref{fig:linear-quadratic}.
+                        
+                        \begin{figure}[H]
+                            \centering
+                            \includegraphics{img/HW2_Ex1.pdf}
+                            \caption{Linear and quadratic fitting models in Exercise 1.}\label{fig:linear-quadratic}
+                        \end{figure}
+                        
+                    \item We choose the quadratic model in (\ref{eqn:linear-quadratic}), i.e.
+                        $$ y= 1.029568 + 0.386143 x - 0.142151 x^2. $$
+                        \qedhere
+                        
+                \end{enumerate}
+            \end{solution}
+            
+    \end{enumerate}
+    
+\end{exercise}
+\newpage
+
+
+
+
+\begin{exercise}[Projection ]
+    Let $\mb{A}\in\mathbb{R}^{m\times n}$ and $\mb{x} \in \mathbb{R}^m$. Define
+    \begin{align*}
+        \proj{\mb{x}}{\mb{A}} = \argmin_{\mb{z}\in\mathbb{R}^m}\,\{\|\mb{x}-\mb{z}\|_2: \mb{z}\in\mathcal{C}(\mb{A})\}.
+    \end{align*}
+    We call $\proj{\mb{x}}{\mb{A}}$ the projection of the point $\mb{x}$ onto the column space of $\mb{A}$.
+    \begin{enumerate}
+        \item Please prove that $\Pi_{\mb{A}}(\mb{x})$ is unique for any $\mb{x} \in \mathbb{R}^m$.
+            
+            \begin{solution}
+                Denote the objective function by $f(\mb{z})=\|\mb{x}-\mb{z}\|^2_2$, which is clearly a continuous function. 
+                Let $\mb{z}_0\in\mathcal{C}(A)$ and $r = \|\mb{x}-\mb{z}_0\|_2$. 
+                If we denote $C = \mathcal{C}(A) \cap B(\mb{x}, r)$, we can conclude that $C$ is nonempty, as it at least contains $\mb{z}_0$. 
+                Since both $B(\mb{x}, r)$ and $\mathcal{C}(A)$ are closed, the set $C$ is closed as well. 
+                Moreover, the boundedness of $B(\mb{x}, r)$ implies that $C$ must be bounded. 
+                All together, we conclude that the set $C$ is compact. 
+                By the Extreme Value Theorem, there exists $\mb{z}_1\in C$ such that $f(\mb{z}_1)\leq f(\mb{z})$ for all $\mb{z}\in C$, and also for all $\mb{z}\in \mathcal{C}(A)$, i.e. $\mb{z}_1 \in \argmin\,\{\|\mb{x}-\mb{z}\|_2: \mb{z}\in\mathcal{C}(\mb{A})\}$. 
+                
+                Suppose there exists another $\mb{z}_2 \in \mathcal{C}(A)$ such that $f(\mb{z}_2) = f(\mb{z}_1)$.
+                Then we have $$f\left(\frac{\mb{z}_1+\mb{z}_2}{2}\right)=\left\|\mb{x}-\frac{\mb{z}_1+\mb{z}_2}{2}\right\|^2_2 = \frac{1}{2}\|\mb{x}-\mb{z}_1||^2_2 + \frac{1}{2}\|\mb{x}-\mb{z}_2||^2_2 - \frac{1}{4}\|\mb{z}_1-\mb{z}_2||^2_2 < f(\mb{z}_1),$$ which is a contradiction. 
+                This shows that $\mb{z}_1=\proj{\mb{x}}{\mb{A}}$ is unique.
+                \qedhere
+            \end{solution}
+            
+        \item Let $\mb{v}_i \in \mathbb{R}^n$, $i=1,\ldots,d$ with $d\leq n$, which are linearly independent.
+            \begin{enumerate}
+                \item For any $\mb{w}\in \mathbb{R}^n$, please find $\proj{\mb{w}}{\mb{v}_1}$, which is the projection of $\mb{w}$ onto the subspace spanned by $\mb{v}_1$.
+                \item Please show $\proj{\cdot}{\mb{v}_1}$ is a linear map, i.e.,
+                    \begin{align*}
+                        \proj{\alpha\mb{u}+\beta\mb{w}}{\mb{v}_1}=\alpha\proj{\mb{u}}{\mb{v}_1} + \beta \proj{\mb{w}}{\mb{v}_1},
+                    \end{align*}
+                    where $\alpha,\beta\in\mathbb{R}$ and $\mb{w}\in\mathbb{R}^n$.
+                \item Please find the projection matrix corresponding to the linear map $\proj{\cdot}{\mb{v}_1}$, i.e., find the matrix $\mb{H}_1\in\mathbb{R}^{n\times n}$ such that
+                    \begin{align*}
+                        \proj{\mb{w}}{\mb{v}_1}=\mb{H}_1\mb{w}.
+                    \end{align*}
+                \item Let $\mb{V}=(\mb{v}_1,\ldots,\mb{v}_d)$.
+                    \begin{enumerate}
+                        \item For any $\mb{w}\in \mathbb{R}^n$, please find $\proj{\mb{w}}{\mb{V}}$ and the corresponding projection matrix $\mb{H}$.
+                        \item Please find $\mb{H}$ if we further assume that $\mb{v}_i^{\top}\mb{v}_j=0$, $\forall\,i\neq j$.
+                    \end{enumerate}
+            \end{enumerate}
+            
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item Define $f(x) = \|\mb{w} - \mb{v}_1x\|_2^2,\ x\in \mathbb{R}$.
+                        To minimize $f(x)$, let $f'(x) = -2\mb{v}_1^{\top}(\mb{w} - \mb{v}_1x) = 0$ $\implies$ $x=\left(\mb{v}_1^\top\mb{v}_1\right)^{-1}\mb{v}_1^\top\mb{w}$. 
+                        Therefore, $\proj{\mb{w}}{\mb{v}_1} = \mb{v}_1\left(\mb{v}_1^\top\mb{v}_1\right)^{-1}\mb{v}_1^\top\mb{w}$.
+                    \item $\proj{\alpha\mb{u}+\beta\mb{w}}{\mb{v}_1}=\mb{v}_1\left(\mb{v}_1^\top\mb{v}_1\right)^{-1}\mb{v}_1^\top(\alpha\mb{u}+\beta\mb{w})=\alpha\mb{v}_1\left(\mb{v}_1^\top\mb{v}_1\right)^{-1}\mb{v}_1^\top\mb{u}+\beta\mb{v}_1\left(\mb{v}_1^\top\mb{v}_1\right)^{-1}\mb{v}_1^\top\mb{w}\\=\alpha\proj{\mb{u}}{\mb{v}_1} + \beta \proj{\mb{w}}{\mb{v}_1}.$
+                    \item $\mb{H}_1 = \mb{v}_1\left(\mb{v}_1^\top\mb{v}_1\right)^{-1}\mb{v}_1.$
+                    \item \begin{enumerate}
+                            \item Define $f(\mb{x}) = \|\mb{w} - \mb{V}\mb{x}\|_2^2,\ \mb{x}\in \mathbb{R}^d$.
+                                To minimize $f(\mb{x})$, let $$f'(\mb{x}) = -2\mb{V}^{\top}(\mb{w} - \mb{V}\mb{x}) = 0 \implies \mb{x}=\left(\mb{V}^\top\mb{V}\right)^{-1}\mb{V}^\top\mb{w}.$$
+                                Therefore, $\proj{\mb{w}}{\mb{V}} = \mb{V}\left(\mb{V}^\top\mb{V}\right)^{-1}\mb{V}^\top\mb{w}$, and thus $\mb{H} = \mb{V}\left(\mb{V}^\top\mb{V}\right)^{-1}\mb{V}^\top$.
+                                \vspace{6ex}
+                            \item \ \vspace{-8ex}
+                                \begin{align*}
+                                    \mb{V}^\top\mb{V}=
+                                    \begin{pmatrix}
+                                        \mb{v}_1^\top \\ \vdots \\ \mb{v}_d^\top
+                                    \end{pmatrix}
+                                    \begin{pmatrix}
+                                        \mb{v}_1 & \cdots & \mb{v}_d
+                                    \end{pmatrix}=
+                                    \begin{pmatrix}
+                                        \mb{v}_1^\top\mb{v}_1 &  & \\ & \ddots & \\ & & \mb{v}_d^\top\mb{v}_d
+                                    \end{pmatrix},
+                                \end{align*}
+                                \begin{align*}
+                                    \mb{H} = \mb{V}\left(\mb{V}^\top\mb{V}\right)^{-1}\mb{V}^\top & = 
+                                    \begin{pmatrix}
+                                        \mb{v}_1 & \cdots & \mb{v}_d
+                                    \end{pmatrix}
+                                    \begin{pmatrix}
+                                        \mb{v}_1^\top\mb{v}_1 &  & \\ & \ddots & \\ & & \mb{v}_d^\top\mb{v}_d
+                                    \end{pmatrix}^{-1}
+                                    \begin{pmatrix}
+                                        \mb{v}_1^\top \\ \vdots \\ \mb{v}_d^\top
+                                    \end{pmatrix}
+                                    \\ & = \mb{v}_1\left(\mb{v}_1^\top\mb{v}_1\right)^{-1}\mb{v}_1 + \cdots + \mb{v}_d\left(\mb{v}_d^\top\mb{v}_d\right)^{-1}\mb{v}_d  \\ & = \mb{H}_1 + \cdots + \mb{H}_d.
+                                    \tag*{\qedhere}
+                                \end{align*}
+                        \end{enumerate}
+                \end{enumerate}
+            \end{solution}
+            
+        \item
+            \begin{enumerate}
+                \item Suppose that
+                    \begin{align*}
+                        \mb{A} = 
+                        \begin{pmatrix}
+                            1 & 0  \\
+                            0 & 1
+                        \end{pmatrix}
+                        .
+                    \end{align*}
+                    What are the coordinates of $\Pi_{\mb{A}}(\mb{x})$ with respect to the column vectors in $\mb{A}$ for any $\mb{x} \in \mathbb{R}^2$? Are the coordinates unique?
+                \item Suppose that
+                    \begin{align*}
+                        \mb{A} = 
+                        \begin{pmatrix}
+                            1 & 2  \\
+                            1 & 2
+                        \end{pmatrix}
+                        .
+                    \end{align*}
+                    What are the coordinates of $\Pi_{\mb{A}}(\mb{x})$ with respect to the column vectors in $\mb{A}$ for any $\mb{x} \in \mathbb{R}^2$? Are the coordinates unique?
+            \end{enumerate}
+            
+            
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item $\proj{\mb{x}}{\mb{A}} = \mb{A}\left(\mb{A}^\top\mb{A}\right)^{-1}\mb{A}^\top\mb{x} = \mb{x}.$ The coordinate $\mb{x}$ is unique.
+                    \item $\proj{\mb{x}}{\mb{A}} = \proj{\mb{x}}{\mb{a}_1} = \mb{a}_1\left(\mb{a}_1^\top\mb{a}_1\right)^{-1}\mb{a}_1^\top\mb{x} = \frac{1}{2}\begin{pmatrix}
+                                x_1+x_2 \\
+                                x_1+x_2
+                            \end{pmatrix}$. The coordinates $\mb{w}$ with respect to $\{\mb{a}_1, \mb{a}_2\}$ can be found by solving $\mb{A}\mb{w} = \proj{\mb{x}}{\mb{A}}$, which has infinitely many solutions. Hence the coordinates are not unique.
+                        \qedhere
+                \end{enumerate}
+            \end{solution}
+            \pagebreak
+        \item A matrix $\mb{P}$ is called a projection matrix if $\mb{P}\mb{x}$ is the projection of $\mb{x}$ onto $\mathcal{C}(\mb{P})$ for any $\mb{x}$.
+            \begin{enumerate}
+                \item Let $\lambda$ be the eigenvalue of $\mb{P}$. Show that $\lambda$ is either $1$ or $0$. (\emph{Hint: you may want to figure out what the eigenspaces corresponding to $\lambda=1$ and $\lambda=0$ are, respectively.})
+                \item Show that $\mb{P}$ is a projection matrix if and only if $\mb{P}^2 = \mb{P}$ and $\mb{P}$ is symmetric.
+            \end{enumerate}
+            
+            \begin{solution}   
+                First, we show that $\proj{\mb{x}}{\mb{A}}=\mb{z}_1$ if and only if $\mb{x}-\mb{z}_1$ is orthogonal to $\mathcal{C}(A)$.
+                Note that any $\mb{z}\in\mathcal{C}(A)$ can be represented by $\mb{z}_1+\epsilon\mb{y}$, where $\epsilon>0$ and $\mb{y}\in\mathcal{C}(A)$ are arbitrary. We expand $f(\mb{z})$ as
+                \begin{align*}
+                    f(\mb{z}) 
+                     & = \|\mb{x}-\mb{z}_1+\mb{z}_1-\mb{z}\|^2_2                                                             \\
+                     & = \|\mb{x}-\mb{z}_1\|^2_2 + \|\mb{z}_1-\mb{z}\|^2_2 + 2\langle\mb{x}-\mb{z}_1, \mb{z}_1-\mb{z}\rangle \\
+                     & = f(\mb{z}_1) + \epsilon^2\|\mb{y}\|^2_2 + 2\epsilon\langle\mb{x}-\mb{z}_1, \mb{y}\rangle.
+                \end{align*}
+                Therefore,
+                \begin{align*}
+                    \forall \,\mb{z}\in\mathcal{C}(A),\ f(\mb{z})-f(\mb{z}_1) \ge 0 
+                     & \iff \forall \,\mb{y}\in\mathcal{C}(A),\ \forall \,\epsilon>0,\ \epsilon\|\mb{y}\|^2_2 + 2\langle\mb{x}-\mb{z}_1, \mb{y}\rangle \ge 0        \\
+                     & \iff \forall \,\mb{y}\in\mathcal{C}(A),\  \langle\mb{x}-\mb{z}_1, \mb{y}\rangle \ge \sup_{\epsilon>0}-\frac{\epsilon}{2}\|\mb{y}\|^2_2 = 0,
+                \end{align*}
+                which leads to the lemma.
+                % \begin{itemize}
+                %     \item [($\Rightarrow$)]
+                %         If $\langle\mb{x} - \mb{z}_1, \mb{z}\rangle =0$ for any $\mb{z}\in\mathcal{C}(A)$, then $$f(\mb{z})=\|\mb{x}-\mb{z}_1\|_2^2 + 2\langle\mb{x}-\mb{z}_1, \mb{z}_1-\mb{z}\rangle + \|\mb{z}_1-\mb{z}\|_2^2=\|\mb{x}-\mb{z}_1\|_2^2+\|\mb{z}_1-\mb{z}\|_2^2,$$ which is minimized at $\mb{z} = \mb{z}_1$. Hence $\proj{\mb{x}}{\mb{A}}=\mb{z}_1$. 
+                %     \item [($\Leftarrow$)]
+                %         Let $\delta \in \mathcal{C}(A)$ be an arbitrary disturbance. 
+                %         Define the following function $$g(t) = f(\mb{z}_1 + t\delta)-f(\mb{z}_1)=t^2\|\delta\|_2^2 + 2t\langle\mb{x} - \mb{z}_1, \delta\rangle,$$ where $t\in\mathbb{R}$ and $g(t)\ge0$. Then we know $\langle\mb{x} - \mb{z}_1, \delta\rangle$ must be zero, or $f(t)$ will have a negative minimum at $t = -\frac{\langle\mb{x} - \mb{z}_1, \delta\rangle}{\|\delta\|_2^2}$. In conclusion, $\mb{x}-\mb{z}_1$ is orthogonal to $\mathcal{C}(A)$.
+                % \end{itemize}
+                Next, we show the statements in the problem.
+                \begin{enumerate}
+                    \item For any $\mb{x} \in \mathcal{C}(\mb{P})$, we have $\proj{\mb{x}}{\mb{P}}=\mb{x}$, while for any $\mb{x} \in \mathcal{C}(\mb{P})^\perp$, $\proj{\mb{x}}{\mb{P}}=\mb{0}$.
+                        Therefore, $\lambda$ is either $1$ with geometric multiplicity $\rank{\mb{P}}$, or $0$ with geometric multiplicity $n-\rank{\mb{P}}$.
+                    \item 
+                        \begin{itemize}
+                            \item [($\Rightarrow$)]
+                                If $\mb{P}$ is a projection matrix, then $\mb{P}^2=\mb{P}$, because each column of $\mb{P}$ is also its own projection onto $\mathcal{C}(\mb{P})$.
+                                Moreover, given arbitrary $\mb{x}, \mb{y} \in \mathbb{R}^n$, we have $\langle\mb{x},\mb{P}\mb{y}\rangle=\langle\mb{P}\mb{x},\mb{P}\mb{y}\rangle=\langle\mb{P}\mb{x},\mb{y}\rangle$, which implies $\mb{P}$ is symmetric.
+                            \item [($\Leftarrow$)]
+                                Given arbitrary $\mb{x}\in \mathbb{R}^n$ and $\mb{Py} \in \mathcal{C}(\mb{P})$, we have $\langle\mb{x},\mb{P}\mb{y}\rangle=\langle\mb{x},\mb{P}^2\mb{y}\rangle=\langle\mb{P}\mb{x},\mb{P}\mb{y}\rangle$, i.e. $\langle\mb{x}-\mb{Px}, \mb{Py}\rangle = 0$, and hence $\proj{\mb{x}}{\mb{P}}=\mb{Px}$. Therefore, $\mb{P}$ must be a projection matrix. \qedhere
+                                
+                        \end{itemize}
+                \end{enumerate}
+            \end{solution}
+            
+        \item Let $\mb{B} \in \mathbb{R}^{m\times s}$ and $\mathcal{C}(\mb{B}) $ be its column space. Suppose that $\mathcal{C}(\mb{B})$ is a proper subspace of $ \mathcal{C}(\mb{A})$.
+            Is $\proj{\mb{x}}{\mb{B}}$ the same as $\proj{\proj{\mb{x}}{\mb{A}}}{\mb{B}}$? Please show your claim rigorously.
+            
+            \begin{solution}
+                $\proj{\mb{x}}{\mb{B}}$ is the same as $\proj{\proj{\mb{x}}{\mb{A}}}{\mb{B}}$.
+                
+                As both $\mb{x} - \proj{\mb{x}}{\mb{A}}$ and $\proj{\mb{x}}{\mb{A}} - \proj{\proj{\mb{x}}{\mb{A}}}{\mb{B}}$ is orthogonal to $\mathcal{C}(\mb{B})$, it follows that their sum $\mb{x} - \proj{\proj{\mb{x}}{\mb{A}}}{\mb{B}}$ is also orthogonal to $\mathcal{C}(\mb{B})$. By the lemma shown in Exercise 2.4, we have $\proj{\mb{x}}{\mb{B}} = \proj{\proj{\mb{x}}{\mb{A}}}{\mb{B}}$. \qedhere
+            \end{solution}
+            
+    \end{enumerate}
+\end{exercise}
+\newpage
+
+
+
+
+\begin{exercise}[Linear regression by maximum likelihood (optional)]
+    Suppose that the samples $\{(\mb{x}_i,y_i)\}^n_{i=1}$ are i.i.d., where $\mb{x}_i =(x_{i,1}, \dots, x_{i,d})^{\top} \in \mathbb{R}^d$  and $y_i \in \mathbb{R}$. For any $i\in \{1,\dots, n\}$, we assume that
+    $$y_i =  w_0 + w_1 x_{i,1} +\dots + w_d x_{i,d} + \epsilon_i,$$
+    where $\mb{w} = (w_0,w_1,\dots,w_d)^{\top}\in \mathbb{R}^{d+1}$ and $\epsilon_i\sim \mathcal{N}(0,\sigma^2)$. For simplicity, we define $\bar{\mb{x}}_i = (1, x_{i,1}, \dots,\\ x_{i,d})^\top$, $ \mb{X}=(\bar{\mb{x}}_1,\dots,\bar{\mb{x}}_n)^\top$, and $\mb{y}=(y_1,\dots,y_n)^\top$, where $\mb{X}$ has full rank.
+    \begin{enumerate}
+        \item Please find the maximum likelihood estimation (MLE) $\hat{\mb{w}}$ of the weights $\mb{w}$. Specifically, please give the expression of $\hat{w}_0$.
+            
+            \begin{solution}
+                The probability density function of $y_i$ conditioned on the model parameters and the input variables is
+                $$ p(y_i|\mb{x}_i,\mb{w},\sigma) = \mathcal{N}(\mb{w}^\top\bar{\mb{x}}_i,\sigma^2).$$
+                Suppose that ${y_i}$ are mutually independent given the model parameters and the input variables. Then the likelihood function is
+                $$L(\mb{w},\sigma) = p(\mb{y}|\mb{x}_i,\mb{w},\sigma) = \prod_{i=1}^n p(y_i|\mb{x}_i,\mb{w},\sigma).$$
+                The log-likelihood is
+                \begin{align*}
+                    \ell(\mb{w},\sigma) & = \log L(\mb{w}) = \sum_{i=1}^n \log \left( \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(y_i-\mb{w}^\top\bar{\mb{x}}_i)^2}{2\sigma^2}\right)\right) \\ & = -\frac{1}{2\sigma^2}\sum_{i=1}^n (y_i-\mb{w}^\top\bar{\mb{x}}_i)^2 - n\log\sigma+ C \\ & = -\frac{1}{2\sigma^2} \|\mb{y} - \mb{X}\mb{w}\|^2_2 - n\log\sigma + C,
+                \end{align*}
+                where $C$ is a constant independent of $\mb{w}$ and $\sigma$. Then $\hat{\mb{w}} = \argmax_{\mb{w}} \ell(\mb{w},\sigma)$. From
+                \begin{gather*}    
+                    \frac{\partial \ell}{\partial \mb{w}} = -\frac{1}{\sigma^2} \mb{X}^\top(\mb{X}\mb{w}-\mb{y}) = 0 \implies \mb{w} = \left(\mb{X}^\top\mb{X}\right)^{-1}\mb{X}^\top\mb{y},\\
+                    \frac{\partial^2 \ell}{\partial \mb{w}^2} = -\frac{1}{\sigma^2} \mb{X}^\top\mb{X} = -\frac{1}{\sigma^2} \mb{X}^\top\mb{X} < 0,
+                \end{gather*}
+                we conclude that $\hat{\mb{w}} = \left(\mb{X}^\top\mb{X}\right)^{-1}\mb{X}^\top\mb{y}$.
+                \qedhere
+            \end{solution}
+            \pagebreak
+        \item Please find the MLE of $\sigma$.
+            \begin{solution}
+                The MLE of $\sigma$ is given by
+                \begin{gather*}    
+                    \frac{\partial \ell}{\partial \sigma} = \frac{1}{\sigma^3} \|\mb{y} - \mb{X}\mb{w}\|^2_2  - \frac{n}{\sigma}=0 \implies \sigma = \frac{\|\mb{y} - \mb{X}\mb{w}\|_2}{\sqrt{n}}, \\
+                    \frac{\partial^2 \ell}{\partial \sigma^2} = -\frac{3}{\sigma^4} \|\mb{y} - \mb{X}\mb{w}\|^2_2 + \frac{n}{\sigma^2} < 0, \implies \sigma < \frac{\sqrt{3}\|\mb{y} - \mb{X}\mb{w}\|_2}{\sqrt{n}}.
+                \end{gather*}
+                Hence $\hat{\sigma} = \frac{\|\mb{y} - \mb{X}\mb{w}\|_2}{\sqrt{n}}$.
+                \qedhere
+            \end{solution}
+    \end{enumerate}
+\end{exercise}
+
+
+
+
+\newpage
+\begin{exercise}[Multicollinearity]
+    Consider the linear regression problem formulated as below:
+    $$\mb{y} = \mb{X} \mb{ w + e},\ \mathbb{E}\left(\mb{e}\right) = \mb{0},\ \Cov{\mb{e}} = \sigma^2 \mb{I_n}, $$where $\mb{y}=\left(y_{1}, \ldots, y_{n}\right)^{\top}$ and $\mb{X} \in \mathbb{R}^{n \times p}$. Suppose that $\mb{X}^{\top}\mb{X}$ is invertible, then $\hat{\mb{w}} = \left(\mb{X}^{\top} \mb{X}\right)^{-1} \mb{X}^{\top} \mb{y}$ is the least squares estimator of $\mb{w}$.
+    \begin{enumerate}
+        \item Recall that the covariance matrix of p-dimensional random vectors is defined as $$\Cov{\hat{\mb{w}}} = \mathbb{E}\mb{\left[(\hat{\mb{w}}-\mathbb{E}(\hat{\mb{w}}))(\hat{\mb{w}}-\mathbb{E}(\hat{\mb{w}}))^{\top}\right]}.$$
+            Please show that
+            \begin{enumerate}
+                \item[(a)] $\mathbb{E}\left(\hat{\mb{w}}\right) = \mb{w}$;
+                \item[(b)] $\Cov{\hat{\mb{w}}} = \sigma^2 \left(\mb{X}^{\top} \mb{X}\right)^{-1}$.
+            \end{enumerate}
+            
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item \ \vspace{-6ex}
+                        \begin{flalign*}
+                            \mathbb{E}\left(\hat{\mb{w}}\right) & =\mathbb{E}\left[\left(\mb{X}^{\top} \mb{X}\right)^{-1} \mb{X}^{\top} \mb{y}\right] =\mathbb{E}\left[\left(\mb{X}^{\top} \mb{X}\right)^{-1} \mb{X}^{\top} (\mb{X} \mb{ w + e})\right] & \\ & = \left(\mb{X}^{\top} \mb{X}\right)^{-1}\mb{X}^{\top}\mb{X}\mb{w} +\left(\mb{X}^{\top} \mb{X}\right)^{-1}\mb{X}^{\top}\mathbb{E}\left(\mb{e}\right) = \mb{w}
+                        \end{flalign*}
+                    \item \ \vspace{-6ex}
+                        \begin{flalign*}
+                            \Cov{\hat{\mb{w}}} & =\Cov{\left(\mb{X}^{\top} \mb{X}\right)^{-1} \mb{X}^{\top} \mb{y}}=\Cov{\left(\mb{X}^{\top} \mb{X}\right)^{-1} \mb{X}^{\top} \left(\mb{X} \mb{w + e}\right)} & \\ & = \Cov{\left(\mb{X}^{\top} \mb{X}\right)^{-1} \mb{X}^{\top} \mb{e}} = \left(\mb{X}^{\top} \mb{X}\right)^{-1} \mb{X}^{\top} \Cov{\mb{e}} \left(\left(\mb{X}^{\top} \mb{X}\right)^{-1} \mb{X}^{\top}\right)^\top & \\ & = \sigma^2 \left(\mb{X}^{\top} \mb{X}\right)^{-1}\mb{X}^{\top} \mb{X}\left(\mb{X}^{\top} \mb{X}\right)^{-1} = \sigma^2 \left(\mb{X}^{\top} \mb{X}\right)^{-1}.
+                            \tag*{\qedhere}
+                        \end{flalign*}
+                \end{enumerate}
+            \end{solution}
+            
+        \item We usually measure the quality of an estimator by mean squared error (MSE). The mean squared error (MSE) of estimator $\hat{\mb{w}}$ is defined as $$\text{MSE}\,(\hat{\mb{w}}) = \mathbb{E}\left[\left\|\hat{\mb{w}} - \mb{w}\right\|^2\right] .$$ Please derive that MSE can be decomposed into the variance of the estimator and the squared bias of the estimator, i.e.,
+            \begin{align*}
+                \text{MSE}\,(\hat{\mb{w}}) & = \tr\Cov{\hat{\mb{w}}} + \left\|\mathbb{E}\left(\hat{\mb{w}}\right)-\mb{w}\right\|^2 \\ & =\sum_{i=1}^{p} \Var{\hat{w}_i} + \sum_{i=1}^{p}  (\mathbb{E}\left(\hat{w}_i\right)-w_i)^2.
+            \end{align*}
+            \pagebreak
+            \begin{solution}
+                \ \vspace{-4ex}
+                \begin{align*}
+                    \text{MSE}\,(\hat{\mb{w}}) 
+                     & = \mathbb{E}\left[\left\|\hat{\mb{w}} - \mb{w}\right\|^2\right] = \mathbb{E}\left[\left\|\hat{\mb{w}} - \mathbb{E}\left(\hat{\mb{w}}\right) + \mathbb{E}\left(\hat{\mb{w}}\right) - \mb{w}\right\|^2\right] & \\ & = \mathbb{E}\left[\left\|\hat{\mb{w}} - \mathbb{E}\left(\hat{\mb{w}}\right)\right\|^2\right] + \mathbb{E}\left[\left\|\mathbb{E}\left(\hat{\mb{w}}\right) - \mb{w}\right\|^2\right] + 2\mathbb{E}\left[\left(\hat{\mb{w}} - \mathbb{E}\left(\hat{\mb{w}}\right)\right)^{\top}\left(\mathbb{E}\left(\hat{\mb{w}}\right) - \mb{w}\right)\right] & \\ & = \Var{\hat{\mb{w}}} + \left\|\mathbb{E}\left(\hat{\mb{w}}\right)-\mb{w}\right\|^2 + 2\mathbb{E}\left[\hat{\mb{w}} - \mathbb{E}\left(\hat{\mb{w}}\right)\right]^{\top}\left(\mathbb{E}\left(\hat{\mb{w}}\right) - \mb{w}\right) & \\ & = \Var{\hat{\mb{w}}} + \left\|\mathbb{E}\left(\hat{\mb{w}}\right)-\mb{w}\right\|^2 + 0 & \\ & = \tr\Cov{\hat{\mb{w}}} + \left\|\mathbb{E}\left(\hat{\mb{w}}\right)-\mb{w}\right\|^2 = \sum_{i=1}^{p} \Var{\hat{w}_i} + \sum_{i=1}^{p}  (\mathbb{E}\left(\hat{w}_i\right)-w_i)^2.
+                    \tag*{\qedhere}
+                \end{align*}
+                \qedhere
+            \end{solution}
+            
+            
+        \item Please show that
+            $$\text{MSE}\,(\hat{\mb{w}}) = \sigma^2 \sum_{i=1}^{p} \frac{1}{\lambda_i},$$
+            
+            where $\lambda_1,\lambda_2,\ldots,\lambda_{p}$ are the eigenvalues of $\mb{X}^{\top} \mb{X}$.
+            
+            \begin{solution}
+                Because $\mathbb{E}\left(\hat{\mb{w}}\right) - \mb{w} = \mb{0}$, we have $\text{MSE}\,(\hat{\mb{w}}) = \tr\Cov{\hat{\mb{w}}} = \sigma^2 \tr\left[\left(\mb{X}^{\top} \mb{X}\right)^{-1}\right]$.
+                If $\lambda_1,\lambda_2,\ldots,\lambda_{p}$ are the eigenvalues of $\mb{X}^{\top} \mb{X}$, then $\frac{1}{\lambda_1},\frac{1}{\lambda_2},\ldots,\frac{1}{\lambda_{p}}$ are the eigenvalues of $\left(\mb{X}^{\top} \mb{X}\right)^{-1}$, and thus $\tr\left[\left(\mb{X}^{\top} \mb{X}\right)^{-1}\right] = \sum_{i=1}^{p} \frac{1}{\lambda_i}$. Therefore, $\text{MSE}\,(\hat{\mb{w}}) = \sigma^2 \sum_{i=1}^{p} \frac{1}{\lambda_i}$.
+                \qedhere
+            \end{solution}
+            
+            
+        \item What would happen if there exists an eigenvalue $\lambda_k \approx 0$?
+            
+            \begin{solution}
+                If there exists an eigenvalue $\lambda_k = 0$, it implies that $\mb{X}$ is not full rank, or there exists some explanatory variables that are linearly dependent. In this case, the least squares estimator $\hat{\mb{w}}$ is not unique, and the MSE of $\hat{\mb{w}}$ is not well defined.
+                
+                If there exists an eigenvalue $\lambda_k \approx 0$, it means that there exists high multicollinearity among the explanatory variables. In this case, the least squares estimator $\hat{\mb{w}}$ is still unique and unbiased, but as $\lambda_k \to 0$, it follows that $\text{MSE}\,(\hat{\mb{w}}) = \sigma^2 \sum_{i=1}^{p} \frac{1}{\lambda_i}\to \infty$, implying that $\hat{\mb{w}}$ may not be a good estimator.
+                \qedhere
+            \end{solution}
+    \end{enumerate}
+\end{exercise}
+\newpage
+
+
+
+
+\begin{exercise}[Regularized least squares]
+    Suppose that $\mb{X}\in \mathbb{R}^{n\times d}$.
+    \begin{enumerate}
+        \item Please show that $\mb{X}^{\top}\mb{X}$ is always positive semi-definite. Moreover, $\mb{X}^{\top}\mb{X}$ is positive definite if and only if $\mb{x}_1, \mb{x}_2, \dots, \mb{x}_d$ are linearly independent.
+            \begin{solution}
+                For any $\mb{u}\in\mathbf{R}^d$, $\mb{u}^\top\mb{X}^{\top}\mb{X}\mb{u} = \|\mb{X}\mb{u}\|^2_2 \ge 0$, so $\mb{X}^{\top}\mb{X}$ is positive semi-definite.
+                
+                If $\mb{X}^{\top}\mb{X}$ is positive definite, then $\mb{X}^\top\mb{X}$ as well as $\mb{X}$ must have full rank. Hence $\mb{x}_1, \mb{x}_2, \dots, \mb{x}_d$ are linearly independent.
+                
+                If $\mb{x}_1, \mb{x}_2, \dots, \mb{x}_d$ are linearly independent, then all eigenvalues of $\mb{X}$ are nonzero. The same is true for $\mb{X}^\top\mb{X}$. Since $\mb{X}^{\top}\mb{X}$ is positive semi-definite, all eigenvalues of $\mb{X}^{\top}\mb{X}$ must be positive. Therefore, $\mb{X}^{\top}\mb{X}$ is positive definite.
+                \qedhere
+            \end{solution}
+        \item Please show that $\mb{X}^{\top}\mb{X} + \lambda \mb{I}$ is always invertible, where $\lambda>0$ and $\mb{I}\in \mathbb{R}^{d\times d}$ is an identity matrix.
+            \begin{solution}
+                For any nonzero $\mb{u}\in\mathbf{R}^d$, $\mb{u}^\top\left(\mb{X}^{\top}\mb{X}+\lambda\mb{I}\right)\mb{u} = \|\mb{X}\mb{u}\|^2_2 + \lambda\|\mb{u}\|^2_2 > 0$, so $\mb{X}^{\top}\mb{X}+\lambda\mb{I}$ is positive definite and thus invertible.
+                \qedhere
+            \end{solution}
+        \item Consider the regularized least squares linear regression and denote
+            $$
+                \mb{w}^*(\lambda)=\argmin_\mb{w} L(\mb{w})+\lambda \Omega(\mb{w}),
+            $$
+            where $L(\mb{w})=\frac{1}{n}\|\mb{y}-\mb{Xw}\|_2^2$ and $\Omega(\mb{w})=\|\mb{w}\|_2^2$. For regular parameters $0<\lambda_1<\lambda_2$, please show that $L(\mb{w}^*(\lambda_1)) < L(\mb{w}^*(\lambda_2))$ and $\Omega (\mb{w}^*(\lambda_1)) > \Omega (\mb{w}^*(\lambda_2))$. Explain intuitively why this holds.
+            \begin{solution}
+                $\mb{w}^*(\lambda)$ is given by
+                \begin{gather*}
+                    \nabla L(\mb{w}) + \lambda\nabla \Omega(\mb{w}) = \frac{2}{n}\left(\mb{X}^{\top}\mb{X}\mb{w}-\mb{X}^{\top}\mb{y}\right)+2\lambda\mb{w} = 0,\\
+                    \nabla^2 L(\mb{w}) + \lambda\nabla^2 \Omega(\mb{w}) = \frac{2}{n}\mb{X}^{\top}\mb{X}+2\lambda\mb{I} > 0.
+                \end{gather*}
+                So $\nabla L(\mb{w}^*) + \lambda\nabla \Omega(\mb{w}^*) = 0$, from which we derive that
+                \begin{gather*}
+                    \frac{\diff \mb{w}^*}{\diff \lambda} = -\frac{\nabla \Omega(\mb{w}^*)}{\nabla^2 L(\mb{w}^*) + \lambda\nabla^2 \Omega(\mb{w}^*)},
+                \end{gather*}
+                and hence
+                \begin{gather*}
+                    \frac{\diff L(\mb{w}^*)}{\diff \lambda} = -\frac{\nabla L(\mb{w}^*)\nabla \Omega(\mb{w}^*)}{\nabla^2 L(\mb{w}^*) + \lambda\nabla^2 \Omega(\mb{w}^*)} > 0, \\
+                    \frac{\diff \Omega(\mb{w}^*)}{\diff \lambda} = -\frac{\left(\nabla \Omega(\mb{w}^*)\right)^2}{\nabla^2 L(\mb{w}^*) + \lambda\nabla^2 \Omega(\mb{w}^*)} < 0.
+                \end{gather*}
+                The conclusion follows. 
+                
+                Intuitively speaking, the regular parameter $\lambda$ controls the trade-off between the two terms in the objective function. 
+                Note that $L(\mb{w})$ and $\Omega(\mb{w})$ are minimized at different points, i.e. $\left(\mb{X}^{\top}\mb{X}\right)^{-1}\mb{X}^{\top}\mb{y}$ and $\mb{0}$, respectively. 
+                As $\lambda$ increases, $\Omega(\mb{w})$ becomes more important in the objective function, and $L(\mb{w})$ becomes less important. 
+                In consequence, $\mb{w}^*$ moves closer to $\mb{0}$ (in the sense that $\Omega(\mb{w}^*)$ decreases), and farther away from $\left(\mb{X}^{\top}\mb{X}\right)^{-1}\mb{X}^{\top}\mb{y}$ (in the sense that $L(\mb{w}^*)$ increases).
+                \qedhere
+            \end{solution}
+    \end{enumerate}
+\end{exercise}
+\newpage
+
+
+
+
+\begin{exercise}[Conditional Expectations (optional)]
+    Recall that, for supervised learning problems, each data instance consists of a $D$-dimensional input feature vector $X\in \mathbb{R}^D$ and the corresponding output $Y \in \mathbb{R}$. We would like to find a mapping $f(X)$ to estimate the value of $Y$ given a sample of $X$. Let
+    $$
+        \ell(y, f(\mb{x}))=(f(\mb{x})-y)^{2}
+    $$
+    be the square loss. We choose the function $f(X)$ by minimizing the expectation of the square loss:
+    $$
+        J[f]:=\mathbb{E}[\ell (Y, f(X)]=\iint(y-f(\mb{x}))^{2} p(\mb{x}, y) \mathrm{d}\mb{x} \mathrm{d}y,
+    $$
+    where $p(\mb{x}, y)$ is the joint PDF.
+    \begin{enumerate}
+        \item Let $h$ be a function of $X$ and $\epsilon >0$. Please calculate $J[f+\epsilon h]-J[f]$.
+            \begin{solution}
+                \ \vspace{-3ex}
+                \begin{align*}
+                    J[f+\epsilon h]-J[f] 
+                     & = \iint\left\{(y-f(\mb{x}) - \epsilon h(\mb{x}))^{2}-(y-f(\mb{x}))^{2}\right\} p(\mb{x}, y) \mathrm{d}\mb{x} \mathrm{d}y                                                                  \\
+                     & = \iint\left\{\epsilon^{2} \left(h(\mb{x})\right)^{2} - 2\epsilon h(\mb{x})(y-f(\mb{x}))\right\} p(\mb{x}, y) \mathrm{d}\mb{x} \mathrm{d}y                                                \\
+                     & = \epsilon\int h(\mb{x})\left\{\int -2\left(y-f(\mb{x})\right) p(\mb{x}, y) \mathrm{d}y\right\} \mathrm{d}\mb{x} + \epsilon^{2}\int \left(h(\mb{x})\right)^{2} p(\mb{x}, y) \mathrm{d}y.
+                    \tag*{\qedhere}
+                \end{align*}
+            \end{solution}
+        \item Prove that $J[f+\epsilon h]-J[f]\ge 0$ for any $\epsilon >0$ if and only if
+            $$
+                \int h(\mb{x})\left\{\int -2\left(y-f(\mb{x})\right) p(\mb{x}, y) \mathrm{d}y\right\} \mathrm{d}\mb{x}\ge 0.
+            $$
+            \begin{solution}
+                \ \vspace{-3ex}
+                \begin{align*}
+                         & \forall\, \epsilon >0,\ J[f+\epsilon h]-J[f] \ge 0                                                                                                                                                               \\
+                    \iff & \forall\, \epsilon >0,\ \int h(\mb{x})\left\{\int -2\left(y-f(\mb{x})\right) p(\mb{x}, y) \mathrm{d}y\right\} \mathrm{d}\mb{x} + \epsilon\int \left(h(\mb{x})\right)^{2} p(\mb{x}, y) \mathrm{d}y \ge 0          \\
+                    \iff & \int h(\mb{x})\left\{\int -2\left(y-f(\mb{x})\right) p(\mb{x}, y) \mathrm{d}y\right\} \mathrm{d}\mb{x} \ge \sup_{\epsilon>0}\left\{-\epsilon\int \left(h(\mb{x})\right)^{2} p(\mb{x}, y) \mathrm{d}y\right\} =0
+                    \tag*{\qedhere}
+                \end{align*}
+            \end{solution}
+        \item Please show that $f^{*}(X)=\mathbb{E}[Y|X]$ is a solution to
+            $$
+                J[f^{*}]=\min_{f}\{ J[f]\}.
+            $$
+            \begin{solution}
+                If $J[f^*]=\min_{f}\{ J[f]\}$, then $J[f^*+\epsilon h]-J[f^*]\ge 0$ for any $\epsilon >0$ and any $h(X)$, i.e.
+                $$
+                    \int h(\mb{x})\left\{\int -2\left(y-f^*(\mb{x})\right) p(\mb{x}, y) \mathrm{d}y\right\} \mathrm{d}\mb{x}\ge 0.
+                $$
+                for any $h(X)$. So we must have
+                $$
+                    \int -2\left(y-f^*(\mb{x})\right) p(\mb{x}, y) \mathrm{d}y=0,
+                $$
+                which leads to
+                $$
+                    f^*(\mb{x})=\frac{\int y p(\mb{x}, y) \mathrm{d}y}{\int p(\mb{x}, y) \mathrm{d}y}=\mathbb{E}[Y|X].
+                $$
+                \qedhere
+            \end{solution}
+        \item Please deduce that
+            $$
+                \mathbb{E}[\ell(Y, f(X))]=\int\{f(\mb{x})-\mathbb{E}[y|\mb{x}]\}^{2} p(\mb{x})\mathrm{d}\mb{x}+\iint\{\mathbb{E}[y|\mb{x}]-y\}^{2} p(\mb{x}, y) \mathrm{d}\mb{x}\mathrm{d}y.
+            $$
+            \begin{solution}
+                We expand the square loss as
+                \begin{align*}
+                    \ell(Y, f(X))
+                     & = \left(f(X)-\mathbb{E}[Y|X] + \mathbb{E}[Y|X]-Y\right)^2                                                                                             \\
+                     & = \left\{f(X)-\mathbb{E}[Y|X]\right\}^2 + \left\{\mathbb{E}[Y|X]-Y\right\}^2 + 2\left\{f(X)-\mathbb{E}[Y|X]\right\}\left\{\mathbb{E}[Y|X]-Y\right\}.
+                \end{align*}
+                Then we have
+                \begin{align*}
+                    \mathbb{E}[\ell(Y, f(X))]
+                    = & \int\left\{f(\mb{x})-\mathbb{E}[Y|\mb{x}]\right\}^{2} p(\mb{x})\mathrm{d}\mb{x} + \iint\left\{\mathbb{E}[Y|\mb{x}]-y\right\}^{2} p(\mb{x}, y) \mathrm{d}\mb{x}\mathrm{d}y \\
+                    - & \int\left\{f(\mb{x})-\mathbb{E}[Y|\mb{x}]\right\}\left\{\int-2\left\{y-\mathbb{E}[Y|\mb{x}]\right\} p(\mb{x}, y)\mathrm{d}y\right\} \mathrm{d}\mb{x}.
+                \end{align*}
+                According to Exercise 6.3, the last term on the RHS equals zero. The conclusion follows.
+                \qedhere
+            \end{solution}
+    \end{enumerate}
+\end{exercise}
+\newpage
+
+
+
+
+\begin{exercise}[Bias-Variance Trade-off (Programming Exercise. You are required to finish at least one of Exercises \ref{BiasVariance} and  \ref{Bayesian}.)]\label{BiasVariance}
+    We provide you with $L=100$ data sets, each having $N=25$ points:
+    $$
+        \mathcal{D}^{(l)}=\{ (x_n,y_n^{(l)})\}_{n=1}^N,\quad l=1,2,\cdots ,L,
+    $$
+    where $x_n$ are uniformly taken from $[-1,1]$, and all points $(x_n, y_n^{(l)})$ are independently from the sinusoidal curve $h(x)=\sin (\pi x)$ with an additional disturbance.
+    \begin{enumerate}
+        \item For each data set $\mathcal{D}^{(l)}$, consider fitting a model with $24$ Gaussian basis functions
+            \begin{align*}
+                \phi_j(x)= e^{-(x-\mu_j)^2},\quad \mu_j = 0.2 \cdot (j-12.5),\quad j = 1,\cdots 24
+            \end{align*}
+            by minimizing the regularized error function
+            \begin{align*}
+                L^{(l)}(\mb{w}) = \frac{1}{2}\sum_{n=1}^N (y^{(l)}_n - \mb{w}^\top \bm{\phi}(x_n))^2 + \frac{\lambda}{2}\mb{w}^\top\mb{w},
+            \end{align*}
+            where $\mb{w}\in\mathbb{R}^{25}$ is the parameter, $\bm{\phi}(x)=(1, \phi_1(x),\cdots,\phi_{24}(x))^\top$ and $\lambda$ is the regular coefficient. What's the closed form of the parameter estimator $\hat{\mb{w}}^{(l)}$ for the data set $\mathcal{D}^{(l)}$?
+            \begin{solution}
+                \ \vspace{-3ex}
+                \begin{gather*}
+                    \nabla L^{(l)}(\mb{w}) = - \sum_{n=1}^N (y^{(l)}_n - \mb{w}^\top \bm{\phi}(x_n))\bm{\phi}(x_n) + \lambda\mb{w} = 0 \\
+                    \implies \hat{\mb{w}}^{(l)} = \left(\sum_{n=1}^N \bm{\phi}(x_n)\bm{\phi}(x_n)^\top + \lambda\mb{I}\right)^{-1}\sum_{n=1}^N y^{(l)}_n\bm{\phi}(x_n).
+                    \tag*{\qedhere}
+                \end{gather*}
+            \end{solution}
+        \item For $\log_{10}\lambda = -10, -5,-1,1$, plot the prediction functions $y^{(l)}(x)=f_{\mathcal{D}^{(l)}}(x)$ on $[-1,1]$ respectively. For clarity, show only the first $25$ fits in the figure for each $\lambda$.
+            \begin{solution}
+                The plots are shown in Figure \ref{fig:predict-lambda}.
+                \qedhere
+                \begin{figure}[H]
+                    \centering
+                    \begin{subfigure}{0.45\textwidth}
+                        \includegraphics{img/HW2_Ex7_lambda_-10.pdf}
+                        \subcaption{$\log_{10}\lambda=-10$}
+                        \vspace{2ex}
+                    \end{subfigure}
+                    \begin{subfigure}{0.45\textwidth}
+                        \includegraphics{img/HW2_Ex7_lambda_-5.pdf}
+                        \subcaption{$\log_{10}\lambda=-5$}
+                        \vspace{2ex}
+                    \end{subfigure}
+                    \begin{subfigure}{0.45\textwidth}
+                        \includegraphics{img/HW2_Ex7_lambda_-1.pdf}
+                        \subcaption{$\log_{10}\lambda=-1$}
+                    \end{subfigure}
+                    \begin{subfigure}{0.45\textwidth}
+                        \includegraphics{img/HW2_Ex7_lambda_1.pdf}
+                        \subcaption{$\log_{10}\lambda=1$}
+                    \end{subfigure}
+                    \caption{Prediction functions $y^{(l)}(x)=f_{\mathcal{D}^{(l)}}(x)$ for $\log_{10}\lambda = -10, -5,-1,1$.}
+                    \label{fig:predict-lambda}
+                \end{figure}
+            \end{solution}
+        \item For $\log_{10}\lambda\in [-3,1]$, calculate the followings:
+            \begin{align*}
+                \bar{y}(x)      & =\mathbb{E}_{\mathcal{D}}[f_{\mathcal{D}}(x)]=\frac{1}{L}\sum_{l=1}^L y^{(l)}(x)                                                                                                                        \\
+                (\mbox{bias})^2 & =\mathbb{E}_X[(\mathbb{E}_{\mathcal{D}}[f_{\mathcal{D}}(X)]-h(X))^2]=\frac{1}{N}\sum_{n=1}^N (\bar{y}(x_n)-h(x_n))^2                                                                                    \\
+                \mbox{variance} & = \mathbb{E}_X[\mathbb{E}_{\mathcal{D}}[(f_{\mathcal{D}}(\mb{x})-\mathbb{E}_{\mathcal{D}}[f_{\mathcal{D}}(\mb{x})])^2]] = \frac{1}{N}\sum_{n=1}^N\frac{1}{L}\sum_{l=1}^L (y^{(l)}(x_n)-\bar{y}(x_n))^2
+            \end{align*}
+            Plot the three quantities, $(\mbox{bias})^2, \mbox{variance}$ and $(\mbox{bias})^2 + \mbox{variance}$ in one figure, as the functions of $\log_{10}\lambda$.
+            (\textbf{Hint:} see \cite{Bishop2006} for an example.)
+            \begin{solution}
+                The plot is shown in Figure \ref{fig:variance-lambda}.
+                \qedhere
+                \begin{figure}[H]
+                    \centering
+                    \includegraphics{img/HW2_Ex7_bias_variance.pdf}
+                    \caption{Bias and variance as functions of $\log_{10}\lambda$.}
+                    \label{fig:variance-lambda}
+                \end{figure}
+            \end{solution}
+    \end{enumerate}
+    
+\end{exercise}
+\newpage
+
+
+
+
+\begin{exercise}[Bayesian Linear Regression (Programming Exercise.  You are required to finish at least one of Exercises \ref{BiasVariance} and  \ref{Bayesian}.)]\label{Bayesian}
+    Consider a single input variable $\textbf{x}$, a single output variable $\textbf{y}$ and a linear model of the form $\mb{y}=w_0+w_1\mb{x}+\mb{\epsilon}$, where $\mb{\epsilon}$ is Gaussian distributed with mean of 0 and standard deviation of 0.25.
+    \begin{enumerate}
+        \item Suppose that, the model parameter $\mb{w}=(w_0,w_1)^T\in \mathbb{R}^2$ has a Gaussian prior of the form
+            $$
+                p(\mb{w})=\mathcal{N}(\mb{w}|\bm{\mu}_0,\mb{\Sigma}_0)=\frac{1}{2\pi}\frac{1}{|\mb{\Sigma}_0|^{1/2}}\exp{\{-\frac{1}{2}(\mb{w}-\bm{\mu}_0)^{T}\mb{\Sigma}_0^{-1}(\mb{w}-\bm{\mu}_0)}\}
+            $$
+            where $\bm{\mu}_0=\mb{0}$ and $\mb{\Sigma}_0=\frac{1}{2}\mb{I}$. Please plot this Gaussian distribution in the form of heat map.
+            
+            \begin{solution}
+                The heat map is shown in Figure \ref{fig:gaussian-prior}.
+                \qedhere
+            \end{solution}
+            
+        \item Sample six times independently from the prior Gaussian distribution defined above. Please plot the six straight lines $y=w_0+w_1x$ using these samples.
+            \begin{solution}
+                The plot of samples is shown in Figure \ref{fig:prior-sample}.
+                \qedhere
+                \begin{figure}[H]
+                    \centering
+                    \begin{subfigure}{0.5\textwidth}
+                        \includegraphics{img/HW2_Ex8_prior.pdf}
+                        \subcaption{$p(\mb{w})$}
+                        \label{fig:gaussian-prior}
+                    \end{subfigure}
+                    \hfill
+                    \begin{subfigure}{0.45\textwidth}
+                        \includegraphics{img/HW2_Ex8_sample.pdf}
+                        \subcaption{$y=w_0+w_1x$}
+                        \label{fig:prior-sample}
+                    \end{subfigure}
+                    \caption{Gaussian prior and samples.}
+                \end{figure}
+            \end{solution}
+        \item Now, suppose that we have observed a single data point $(x_1,y_1)=(0.6,0)$.  Please plot the likelihood function $p(y_1|x_1,\mb{w})$ for this data point as the function of $\mb{w}$, still in the form of heat map.
+            \begin{solution}
+                The plot of likelihood is shown in Figure \ref{fig:likelihood1}.
+                \qedhere
+                \begin{figure}[H]
+                    \centering
+                    \begin{subfigure}{0.49\textwidth}
+                        \includegraphics{img/HW2_Ex8_likelihood.pdf}
+                        \subcaption{$p(y_1|x_1,\mb{w})$}
+                        \label{fig:likelihood1}
+                    \end{subfigure}
+                    \hfill
+                    \begin{subfigure}{0.49\textwidth}
+                        \includegraphics{img/HW2_Ex8_likelihood2.pdf}
+                        \subcaption{$p(y_2|x_2,\mb{w})$}
+                        \label{fig:likelihood2}
+                    \end{subfigure}
+                    \caption{Likelihood functions for $(x_1,y_1)$ and $(x_2,y_2)$.}
+                \end{figure}
+            \end{solution}
+        \item Calculate the posterior distribution of $\mb{w}$, denoted by $p(\mb{w}|y_1,x_1)$.
+            Please plot the posterior distribution.
+            
+            \begin{solution}
+                The heat map of posterior is shown in Figure \ref{fig:posterior1}.
+                \qedhere
+                \begin{figure}[H]
+                    \centering
+                    \begin{subfigure}{0.5\textwidth}
+                        \includegraphics{img/HW2_Ex8_posterior.pdf}
+                        \subcaption{$p(\mb{w}|y_1,x_1)$}
+                        \label{fig:posterior1}
+                    \end{subfigure}
+                    \hfill
+                    \begin{subfigure}{0.45\textwidth}
+                        \includegraphics{img/HW2_Ex8_sample_posterior.pdf}
+                        \subcaption{$y=w_0+w_1x$}
+                        \label{fig:posterior-sample1}
+                    \end{subfigure}
+                    \caption{Posterior and samples for $(x_1,y_1)$.}
+                \end{figure}
+            \end{solution}
+            
+        \item Sample six times independently from this posterior distribution of $\mb{w}$ and plot the six straight lines $y=w_0+w_1x$.
+            \begin{solution}
+                The plot of samples is shown in Figure \ref{fig:posterior-sample1}.
+                \qedhere
+            \end{solution}
+        \item Then, suppose we observe a new single data point $(x_2,y_2)=(-0.5,0.6)$. Please plot the corresponding likelihood function $p(y_2|x_2,\mb{w})$ of this second point alone, the posterior distribution of $\mb{w}$, denote by $p(\mb{w}|y_1,y_2,x_1,x_2)$, and six samples drawn from the current posterior function.
+            \begin{solution}
+                The plot of likelihood is shown in Figure \ref{fig:likelihood2}.
+                The plots of posterior and samples are shown in Figure \ref{fig:posterior2} and \ref{fig:posterior-sample2}.
+                \qedhere
+                \begin{figure}[H]
+                    \centering
+                    \begin{subfigure}{0.5\textwidth}
+                        \includegraphics{img/HW2_Ex8_posterior2.pdf}
+                        \subcaption{$p(\mb{w}|y_1,y_2,x_1,x_2)$}
+                        \label{fig:posterior2}
+                    \end{subfigure}
+                    \hfill
+                    \begin{subfigure}{0.45\textwidth}
+                        \includegraphics{img/HW2_Ex8_sample_posterior2.pdf}
+                        \subcaption{$y=w_0+w_1x$}
+                        \label{fig:posterior-sample2}
+                    \end{subfigure}
+                    \caption{Posterior and samples for $(x_1,y_1)$.}
+                \end{figure}
+            \end{solution}
+        \item If we can observe new data points continuously, and then observe the posterior distributions and their sampled linear regression models sequentially, what will you infer from them? Please write down your conclusions.
+            (\textbf{Hint:} see \cite{Bishop2006} for an example.)
+            
+            \begin{solution}
+                As more and more new data points are observed, the posterior distribution would become sharper and sharper, and the sampled linear regression models would become more and more accurate. In the limit of an infinite number of data points, the posterior distribution would become a delta function centred on the true parameter values, and the sampled models would become the true linear regression model.
+                \qedhere
+            \end{solution}
+            
+    \end{enumerate}
+\end{exercise}
+\newpage
+
+
+
+
+\begin{exercise}[Covariance Matrix and Gaussian Distribution] Let $\mb{X}=(X_1,X_2,\cdots,X_D)^\top \in \mathbb{R}^D$ be a  $D$-dimensional random vector. The covariance matrix of $\mb{X}$, denoted by $\mb{\Sigma}_\mb{X}$, is defined as
+    $$
+        \Cov{\mb{X}}=\mathbb{E}\left[(\mb{X}-\mathbb{E}[\mb{X}])(\mb{X}-\mathbb{E}[\mb{X}])^\top \right].
+    $$
+    \begin{enumerate}
+        \item
+            Please show that $\mb{\Sigma}_{\mb{X}}$ is positive semi-definite.
+            
+            \begin{solution}
+                For any $\mb{u}\in \mathbb{R}^D$, we have $\mb{u}^\top\mb{\Sigma}_{\mb{X}}\mb{u} = \mathbb{E}\left[\left\|\mb{u}^\top(\mb{X}-\mathbb{E}[\mb{X}])\right\|^2_2\right] \geq 0$. Thus $\mb{\Sigma}_{\mb{X}}$ is positive semi-definite.
+                \qedhere
+            \end{solution}
+            
+        \item Please show that $\mb{\Sigma}_\textbf{X}$ doesn't have full rank if and only if $\{X_i-\mathbb{E}[X_i]\}_{i=1}^D$ are linearly dependent.
+            
+            \begin{solution}
+                Since $\mb{\Sigma}_{\mb{X}}$ is positive semi-definite, $\mb{\Sigma}_\textbf{X}$ doesn't have full rank if and only if for some $\mb{u}\in \mathbb{R}^D$, $\mb{u}^\top\mb{\Sigma}_{\mb{X}}\mb{u} = \mathbb{E}\left[\left\|\mb{u}^\top(\mb{X}-\mathbb{E}[\mb{X}])\right\|^2_2\right] = 0$. Note that $\left\|\mb{u}^\top(\mb{X}-\mathbb{E}[\mb{X}])\right\|^2_2\ge0$, so the expectation equals zero if and only if $\mb{u}^\top(\mb{X}-\mathbb{E}[\mb{X}])=\mb{0}$, i.e. $\{X_i-\mathbb{E}[X_i]\}_{i=1}^D$ are linearly dependent. \qedhere
+            \end{solution}
+            
+        \item Suppose that, the random vector $\mb{X}$ has a multivariate Gaussian distribution with the mean vector being $\bm{\mu}$ and the covariance matrix being $\mb{\Sigma}$, respectively. The probability density function of $\mb{X}$ is
+            \begin{align*}
+                p(\mb{x})=\mathcal{N}(\mb{x}|\bm{\mu},\mb{\Sigma})=\frac{1}{(2\pi)^{D/2}}\frac{1}{|\mb{\Sigma}|^{1/2}}\exp\left\{-\frac{1}{2}(\mb{x}-\bm{\mu})^{\top}\mb{\Sigma}^{-1}(\mb{x}-\bm{\mu})\right\},
+            \end{align*}
+            where $\mb{x}$ is a realization of the random vector $\mb{X}$.
+            For notational simplicity, let
+            \begin{align}\label{eqn:cx}
+                c=(2\pi)^{D/2}|\mb{\Sigma}|^{1/2}.
+            \end{align}
+            Clearly, we must have
+            \begin{align}\label{eqn:cx-int}
+                \int_{\mathbb{R}^D}\exp\left\{-\frac{1}{2}(\mb{x}-\bm{\mu})^{\top}\mb{\Sigma}^{-1}(\mb{x}-\bm{\mu})\right\}\diff\mb{x}=c.
+            \end{align}
+            
+            Now, let us denote the first $M$ components of $\mb{X}$ by $\mb{X}_a$, and the remaining $D-M$ ones by $\mb{X}_b$, so that
+            \begin{align*}
+                \mb{X}=
+                \begin{pmatrix}
+                    \mb{X}_a \\
+                    \mb{X}_b
+                \end{pmatrix}.
+            \end{align*}
+            We denote the corresponding partitions of the mean vector by
+            \begin{align*}
+                \bm{\mu}=
+                \begin{pmatrix}
+                    \bm{\mu}_a \\
+                    \bm{\mu}_b
+                \end{pmatrix}
+            \end{align*}
+            and the covariance matrix by
+            \begin{align*}
+                \mb{\Sigma}=
+                \begin{pmatrix}
+                    \mb{\Sigma}_{aa} & \mb{\Sigma}_{ab} \\
+                    \mb{\Sigma}_{ba} & \mb{\Sigma}_{bb}
+                \end{pmatrix}.
+            \end{align*}
+            
+            Please show that $\mb{X}_a$ has a Gaussian distribution with its mean vector being $\bm{\mu}_a$ and the covariance matrix being $\mb{\Sigma}_{aa}$. In other words, please show that
+            \begin{align*}
+                p(\mb{x}_a)=\int p(\mb{x}_a,\mb{x}_b)\diff\mb{x}_b=\frac{1}{(2\pi)^{M/2}}\frac{1}{|\mb{\Sigma}_{aa}|^{1/2}}\exp\left\{-\frac{1}{2}(\mb{x}_a-\bm{\mu}_a)^{\top}\mb{\Sigma}_{aa}^{-1}(\mb{x}_a-\bm{\mu}_a)\right\}.
+            \end{align*}
+            
+            (\textbf{Hint:}
+            \begin{enumerate}
+                \item you can make use of identities similar to \eqref{eqn:cx} and \eqref{eqn:cx-int} to integrate out $\mb{x}_b$.
+                \item you may find the following identity useful:
+                    \begin{align*}
+                        |\mb{\Sigma}|=|\mb{\Sigma}_{aa}\|\mb{\Sigma}_{bb}-\mb{\Sigma}_{ba}\mb{\Sigma}_{aa}^{-1}\mb{\Sigma}_{ab}|=|\mb{\Sigma}_{bb}||\mb{\Sigma}_{aa}-\mb{\Sigma}_{ab}\mb{\Sigma}_{bb}^{-1}\mb{\Sigma}_{ba}|.
+                    \end{align*}
+            \end{enumerate}
+            
+            \begin{solution}
+                Denote $\mb{\Sigma}^{-1}$ by
+                \begin{align*}
+                    \mb{\Lambda} = 
+                    \begin{pmatrix}
+                        \mb{\Lambda}_{aa} & \mb{\Lambda}_{ab} \\
+                        \mb{\Lambda}_{ba} & \mb{\Lambda}_{bb}
+                    \end{pmatrix} =
+                    % \begin{pmatrix}
+                    %     \mb{\Lambda}_{aa}                                            & -\mb{\Lambda}_{aa}\mb{\Sigma}_{ab}\mb{\Sigma}_{bb}^{-1}                                                         \\
+                    %     -\mb{\Sigma}_{bb}^{-1}\mb{\Sigma}_{ba}\mb{\Lambda}_{aa} & \mb{\Sigma}_{bb}^{-1} + \mb{\Sigma}_{bb}^{-1}\mb{\Sigma}_{ba}\mb{\Lambda}_{aa}\mb{\Sigma}_{ab}\mb{\Sigma}_{bb}^{-1}
+                    % \end{pmatrix} = 
+                    \begin{pmatrix}
+                        \mb{\Sigma}_{aa}^{-1} + \mb{\Sigma}_{aa}^{-1}\mb{\Sigma}_{ab}\mb{\Lambda}_{bb}\mb{\Sigma}_{ba}\mb{\Sigma}_{aa}^{-1} & -\mb{\Sigma}_{aa}^{-1}\mb{\Sigma}_{ab}\mb{\Lambda}_{bb} \\
+                        -\mb{\Lambda}_{bb}\mb{\Sigma}_{ba}\mb{\Sigma}_{aa}^{-1}                                                             & \mb{\Lambda}_{bb}
+                    \end{pmatrix}.
+                \end{align*}
+                where $\mb{\Lambda}_{bb}=(\mb{\Sigma}_{bb}-\mb{\Sigma}_{ba}\mb{\Sigma}_{aa}^{-1}\mb{\Sigma}_{ab})^{-1}$ is the inverse of the Schur complement of $\mb{\Sigma}_{aa}$ in $\mb{\Sigma}$.\\
+                We have
+                \begin{align*}
+                        & (\mb{X}-\bm{\mu})^{\top}\mb{\Sigma}^{-1}(\mb{X}-\bm{\mu})                                                                                                                                             \\
+                    =\  & 
+                    \begin{pmatrix}
+                        \mb{X}_a - \bm{\mu}_a \\ \mb{X}_b - \bm{\mu}_b
+                    \end{pmatrix}^\top 
+                    \begin{pmatrix}
+                        \mb{\Lambda}_{aa} & \mb{\Lambda}_{ab} \\
+                        \mb{\Lambda}_{ba} & \mb{\Lambda}_{bb}
+                    \end{pmatrix}
+                    \begin{pmatrix}
+                        \mb{X}_a - \bm{\mu}_a \\ \mb{X}_b - \bm{\mu}_b
+                    \end{pmatrix}                                                                                                                                                              \\
+                    =\  & (\mb{X}_a - \bm{\mu}_a)^\top (\mb{\Sigma}_{aa}^{-1} + \mb{\Sigma}_{aa}^{-1}\mb{\Sigma}_{ab}\mb{\Lambda}_{bb}\mb{\Sigma}_{ba}\mb{\Sigma}_{aa}^{-1}) (\mb{X}_a - \bm{\mu}_a)                            \\ 
+                    +   & 2(\mb{X}_a - \bm{\mu}_a)^\top (-\mb{\Sigma}_{aa}^{-1}\mb{\Sigma}_{ab}\mb{\Lambda}_{bb}) (\mb{X}_b - \bm{\mu}_b)
+                    + (\mb{X}_b - \bm{\mu}_b)^\top \mb{\Lambda}_{bb} (\mb{X}_b - \bm{\mu}_b)                                                                                                                                    \\
+                    =\  & (\mb{X}_a - \bm{\mu}_a)^\top \mb{\Sigma}_{aa}^{-1} (\mb{X}_a - \bm{\mu}_a)                                                                                                                            \\
+                    +   & (\mb{X}_b - \bm{\mu}_b - \mb{\Sigma}_{ba}\mb{\Sigma}_{aa}^{-1}(\mb{X}_a - \bm{\mu}_a))^\top \mb{\Lambda}_{bb} (\mb{X}_b - \bm{\mu}_b - \mb{\Sigma}_{ba}\mb{\Sigma}_{aa}^{-1}(\mb{X}_a - \bm{\mu}_a))
+                \end{align*}
+                Let $\mb{X}_{b'}=\mb{X}_b-\mb{\Sigma}_{ba}\mb{\Sigma}_{aa}^{-1}\mb{X}_a$ and $\bm{\mu}_{b'}=\bm{\mu}_b-\mb{\Sigma}_{ba}\mb{\Sigma}_{aa}^{-1}\bm{\mu}_a$. Then the PDF of $\mb{X}$ becomes
+                \begin{align*}
+                    p(\mb{x})
+                    =\      & \frac{1}{(2\pi)^{D/2}}\frac{1}{|\mb{\Sigma}|^{1/2}}\exp\left\{-\frac{1}{2}(\mb{x}-\bm{\mu})^{\top}\mb{\Sigma}^{-1}(\mb{x}-\bm{\mu})\right\}                                                                                       \\
+                    =\      & \frac{1}{(2\pi)^{M/2}}\frac{1}{|\mb{\Sigma}_{aa}|^{1/2}}\exp\left\{-\frac{1}{2}(\mb{x}_a-\bm{\mu}_a)^{\top}\mb{\Sigma}_{aa}^{-1}(\mb{x}_a-\bm{\mu}_a)\right\}                                                                     \\
+                    \cdot\, & \frac{1}{(2\pi)^{(D-M)/2}}\frac{1}{|\mb{\Sigma}_{bb}-\mb{\Sigma}_{ba}\mb{\Sigma}_{aa}^{-1}\mb{\Sigma}_{ab}|^{1/2}}\exp\left\{-\frac{1}{2}(\mb{x}_{b'}-\bm{\mu}_{b'})^{\top}\mb{\Lambda}_{bb}(\mb{x}_{b'}-\bm{\mu}_{b'})\right\}.
+                \end{align*}
+                Hence, by changing variables, we integrate out $\mb{X}_b$ and obtain the marginal PDF of $\mb{X}_a$ as
+                \begin{align*}
+                    p(\mb{x}_a)
+                    =\      & \int_{\mathbb{R}^{D-M}} p(\mb{x}_a,\mb{x}_b)\diff\mb{x}_b                                                                                                                                                              \\
+                    =\      & \frac{1}{(2\pi)^{M/2}}\frac{1}{|\mb{\Sigma}_{aa}|^{1/2}}\exp\left\{-\frac{1}{2}(\mb{x}_a-\bm{\mu}_a)^{\top}\mb{\Sigma}_{aa}^{-1}(\mb{x}_a-\bm{\mu}_a)\right\}                                                          \\
+                    \cdot\, & \frac{1}{(2\pi)^{(D-M)/2}}\frac{1}{|\mb{\Lambda}_{bb}^{-1}|^{1/2}}\int_{\mathbb{R}^{D-M}}\exp\left\{-\frac{1}{2}(\mb{x}_{b'}-\bm{\mu}_{b'})^{\top}\mb{\Lambda}_{bb}(\mb{x}_{b'}-\bm{\mu}_{b'})\right\}\diff\mb{x}_{b'} \\
+                    =\      & \frac{1}{(2\pi)^{M/2}}\frac{1}{|\mb{\Sigma}_{aa}|^{1/2}}\exp\left\{-\frac{1}{2}(\mb{x}_a-\bm{\mu}_a)^{\top}\mb{\Sigma}_{aa}^{-1}(\mb{x}_a-\bm{\mu}_a)\right\},
+                \end{align*}
+                where we have used the fact that $\mb{\Sigma}_{bb}-\mb{\Sigma}_{ba}\mb{\Sigma}_{aa}^{-1}\mb{\Sigma}_{ab}=\mb{\Lambda}_{bb}^{-1}$ and $|\mb{\Sigma}|=|\mb{\Sigma}_{aa}||\mb{\Lambda}_{bb}^{-1}|$.
+                \qedhere
+            \end{solution}
+            
+            
+    \end{enumerate}
+\end{exercise}
+\newpage
+
+
+
+
+\begin{exercise}[Determinant and geometric (optional)]
+    The determinant of a square matrix can be viewed as the signed volume spanned by the columns or rows of the matrix.
+    \begin{enumerate}
+        \item Consider three vectors $\mb{a}=(1,2,3,4)^\top$, $\mb{b}=(5,6,7,8)^\top$ and $\mb{c}=(7,-11,1,3)^\top$ in $\mathbb{R}^4$. Please find the volume of the parallelepipedon spanned by $\mb{a}$, $\mb{b}$ and $\mb{c}$. You may first find a unit vector $\mb{n}$ such that $\mb{n}\perp \text{Span}(\{\mb{a,b,c}\})$ and then calculate the volume of the parallelogram spanned by $\mb{a}$, $\mb{b}$, $\mb{c}$ and $\mb{n}$. Explain why you can do so.
+            \begin{solution}
+                By solving the system
+                \begin{align*}
+                    \begin{pmatrix}
+                        1 & 2   & 3 & 4  \\
+                        5 & 6   & 7 & 8  \\
+                        7 & -11 & 1 & 3  \\
+                        x & y   & z & w
+                    \end{pmatrix}
+                    \begin{pmatrix}
+                        x \\
+                        y \\
+                        z \\
+                        w
+                    \end{pmatrix}
+                    =
+                    \begin{pmatrix}
+                        0 \\
+                        0 \\
+                        0 \\
+                        1
+                    \end{pmatrix},
+                \end{align*}
+                we obtain $\mb{n}=\pm\left(\frac{1}{6},\frac{1}{6},-\frac{5}{6},\frac{1}{2}\right)^\top$, which is a unit vector orthogonal to $\text{Span}(\{\mb{a,b,c}\})$. The volume of the parallelogram spanned by $\mb{a}$, $\mb{b}$, $\mb{c}$ and $\mb{n}$ is
+                \begin{align*}
+                    \left|\left|
+                    \begin{array}{cccc}
+                        1 & 5 & 7   & \frac{1}{6}\vspace{0.5ex}  \\
+                        2 & 6 & -11 & \frac{1}{6}\vspace{0.5ex}  \\
+                        3 & 7 & 1   & -\frac{5}{6}\vspace{0.5ex} \\
+                        4 & 8 & 3   & \frac{1}{2}
+                    \end{array}
+                    \right|\right|
+                    = 240,
+                \end{align*}
+                which can also be viewed as the volume of the parallelepipedon spanned by $\mb{a}$, $\mb{b}$ and $\mb{c}$. This is because the volume of a parallelogram is the product of its base and altitude. Specifically, the volume of the parallelepipedon spanned by $\mb{a}$, $\mb{b}$ and $\mb{c}$ can be viewed as a base of the parallelogram spanned by $\mb{a}$, $\mb{b}$, $\mb{c}$ and $\mb{n}$, with the corresponding altitude $|\mb{n}|=1$.
+                \qedhere
+            \end{solution}
+        \item Consider two vectors $\mb{a}=(1,2,3,4)^\top$ and $\mb{b}=(5,6,7,8)^\top$ in $\mathbb{R}^4$. Please find the area of the parallelogram spanned by $\mb{a}$ and $\mb{b}$.
+            \begin{solution}
+                By applying Gram-Schmidt orthogonalization, we obtain $\mb{c}=\left(- \frac{\sqrt{70}}{70} , - \frac{\sqrt{70}}{35} , \frac{\sqrt{70}}{10} , - \frac{2 \sqrt{70}}{35}\right)^\top$ and $\mb{d}=\left(\frac{\sqrt{14}}{7} , - \frac{3 \sqrt{14}}{14} , 0 , \frac{\sqrt{14}}{14}\right)^\top$, which form an orthonormal basis of $\text{Span}(\{\mb{a,b}\})^\top$. The area of the parallelogram spanned by $\mb{a}$ and $\mb{b}$ is
+                \begin{align*}
+                    \left|\left|
+                    \begin{array}{cccc}
+                        1 & 5 & - \frac{\sqrt{70}}{70}   & \frac{\sqrt{14}}{7}  \vspace{0.5ex}     \\
+                        2 & 6 & - \frac{\sqrt{70}}{35}   & - \frac{3 \sqrt{14}}{14} \vspace{0.5ex} \\
+                        3 & 7 & \frac{\sqrt{70}}{10}     & 0                    \vspace{0.5ex}     \\
+                        4 & 8 & - \frac{2 \sqrt{70}}{35} & \frac{\sqrt{14}}{14}\end{array}
+                    \right|\right|
+                    = 8\sqrt{5},
+                \end{align*}
+                \qedhere
+            \end{solution}
+        \item Now we want to calculate the $n$-dimension volume of an  $n$-dimension parallelepiped in $\mathbb{R}^{m}$ ($n\le m$). The parallelepiped $P$ has the form
+            \begin{align*}
+                P=\left\{\mb{a}+\sum_{i=1}^{n} \lambda_{i} \mb{b}_{i} ; 0 \leq \lambda_{i} \leq 1,1 \leq i \leq n\right\},
+            \end{align*}
+            where $\mb{a} \in \mathbb{R}^{m}$ and $\mb{b}_{i} \in \mathbb{R}^{m}$, $1 \leq i \leq n$. Show that the volume is given by
+            \begin{align*}
+                \text {V} (P)=\sqrt{\det\left({\mb{B}}^\top{\mb{B}}\right)},
+            \end{align*}
+            
+            
+            where $\mb{B}$ denotes the $m \times n$ matrix whose $i^{th}$ column is the vector $\mb{b}_{i}$.
+            
+                [Hint: you may follow the idea in question 1.]
+            
+            \begin{solution}
+                Prove by induction on $n$. The base case $n=1$  has $\mb{B}^\top \mb{B}$ equal to the square of the length of the vector $\mb{b}_1$, and hence is trivially $\left(\text{V}(P)\right)^2$.
+                Assume that the result is true for $n-1$. We denote the $m\times (n-1)$ matrix whose $i^{th}$ column is $\mb{b}_i$ by $\mb{B}_{n-1}$ and the corresponding parallelepiped by $P_{n-1}$.  We can write $\mb{b}_n$ as $\mb{B}_{n-1}\mb{u} + \mb{b}$, where $\mb{B}_{n-1}\mb{u}$ is its projection onto $\mathcal{C}(\mb{B}_{n-1})$ and $\mb{b}\in\mathcal{C}(\mb{B}_{n-1})^\top$. Then 
+                $$\mb{B}^\top\mb{B}=\begin{pmatrix}
+                    \mb{B}_{n-1}^\top \\ \mb{b}_n^\top
+                \end{pmatrix}\begin{pmatrix}
+                    \mb{B}_{n-1} & \mb{b}_n
+                \end{pmatrix} = \begin{pmatrix}
+                    \mb{B}_{n-1}^\top\mb{B}_{n-1} & \mb{B}_{n-1}^\top\mb{B}_{n-1}\mb{u} \\
+                    \mb{u}^\top\mb{B}_{n-1}^\top\mb{B}_{n-1} & \mb{u}^\top\mb{B}_{n-1}^\top\mb{B}_{n-1}\mb{u} + \mb{b}^\top\mb{b}
+                \end{pmatrix}$$
+                $$\implies\det\left(\mb{B}^\top\mb{B}\right)=\det\left(\mb{B}_{n-1}^\top\mb{B}_{n-1}\right)\det\left(\mb{b}^\top\mb{b}\right),$$
+                where $\sqrt{\det\left(\mb{B}_{n-1}^\top\mb{B}_{n-1}\right)} = \text{V}_{n-1}(P)$ can be viewed as a base of $P$ and $\sqrt{\det\left(\mb{b}^\top\mb{b}\right)} = |\mb{b}|$ as the corresponding altitude. Therefore, the volume of $P$ is
+                $$\text{V}(P)=\text{V}_{n-1}(P)|\mb{b}|=\sqrt{\det\left(\mb{B}^\top\mb{B}\right)},$$
+                as desired.
+                \qedhere
+            \end{solution}
+        \item Suppose $\mb{A}\in \mathbb{R}^{n\times n}$, please show that
+            
+            \begin{align*}
+                \left|\det(\mb{A})\right|\le \prod_{i=1}^n\|\bm{\alpha}_i\|_2,
+            \end{align*}
+            where $\bm{\alpha}_i$ is the $i^{\rm th}$ row of $\mb{A}$. Then explain the geometrical meaning of this inequality.
+            \begin{solution}
+                Denote the $n\times k$ matrix whose $i^{th}$ row is $\bm{\alpha}_i$ by $\mb{A}_k$. We prove $\sqrt{\det(\mb{A}_k^\top\mb{A}_k)}\le \prod_{i=1}^k\|\bm{\alpha}_i\|_2$ by induction on $k$. The base case $k=1$ is trivial. Assume that the result is true for $k-1$. We can write $\bm{\alpha}_k$ as $\mb{A}_{k-1}\mb{u} + \bm{\alpha}$, where $\mb{A}_{k-1}\mb{u}$ is its projection onto $\mathcal{C}(\mb{A}_{k-1})$ and $\bm{\alpha}\in\mathcal{C}(\mb{A}_{k-1})^\top$. Then
+                $$\mb{A}_k^\top\mb{A}_k=\begin{pmatrix}
+                    \mb{A}_{k-1}^\top \\ \bm{\alpha}_k^\top
+                \end{pmatrix}\begin{pmatrix}
+                    \mb{A}_{k-1} & \bm{\alpha}_k
+                \end{pmatrix} = \begin{pmatrix}
+                    \mb{A}_{k-1}^\top\mb{A}_{k-1} & \mb{A}_{k-1}^\top\mb{A}_{k-1}\mb{u} \\
+                    \mb{u}^\top\mb{A}_{k-1}^\top\mb{A}_{k-1} & \mb{u}^\top\mb{A}_{k-1}^\top\mb{A}_{k-1}\mb{u} + \bm{\alpha}^\top\bm{\alpha}
+                \end{pmatrix}$$
+                $$\implies\det\left(\mb{A}_k^\top\mb{A}_k\right)=\det\left(\mb{A}_{k-1}^\top\mb{A}_{k-1}\right)\det\left(\bm{\alpha}^\top\bm{\alpha}\right)\le \det\left(\mb{A}_{k-1}^\top\mb{A}_{k-1}\right)\left\|\bm{\alpha}_k\right\|^2_2.$$
+                Hence $\sqrt{\det\left(\mb{A}_k^\top\mb{A}_k\right)}\le \sqrt{\det\left(\mb{A}_{k-1}^\top\mb{A}_{k-1}\right)}\left\|\bm{\alpha}_k\right\|_2\le\prod_{i=1}^k\|\bm{\alpha}_i\|_2$. When $k=n$, we have $\left|\det(\mb{A})\right|\le \prod_{i=1}^n\|\bm{\alpha}_i\|_2$, as desired. 
+                
+                The geometric meaning of this inequality is that the volume of the parallelepiped spanned by the columns of $\mb{A}$ is bounded by the product of the lengths of the columns.
+                \qedhere
+            \end{solution}
+    \end{enumerate}
+\end{exercise}
+\newpage
+
+
+
+
+\begin{exercise}[Calculus in Bayesian linear regression]
+    \begin{enumerate}
+        \item In Bayesian linear regression lecture, we suppose that the model parameter $\mb{w}$ has a Gaussian prior of the form
+            $p(\mb{w})=\mathcal{N}\left(\mb{w}|\bm{\mu}_{0}, \boldsymbol{\Sigma}_{0}\right)$. Then, given a set of input data instances  $\left\{\mb{x}_{i}\right\}_{i=1}^{n}$, the joint distribution of the corresponding target variables is a Gaussian
+            $p(\mb{y}|\mb{w}, \mb{X})=\mathcal{N}\left(\mb{y}|\mb{X} \mb{w}, \sigma^{2} \mb{I}\right)$. We first find the joint distribution over $\mb{w}$ and $\mb{y}$. Let
+            \begin{align*}
+                \mb{z}=\begin{pmatrix}
+                           \mb{w} \\
+                           \mb{y}
+                       \end{pmatrix}.
+            \end{align*}
+            The log of the joint distribution is
+            \begin{align*}
+                \ln p(\mb{z})=\ln p(\mb{w})+\ln p(\mb{y}|\mb{w}).
+            \end{align*}
+            The calculation of Gaussian density $p(\mb{z})$ is a tedious work. We are going to find a simpler way to calculate $p(\mb{z})$.
+            \begin{enumerate}
+                \item Let $\bm{\xi}$ is an $n$-dimension Gaussian random vector, satisfying  $\mathbb{E}(\bm{\xi})=\bm{\mu},\ \Cov{\bm{\xi}}=\mb{\Sigma}$. Show that for any $n \times n$ matrix $\mb{A}$,
+                    $\mb{A} \bm{\xi} \sim \mathcal{N}\left(\mb{A} \bm{\mu},\mb{A} \mb{\Sigma} \mb{A}^{\top}\right)$.
+                \item We can rewrite $\mb{y}$ as $\mb{y}=\mb{Xw}+\bm{\epsilon}$, where $\bm{\epsilon}\sim\mathcal{N}(\mb{0},\mb{I})$ and is independent of $\mb{w}$. Please find the covariance matrix of $\mb{y}$ and the matrix $\mathbb{E}\left[(\mb{w}-\mathbb{E}[\mb{w}])(\mb{y}-\mathbb{E}[\mb{y}])^\top\right]$.
+                    Then write down the mean and covariance matrix of $\mb{z}$.
+            \end{enumerate}
+            
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item Let $\delta>0$ be small enough such that $\mb{A}' = \mb{A} + \delta\mb{I}$ is invertible. The PDF of $\mb{A}'\xi$ is
+                        \begin{align*}
+                            p_{\mb{A}'\bm{\xi}}(\mb{x})=\frac{p_{\bm{\xi}}(\mb{A}'^{-1}\mb{x})}{|\mb{A}'|}=\frac{\mathcal{N}(\mb{A}'^{-1}\mb{x}|\bm{\mu},\mb{\Sigma})}{|\mb{A}'|}
+                        \end{align*}
+                        Suppose that $\mb{\Sigma}$ is invertible, then
+                        \begin{align*}
+                            p_{\mb{A}'\bm{\xi}}(\mb{x})=\  & \frac{1}{(2\pi)^{n/2}}\frac{1}{|\mb{A}'||\mb{\Sigma}|^{1/2}}\exp\left\{-\frac{1}{2}(\mb{A}'^{-1}\mb{x}-\bm{\mu})^{\top}\mb{\Sigma}^{-1}(\mb{A}'^{-1}\mb{x}-\bm{\mu})\right\}                      \\
+                            =\                             & \frac{1}{(2\pi)^{n/2}}\frac{1}{|\mb{A}'\mb{\Sigma}\mb{A}'^\top|^{1/2}}\exp\left\{-\frac{1}{2}(\mb{x}-\mb{A}'\bm{\mu})^{\top}(\mb{A}'\mb{\Sigma}\mb{A}'^\top)^{-1}(\mb{x}-\mb{A}'\bm{\mu})\right\} \\
+                            =\                             & \mathcal{N}\left(\mb{x}\Big|\mb{A}'\bm{\mu},\mb{A}'\mb{\Sigma}\mb{A}'^{\top}\right)
+                        \end{align*}
+                        Let $\delta \to 0$. Then $\mb{A}'\bm{\mu} \to\mb{A}\bm{\mu}$ and $\mb{A}'\mb{\Sigma}\mb{A}'^{\top}\to\mb{A}\mb{\Sigma}\mb{A}^{\top}$. We assert $\mb{A}\bm{\xi} \sim \mathcal{N}\left(\mb{A} \bm{\mu},\mb{A} \mb{\Sigma} \mb{A}^{\top}\right)$ without rigorous proof, which is out of the scope. When $\mb{\Sigma}$ is not invertible, the PDF of $\bm{\xi}$ can be written with rank, pseudoinverse and pseudo-determinant of $\mb{\Sigma}$ and the same conclusion holds.
+                        
+                    \item By (a), we have
+                        \begin{gather*}
+                            \begin{pmatrix}
+                                \mb{w} \\
+                                \bm{\epsilon}
+                            \end{pmatrix}
+                            \sim \mathcal{N}\left(
+                            \begin{pmatrix}
+                                    \bm{\mu}_0 \\
+                                    \mb{0}
+                                \end{pmatrix},
+                            \begin{pmatrix}
+                                    \mb{\Sigma}_0 & \mb{0} \\
+                                    \mb{0}        & \mb{I}
+                                \end{pmatrix}
+                            \right)\\
+                            \implies
+                            \mb{y} = 
+                            \begin{pmatrix}
+                                \mb{X} & \mb{I}
+                            \end{pmatrix}
+                            \begin{pmatrix}
+                                \mb{w} \\
+                                \bm{\epsilon}
+                            \end{pmatrix}
+                            \sim \mathcal{N}\left(\mb{X}\bm{\mu}_0, \sigma^2\mb{I}+\mb{X}\mb{\Sigma}_0\mb{X}^\top\right)
+                        \end{gather*}
+                        Hence $\mb{\Sigma}_\mb{y}=\sigma^2\mb{I}+\mb{X}\mb{\Sigma}_0\mb{X}^\top$. Analogously, we have
+                        \begin{gather*}
+                            \mb{z}=
+                            \begin{pmatrix}
+                                \mb{w} \\
+                                \mb{y}
+                            \end{pmatrix}
+                            = 
+                            \begin{pmatrix}
+                                \mb{I} & \mb{O} \\
+                                \mb{X} & \mb{I}
+                            \end{pmatrix}
+                            \begin{pmatrix}
+                                \mb{w} \\
+                                \bm{\epsilon}
+                            \end{pmatrix}
+                            \sim \mathcal{N}\left(
+                            \begin{pmatrix}
+                                    \bm{\mu}_0 \\
+                                    \mb{X}\bm{\mu}_0
+                                \end{pmatrix},
+                            \begin{pmatrix}
+                                    \mb{\Sigma}_0       & \mb{\Sigma}_0\mb{X}^\top                       \\    
+                                    \mb{X}\mb{\Sigma}_0 & \sigma^2\mb{I}+\mb{X}\mb{\Sigma}_0\mb{X}^\top
+                                \end{pmatrix}
+                            \right).
+                        \end{gather*}
+                        Hence $\mb{\Sigma}_\mb{wy}=\mathbb{E}\left[(\mb{w}-\mathbb{E}[\mb{w}])(\mb{y}-\mathbb{E}[\mb{y}])^\top\right]=\mb{\Sigma}_0\mb{X}^\top$. Moreover, $\bm{\mu}_\mb{z}=\begin{pmatrix}\bm{\mu}_0\\\mb{X}\bm{\mu}_0\end{pmatrix}$, $\mb{\Sigma}_\mb{z}=\begin{pmatrix}\mb{\Sigma}_0 & \mb{\Sigma}_0\mb{X}^\top\\\mb{X}\mb{\Sigma}_0 & \sigma^2\mb{I}+\mb{X}\mb{\Sigma}_0\mb{X}^\top\end{pmatrix}$.
+                        \qedhere
+                \end{enumerate}
+                \qedhere
+            \end{solution}
+            
+        \item (Optional) We know that a multivariate Gaussian random vector $\mb{X}$ with uncorrelated components has mean vector $\bm{\mu}$ and the invertible covariance matrix  $\mb{\Sigma}$. The probability density function of $\mb{X}$ is
+            \begin{align*}
+                p(\mb{x})=\mathcal{N}(\mb{x}|\bm{\mu},\mb{\Sigma})=\frac{1}{(2\pi)^{D/2}}\frac{1}{|\mb{\Sigma}|^{1/2}}\exp\left\{-\frac{1}{2}(\mb{x}-\bm{\mu})^{\top}\mb{\Sigma}^{-1}(\mb{x}-\bm{\mu})\right\},
+            \end{align*}
+            But now we concentrate on the multivariate Gaussian random vector $\mb{X}$ with correlated components, which means that $|\mb{\Sigma}|=0$ and $\mb{\Sigma}$ is not invertible.
+            
+            Specifically, Suppose $X$ is a Gaussian random variable with mean $\mu$ and variance $\sigma^2$. Another random variable $Y=aX+b$, where $a,b$ are non-zero real numbers. Please show that $X$ and $Y$ are correlated, then find the joint density function of $X$ and $Y$.
+            
+            Hint: you may use the Dirac Delta function. This function, typically written $\delta(x)$, is defined as:
+            \begin{align*}
+                \delta(x)=\left\{\begin{array}{ll}
+                                     \infty & x=0                 \\
+                                     0      & \text { otherwise }
+                                 \end{array}\right.
+            \end{align*}
+            with the properties that
+            \begin{enumerate}
+                \item $\int_{-\infty}^{\infty} \delta(x) d x=1;$
+                    
+                \item $\int_{-\infty}^{\infty} f(x) \delta\left(x-x_{0}\right) d x=f\left(x_{0}\right)$
+                    for any function $f(x)$ that is continuous around $x=x_{0}$.
+            \end{enumerate}
+            \begin{solution}
+                \ \vspace{-3ex}
+                \begin{gather*}
+                    \begin{pmatrix}
+                        X \\
+                        1
+                    \end{pmatrix}
+                    \sim \mathcal{N}\left(
+                    \begin{pmatrix}
+                            \mu \\
+                            0
+                        \end{pmatrix},
+                    \begin{pmatrix}
+                            \sigma^2 & 0  \\
+                            0        & 0
+                        \end{pmatrix}
+                    \right)\\
+                    \implies
+                    \begin{pmatrix}
+                        X \\
+                        Y
+                    \end{pmatrix}
+                    = 
+                    \begin{pmatrix}
+                        1 & 0  \\
+                        a & b
+                    \end{pmatrix}
+                    \begin{pmatrix}
+                        X \\
+                        1
+                    \end{pmatrix}
+                    \sim \mathcal{N}\left(
+                    \begin{pmatrix}
+                            \mu \\
+                            a\mu+b
+                        \end{pmatrix},
+                    \begin{pmatrix}
+                            \sigma^2  & a\sigma^2    \\    
+                            a\sigma^2 & a^2\sigma^2
+                        \end{pmatrix}
+                    \right).
+                \end{gather*}
+                The covariance matrix of $\begin{pmatrix}X\\Y\end{pmatrix}$ has rank $1$, which means that $X$ and $Y$ are correlated.
+                
+                The joint PDF can be obtained by
+                \begin{align*}
+                    p_{X,Y}(x,y)=\  & p_{Y|X}(y|x)\,p_X(x)                                                                          \\
+                    =\              & \delta(y-ax-b)\frac{1}{\sqrt{2\pi\sigma^2}}\exp\left\{-\frac{1}{2\sigma^2}(x-\mu)^2\right\}.
+                \end{align*}
+                \qedhere
+            \end{solution}
+    \end{enumerate}
+    
+\end{exercise}
+\newpage
+
+
+
+
+\begin{exercise}[Inverse of block matrix ]
+    Please prove Lemma 1 in Bayesian linear regression lecture.
+    \subsubsection*{Lemma 1.}
+    Suppose that the involved matrices are invertible. Then,
+    \begin{align*}
+        \left(\begin{array}{ll}
+                  \mb{A} & \mb{B} \\
+                  \mb{C} & \mb{D}
+              \end{array}\right)^{-1}=
+        \left(\begin{array}{cc}
+                      \mb{M}                & -\mb{M B D}^{-1}                          \\
+                      -\mb{D}^{-1} \mb{C M} & \mb{D}^{-1}+\mb{D}^{-1} \mb{C M B D}^{-1}
+                  \end{array}\right)
+    \end{align*}
+    where
+    \begin{align*}
+        \mb{M}=\left(\mb{A}-\mb{B D}^{-1} \mb{C}\right)^{-1}.
+    \end{align*}
+    
+    Please imitate the process of finding an inverse of a matrix $\mb{X}$, i.e., we first write $(\mb{X},\mb{I})$ and then executing elementary row operations to get $(\mb{I}, \mb{X}^{-1})$.
+    
+    \begin{solution} 
+        \ \vspace{-3ex}
+        \begin{align*}
+             & \left(\begin{array}{cc|cc}
+                             \mb{A} & \mb{B} & \mb{I} & \mb{O} \\
+                             \mb{C} & \mb{D} & \mb{O} & \mb{I}
+                         \end{array}\right)\to
+            \left(\begin{array}{cc|cc}
+                          \mb{A}            & \mb{B} & \mb{I} & \mb{O}      \\
+                          \mb{D}^{-1}\mb{C} & \mb{I} & \mb{O} & \mb{D}^{-1}
+                      \end{array}\right)\to
+            \left(\begin{array}{cc|cc}
+                          \mb{A}-\mb{B}\mb{D}^{-1}\mb{C} & \mb{O} & \mb{I} & -\mb{B}\mb{D}^{-1} \\
+                          \mb{D}^{-1}\mb{C}              & \mb{I} & \mb{O} & \mb{D}^{-1}
+                      \end{array}\right) \\\to&
+            \left(\begin{array}{cc|cc}
+                          \mb{I}            & \mb{O} & \mb{M} & -\mb{M}\mb{B}\mb{D}^{-1} \\
+                          \mb{D}^{-1}\mb{C} & \mb{I} & \mb{O} & \mb{D}^{-1}
+                      \end{array}\right)\to
+            \left(\begin{array}{cc|cc}
+                          \mb{I} & \mb{O} & \mb{M}               & -\mb{M}\mb{B}\mb{D}^{-1}                  \\
+                          \mb{O} & \mb{I} & -\mb{D}^{-1}\mb{C M} & \mb{D}^{-1}+\mb{D}^{-1} \mb{C M B D}^{-1}
+                      \end{array}\right)
+            \tag*{\qedhere}
+        \end{align*}
+    \end{solution}
+\end{exercise}
+\newpage
+
+
+\bibliography{refs.bib}
+\bibliographystyle{abbrv}
+\end{document}

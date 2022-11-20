@@ -1,0 +1,5 @@
+{
+  "dockerFile": "./../ubuntu.Dockerfile",
+  "extensions": ["ms-vscode.cpptools", "GitHub.copilot"],
+  "runArgs": ["--name", "ubuntu-container"]
+}

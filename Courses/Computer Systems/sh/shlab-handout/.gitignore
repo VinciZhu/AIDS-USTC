@@ -1,0 +1,3 @@
+trace*.txt
+!tsh.out
+!tshref.out

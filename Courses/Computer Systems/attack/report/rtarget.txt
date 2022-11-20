@@ -1,0 +1,100 @@
+(gdb) disas touch1
+Dump of assembler code for function touch1:
+   0x00000000004017c0 <+0>:	sub    $0x8,%rsp
+   0x00000000004017c4 <+4>:	movl   $0x1,0x203d0e(%rip)        # 0x6054dc <vlevel>
+   0x00000000004017ce <+14>:	mov    $0x4031e5,%edi
+   0x00000000004017d3 <+19>:	call   0x400cc0 <puts@plt>
+   0x00000000004017d8 <+24>:	mov    $0x1,%edi
+   0x00000000004017dd <+29>:	call   0x401dad <validate>
+   0x00000000004017e2 <+34>:	mov    $0x0,%edi
+   0x00000000004017e7 <+39>:	call   0x400e40 <exit@plt>
+End of assembler dump.
+(gdb) disas touch2
+Dump of assembler code for function touch2:
+   0x00000000004017ec <+0>:	sub    $0x8,%rsp
+   0x00000000004017f0 <+4>:	mov    %edi,%edx
+   0x00000000004017f2 <+6>:	movl   $0x2,0x203ce0(%rip)        # 0x6054dc <vlevel>
+   0x00000000004017fc <+16>:	cmp    0x203ce2(%rip),%edi        # 0x6054e4 <cookie>
+   0x0000000000401802 <+22>:	jne    0x401824 <touch2+56>
+   0x0000000000401804 <+24>:	mov    $0x403208,%esi
+   0x0000000000401809 <+29>:	mov    $0x1,%edi
+   0x000000000040180e <+34>:	mov    $0x0,%eax
+   0x0000000000401813 <+39>:	call   0x400df0 <__printf_chk@plt>
+   0x0000000000401818 <+44>:	mov    $0x2,%edi
+   0x000000000040181d <+49>:	call   0x401dad <validate>
+   0x0000000000401822 <+54>:	jmp    0x401842 <touch2+86>
+   0x0000000000401824 <+56>:	mov    $0x403230,%esi
+   0x0000000000401829 <+61>:	mov    $0x1,%edi
+   0x000000000040182e <+66>:	mov    $0x0,%eax
+   0x0000000000401833 <+71>:	call   0x400df0 <__printf_chk@plt>
+   0x0000000000401838 <+76>:	mov    $0x2,%edi
+   0x000000000040183d <+81>:	call   0x401e6f <fail>
+   0x0000000000401842 <+86>:	mov    $0x0,%edi
+   0x0000000000401847 <+91>:	call   0x400e40 <exit@plt>
+End of assembler dump.
+(gdb) disas touch3
+Dump of assembler code for function touch3:
+   0x00000000004018fa <+0>:	push   %rbx
+   0x00000000004018fb <+1>:	mov    %rdi,%rbx
+   0x00000000004018fe <+4>:	movl   $0x3,0x203bd4(%rip)        # 0x6054dc <vlevel>
+   0x0000000000401908 <+14>:	mov    %rdi,%rsi
+   0x000000000040190b <+17>:	mov    0x203bd3(%rip),%edi        # 0x6054e4 <cookie>
+   0x0000000000401911 <+23>:	call   0x40184c <hexmatch>
+   0x0000000000401916 <+28>:	test   %eax,%eax
+   0x0000000000401918 <+30>:	je     0x40193d <touch3+67>
+   0x000000000040191a <+32>:	mov    %rbx,%rdx
+   0x000000000040191d <+35>:	mov    $0x403258,%esi
+   0x0000000000401922 <+40>:	mov    $0x1,%edi
+   0x0000000000401927 <+45>:	mov    $0x0,%eax
+   0x000000000040192c <+50>:	call   0x400df0 <__printf_chk@plt>
+   0x0000000000401931 <+55>:	mov    $0x3,%edi
+   0x0000000000401936 <+60>:	call   0x401dad <validate>
+   0x000000000040193b <+65>:	jmp    0x40195e <touch3+100>
+   0x000000000040193d <+67>:	mov    %rbx,%rdx
+   0x0000000000401940 <+70>:	mov    $0x403280,%esi
+   0x0000000000401945 <+75>:	mov    $0x1,%edi
+   0x000000000040194a <+80>:	mov    $0x0,%eax
+   0x000000000040194f <+85>:	call   0x400df0 <__printf_chk@plt>
+   0x0000000000401954 <+90>:	mov    $0x3,%edi
+   0x0000000000401959 <+95>:	call   0x401e6f <fail>
+   0x000000000040195e <+100>:	mov    $0x0,%edi
+   0x0000000000401963 <+105>:	call   0x400e40 <exit@plt>
+End of assembler dump.
+(gdb) disas getbuf 
+Dump of assembler code for function getbuf:
+   0x00000000004017a8 <+0>:	sub    $0x28,%rsp
+   0x00000000004017ac <+4>:	mov    %rsp,%rdi
+   0x00000000004017af <+7>:	call   0x401b60 <Gets>
+   0x00000000004017b4 <+12>:	mov    $0x1,%eax
+   0x00000000004017b9 <+17>:	add    $0x28,%rsp
+   0x00000000004017bd <+21>:	ret    
+End of assembler dump.
+(gdb) disas Gets   
+Dump of assembler code for function Gets:
+   0x0000000000401b60 <+0>:	push   %r12
+   0x0000000000401b62 <+2>:	push   %rbp
+   0x0000000000401b63 <+3>:	push   %rbx
+   0x0000000000401b64 <+4>:	mov    %rdi,%r12
+   0x0000000000401b67 <+7>:	movl   $0x0,0x204593(%rip)        # 0x606104 <gets_cnt>
+   0x0000000000401b71 <+17>:	mov    %rdi,%rbx
+   0x0000000000401b74 <+20>:	jmp    0x401b87 <Gets+39>
+   0x0000000000401b76 <+22>:	lea    0x1(%rbx),%rbp
+   0x0000000000401b7a <+26>:	mov    %al,(%rbx)
+   0x0000000000401b7c <+28>:	movzbl %al,%edi
+   0x0000000000401b7f <+31>:	call   0x401ac0 <save_char>
+   0x0000000000401b84 <+36>:	mov    %rbp,%rbx
+   0x0000000000401b87 <+39>:	mov    0x203942(%rip),%rdi        # 0x6054d0 <infile>
+   0x0000000000401b8e <+46>:	call   0x400dc0 <_IO_getc@plt>
+   0x0000000000401b93 <+51>:	cmp    $0xffffffff,%eax
+   0x0000000000401b96 <+54>:	je     0x401b9d <Gets+61>
+   0x0000000000401b98 <+56>:	cmp    $0xa,%eax
+   0x0000000000401b9b <+59>:	jne    0x401b76 <Gets+22>
+   0x0000000000401b9d <+61>:	movb   $0x0,(%rbx)
+   0x0000000000401ba0 <+64>:	mov    $0x0,%eax
+   0x0000000000401ba5 <+69>:	call   0x401b18 <save_term>
+   0x0000000000401baa <+74>:	mov    %r12,%rax
+   0x0000000000401bad <+77>:	pop    %rbx
+   0x0000000000401bae <+78>:	pop    %rbp
+   0x0000000000401baf <+79>:	pop    %r12
+   0x0000000000401bb1 <+81>:	ret    
+End of assembler dump.

@@ -1,0 +1,340 @@
+% !TeX encoding = UTF-8
+% !TeX program = xelatex
+% !TeX spellcheck = en_US
+
+\documentclass[degree=report, output=electronic]{ustcthesis}
+
+\input{ustcsetup.tex}
+
+\ustcsetup{
+  course             = {计算方法B},
+  title              = {Project 1},
+  author             = {朱云沁},
+  student-id         = {PB20061372},
+  math-font          = stix,
+}
+
+\usepackage[inline]{enumitem}
+\usepackage[skins,minted,breakable]{tcolorbox}
+\usepackage{xcolor}
+\usepackage{float}
+
+\newtcbinputlisting{\pylistings}[2][]{
+  skin=empty, breakable, center, listing only,
+  listing file={#2},
+  minted language=python,
+  minted options={frame=lines, framesep=2mm, fontsize=\footnotesize, autogobble, linenos, breaklines}, #1
+}
+
+\begin{document}
+
+\maketitle
+
+\frontmatter
+
+\tableofcontents
+
+\mainmatter
+
+\newtheorem{problem}{问题}
+
+\section{实验题目}
+
+\begin{problem}
+下面给出美国\numrange{1920}{1970}年的人口表：
+
+\begin{table}[h]
+  \centering
+  \caption{美国\numrange{1920}{1970}年的人口表}
+  \label{tab:ori-data}
+  \begin{tabular}{c*{6}{c}}
+    \toprule
+    年份         & 1920   & 1930   & 1940   & 1950   & 1960   & 1970   \\
+    \midrule
+    人口（千人） & 105711 & 123203 & 131669 & 150697 & 179323 & 203212 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+用表~\ref{tab:ori-data}~中数据构造一个5次Lagrange插值多项式，并用此估计1910、1965和2002年的人口。1910年的实际人口数约为91772000，请判断插值计算得到的1965年和2002年的人口数据准确性是多少？
+\end{problem}
+
+\begin{problem}
+数据同表~\ref{tab:ori-data}，用Newton插值估计：
+
+\begin{enumerate}[align=left,label=（\arabic*）]
+  \item 1965年的人口数；
+  \item 2012年的人口数。
+\end{enumerate}
+
+\end{problem}
+
+\section{实验结果}
+
+设$x$为年份，$f(x)$为人口（千人），即被插函数。将表~\ref{tab:ori-data}~中年份从左至右分别记作$x_0,x_1,x_2,x_3,x_4,x_5$，并令$x_6=1910$。
+
+\subsection{Lagrange插值}
+
+编写程序，以$x_0,x_1,x_2,x_3,x_4,x_5$为一组插值节点，构造Lagrange插值多项式$L_5(x)$；以$x_1,x_2,x_3,x_4,x_5,x_6$为另一组插值节点，构造Lagrange插值多项式$\tilde{L}_5(x)$。插值计算得1910、1965、2002和2012年的人口，用事后估计方法计算得误差$f(x)-L_5(x)$。结果如表~\ref{tab:lagrange-output}~所示。
+
+\begin{table}[h]
+  \centering
+  \caption{Lagrange插值数值结果}
+  \label{tab:lagrange-output}
+  \begin{tabular}{c*{3}c}
+    \toprule
+    $x$  & $L_5(x)$       & $\tilde{L}_5(x)$ & $f(x)-L_5(x)$ \\
+    \midrule
+    1910 & 31872.000000   & 91772.000000     & 5.990000e+04  \\
+    1965 & 193081.511719  & 193354.493490    & -1.228418e+03 \\
+    2002 & 26138.748416   & -233411.305984   & 2.128310e+06  \\
+    2012 & -136453.125184 & -801550.139584   & 6.118893e+06  \\
+    \bottomrule
+  \end{tabular}
+  \note{注：数据保留原始输出格式，下同}
+\end{table}
+
+绘制得区间$[1900,2010]$上$L_5(x)$、$\tilde{L}_5(x)$以及$f(x)-L_5(x)$的图象如图~\ref{fig:lagrange}~所示。
+
+\newpage
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{lagrange-interpolation.pdf}
+  \caption{Lagrange插值}
+  \label{fig:lagrange}
+\end{figure}
+
+\subsection{Newton插值}
+
+编写程序，以$x_0,x_1,x_2,x_3,x_4,x_5$为插值节点，构造牛顿插值多项式$N_5(x)$，插值计算得1910、1965、2002和2012年的人口。结果如表~\ref{tab:newton-output}~所示。
+
+\begin{table}[h]
+  \centering
+  \caption{Newton插值数值结果}
+  \label{tab:newton-output}
+  \begin{tabular}{cc}
+    \toprule
+    $x$  & $N_5(x)$           \\
+    \midrule
+    1910 & 31872.000000000015 \\
+    1965 & 193081.51171875    \\
+    2002 & 26138.748416000046 \\
+    2012 & -136453.1251840004 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+绘制得区间$[1900,2010]$上$N_5(x)$的图象如图~\ref{fig:newton}~所示。
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{newton-interpolation.pdf}
+  \caption{Newton插值}
+  \label{fig:newton}
+\end{figure}
+
+\subsection{Neville算法}
+
+编写程序，以$x_0,x_1,x_2,x_3,x_4,x_5$为插值节点，用Neville算法构造插值多项式$P_{0,1,\dots,5}(x)$，插值计算得1910、1965、2002和2012年的人口。结果如表~\ref{tab:neville-output}~所示。
+
+\begin{table}[h]
+  \centering
+  \caption{Neville算法插值数值结果}
+  \label{tab:neville-output}
+  \begin{tabular}{cc}
+    \toprule
+    $x$  & $P_{0,1,\dots,5}(x)$ \\
+    \midrule
+    1910 & 31872.0              \\
+    1965 & 193081.51171875      \\
+    2002 & 26138.748415998853   \\
+    2012 & -136453.12518400417  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+绘制得区间$[1900,2010]$上$P_{0,1,\dots,5}(x)$的图象如图~\ref{fig:neville}~所示。
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\textwidth]{neville-interpolation.pdf}
+  \caption{Neville算法}
+  \label{fig:neville}
+\end{figure}
+
+\section{算法分析}
+
+\subsection{Lagrange插值}
+
+关于插值节点$x_0,x_1,\dots,x_n$的$n$次Lagrange插值多项式为
+
+\begin{equation}
+  L_n(x)=\sum_{i=0}^{n}l_i(x)f(x_i)
+\end{equation}
+
+其中，插值基函数$l_i(x)$的表达式为
+
+\begin{equation}
+  l_i(x)=\prod_{\begin{subarray}{c}0\le j\le n\\j\neq i\end{subarray}}\frac{x-x_j}{x_i-x_j}
+\end{equation}
+
+于是，立即得到计算Lagrange多项式的算法：
+
+\begin{algorithm}[h]
+  \SetAlgoLined
+  \KwData{$(x_i,f(x_i)),i=0,1,\dots,n$；待计算的点$x$。}
+  \KwResult{$L_n(x)$}
+  
+  $L_n(x)\leftarrow 0$\;
+  \For{$i\leftarrow 0$ \KwTo $n$}{
+    $l_i(x)\leftarrow 1$\;
+    \For{$j\leftarrow 0$ \KwTo $n$}{
+      $l_i(x)\leftarrow l_i(x)\cdot (x-x_j)/(x_i-x_j)$\tcp*{对于给定$x$，计算$l_i(x)$}
+    }
+    $L_n(x)\leftarrow L_n(x) + l_i(x)\cdot f(x_i)$\tcp*{求和，计算$L_n(x)$}
+  }
+  \caption{Lagrange插值}
+  \label{algo:lagrange}
+\end{algorithm}
+
+显然，该算法的时间复杂度为$\mathbb{O}(n^2)$，空间复杂度为$\mathbb{O}(1)$。
+
+以$(x_i,f(x_i)),i=1,2,\dots,n+1$为插值点，重复上述算法，得$\tilde{L}_n(x)$，进而用事后估计方法估算得误差为
+\begin{equation}
+  f(x)-L_n(x)\approx \frac{x-x_0}{x_0-x_{n+1}}(L_n(x)-\tilde{L}_n(x))
+\end{equation}
+
+\newpage
+
+\subsection{Newton插值}
+
+关于插值节点$x_0,x_1,\dots,x_n$的$n$次Newton插值多项式为
+
+\begin{equation}
+  N(x)=f(x_0)+\sum_{k=1}^{n}f[x_0,x_1,\dots,x_k]\prod_{i=0}^{k-1}(x-x_i)
+\end{equation}
+
+其中，$f[x_0,x_1,\dots,x_k]$为函数$f(x)$关于$x_0,x_1,\dots,x_k$的$k$阶差商，满足如下递归关系
+
+\begin{equation}
+  f[x_0,x_1,\dots,x_k]=\frac{f[x_1,\dots,x_k]-f[x_0,x_1,\dots,x_{k-1}]}{x_k-x_0}
+\end{equation}
+
+构造如下差商表:
+
+\begin{table}[h]
+  \centering
+  \caption{差商表}
+  \label{tab:diff-table}
+  \begin{tabular}{c*{5}c}
+    \toprule
+    $f(x_i)$ & $f[x_{i-1},x_i]$ & $f[x_{i-2},x_{i-1},x_{i}]$ & $\cdots$ & $f[x_0,x_1,\dots,x_i]$ \\
+    \midrule
+    $f(x_0)$                                                                                     \\
+    $f(x_1)$ & $f[x_0,x_1]$                                                                      \\
+    $f(x_2)$ & $f[x_1,x_2]$     & $f[x_0,x_1,x_2]$                                               \\
+    $\vdots$ & $\vdots$         & $\vdots$                   & $\ddots$                          \\ 
+    $f(x_n)$ & $f[x_{n-1},x_n]$ & $f[x_{n-2},x_{n-1},x_n]$   & $\cdots$ & $f[x_0,x_1,\dots,x_n]$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+观察发现，按从左到右、从下到上的顺序计算上述差商表，只需维护大小为$n+1$的数组，记作$g[i],i=0,1,\dots,n$。递推结束后，应有$g[k]=f[x_0,x_1,\dots,x_k]$，进而计算$N_n(x)$。有如下算法：
+
+\begin{algorithm}[h]
+  \SetAlgoLined
+  \KwData{$(x_i,f(x_i)),i=0,1,\dots,n$；待计算的点$x$。}
+  \KwResult{$N_n(x)$}
+  
+  \tcp{递推计算$g[k]$，即$f[x_0,x_1,\dots,x_k]$}
+  $g[i]\leftarrow f(x_i), i=0,1,\dots,n$\;
+  \For{$k\leftarrow 1$ \KwTo $n$}{
+  \For{$j\leftarrow n$ \KwTo $k$}{
+  $ g[j]=(g[j]-g[j-1])/(x_j-x_{j-k})$\;
+  }
+  }
+  \tcp{以嵌套乘法形式计算$N_n(x)$}
+  $N_n(x)\leftarrow g[n]$\;
+  \For{$i\leftarrow n-1$ \KwTo $0$}{
+  $N_n(x)\leftarrow (x-x_i)N_n(x)+g[i]$
+  }
+  \caption{Newton插值}
+  \label{algo:newton}
+\end{algorithm}
+
+该算法预处理（计算差商）的时间复杂度为$\mathbb{O}(n^2)$，计算某个$x$处的插值函数的时间复杂度为$\mathbb{O}(n)$；空间复杂度为$\mathbb{O}(n)$。
+
+\newpage
+
+\subsection{Neville算法}
+
+记以$x_0,x_1,\dots,x_n$为插值节点构造的$n$次插值多项式为$P_{0,1,\cdots,n}(x)$。存在递归关系
+
+\begin{equation}
+  P_{0,1,\cdots,n}(x)=\frac{(x-x_0)P_{1,\cdots,n}(x)-(x-x_n)P_{0,\cdots,n-1}}{x_n-x_0}
+\end{equation}
+
+类似于Newton插值中差商表的构造方式，维护数组$p[i],i=0,1,\dots,n$，使得递推结束后，$p[n]=P_{0,\cdots,n}(x)$。完整算法如下：
+
+\begin{algorithm}[h]
+  \SetAlgoLined
+  \KwData{$(x_i,f(x_i)),i=0,1,\dots,n$；待计算的点$x$。}
+  \KwResult{$P_{0,\cdots,n}(x)$}
+  
+  $p[i]\leftarrow f(x_i), i=0,1,\dots,n$\;
+  \For{$i\leftarrow 1$ \KwTo $n$}{
+  \For{$j\leftarrow 1$ \KwTo $n-i$}{
+  $ p[j]\leftarrow ((x-x_j)p[j+1]-(x-x_{j+i})p[j])/(x_{j+i} - x_j)$\;
+  }
+  \tcp{$p[n]$即为输出结果$P_{0,\cdots,n}(x)$}
+  }
+  \caption{Neville算法}
+  \label{algo:neville}
+\end{algorithm}
+
+显然，该算法的时间复杂度为$\mathbb{O}(n^2)$，空间复杂度为$\mathbb{O}(n)$。相较于Lagrange插值，Neville算法的运算次数更少，是以空间效率换取时间效率的做法。
+
+考虑到插值多项式的唯一性，不再重复估算误差。
+
+\section{结果分析}
+
+由三种多项式插值算法的数值与图示结果可以看出：
+
+\begin{itemize}
+  \item 用Lagrange插值估计得1910年的人口数约为31872千人，1965年的人口数约为193082.5千人，2002年的人口数约为26138.75千人。
+  \item 利用事后估计方法，计算出1965年的人口数绝对误差约为-1228.4千人，用近似值代替精确值，计算得相对误差约为$-0.64\%$，准确性较好；2002年的人口数绝对误差约为2128310千人，远远超出误差允许范围，准确性极差。
+  \item 用Newton插值估计得1965年的人口数约为193082.5千人，2012年的人口数约为-136453千人。
+  \item 选取相同的插值点，无论Lagrange插值多项式、Newton插值多项式或用Neville算法得到的插值多项式，均得到相同的数值和图示结果，映证了插值多项式的唯一性。
+  \item 在插值区间内，例如1965年，多项式插值的准确性较好；在插值区间外，例如2002、2012年，多项式插值估算得到的值不具有参考价值。
+\end{itemize}
+
+\backmatter
+
+\appendix
+
+\chapter{Python程序代码}
+
+\subsection{Lagrange插值}
+
+\pylistings[]{code/lagrange.py}
+
+\newpage
+
+\subsection{Newton插值}
+
+\pylistings[]{code/newton.py}
+
+\newpage
+
+\subsection{Neville算法}
+
+\pylistings[]{code/neville.py}
+
+\newpage
+
+\chapter{CSV格式数据}
+
+\pylistings[]{code/data_points.csv}
+
+\end{document}

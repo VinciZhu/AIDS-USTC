@@ -1,0 +1,51 @@
+
+String dump of section '.rodata':
+  [     4]  r
+  [     6]  %s: Error: Couldn't open %s^J
+  [    23]  Usage: %s [<input_file>]^J
+  [    3d]  That's number 2.  Keep going!
+  [    5b]  Halfway there!
+  [    6a]  Good work!  On to the next...
+  [    88]  Welcome to my fiendish little bomb. You have 6 phases with
+  [    c8]  which to blow yourself up. Have a nice day!
+  [    f8]  Phase 1 defused. How about the next one?
+  [   128]  So you got that one.  Try this one.
+  [   150]  Border relations with Canada have never been better.
+  [   188]  Wow! You've defused the secret stage!
+  [   1ae]  flyers
+  [   1c0]  |^O@
+  [   1ca]  @
+  [   1d2]  @
+  [   1da]  @
+  [   1e2]  @
+  [   1ea]  @
+  [   1f2]  @
+  [   1fa]  @
+  [   200]  maduiersnfotvbylSo you think you can stop the bomb with ctrl-c, do you?
+  [   248]  Curses, you've found the secret phase!
+  [   270]  But finding it and solving it are quite different...
+  [   2a8]  Congratulations! You've defused the bomb!
+  [   2d2]  Well...
+  [   2da]  OK. :-)
+  [   2e2]  Invalid phase%s^J
+  [   2f4]  BOOM!!!
+  [   2fc]  The bomb has blown up.
+  [   313]  %d %d %d %d %d %d
+  [   325]  Error: Premature EOF on stdin
+  [   343]  GRADE_BOMB
+  [   34e]  Error: Input line too long
+  [   369]  %d %d %s
+  [   372]  DrEvil
+  [   379]  greatwhite.ics.cs.cmu.edu
+  [   393]  angelshark.ics.cs.cmu.edu
+  [   3ad]  makoshark.ics.cs.cmu.edu
+  [   3c8]  Program timed out after %d seconds^J
+  [   3f0]  Error: HTTP request failed with error %d: %s
+  [   420]  GET /%s/submitr.pl/?userid=%s&lab=%s&result=%s&submit=submit HTTP/1.0^M^J^M^J
+  [   470]  Error: Unable to connect to server %s
+  [   498]  %%%02X
+  [   49f]  %s %d %[a-zA-z ]
+  [   4b0]  changeme.ics.cs.cmu.edu
+  [   4c9]  AUTORESULT_STRING=%s^J
+  [   4df]  csapp
+

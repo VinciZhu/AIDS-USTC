@@ -1,0 +1,813 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Course info
+\newcommand{\school}{\text{University of Science and Technology of China}}
+\newcommand{\course}{\text{Introduction to Machine Learning}}
+\newcommand{\semester}{\text{Fall 2022}}
+\newcommand{\lecturer}{\text{Jie Wang}}
+% Homework info
+\newcommand{\posted}{\text{Nov. 3, 2022}}
+\newcommand{\due}{\text{Nov. 15, 2022}}
+\newcommand{\hwno}{\text{4}}
+% Student info
+\newcommand{\name}{\text{Yunqin Zhu}}
+\newcommand{\id}{\text{PB20061372}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{../common/HW.tex}
+\begin{document}
+\maketitle
+
+\begin{exercise}[Convex Functions]
+  \begin{enumerate}
+    \item (Optional)
+      For each of the following functions, determine whether it is convex. % and then show your conclusion.
+      % \item Judgement questions.
+      \begin{enumerate}
+        \item
+          $f(x)=x^2\log x$ on $\mathbb{R}_{++}$, where $\mathbb{R}_{++}=\{x\in\mathbb{R}:x>0\}$.
+        \item
+          $f(x_1,x_2)=x_1x_2$ on $\mathbb{R}^2$.
+        \item
+          $f(x_1,x_2)=\frac{x_1}{x_2}$ on $\mathbb{R}^2_{++}$, where $\mathbb{R}^2_{++}=\{ (x_1,x_2)\in\mathbb{R}^2:x_1,x_2>0\}$.
+        \item
+          $f(x_1,x_2)=\frac{x_1^2}{x_2}$ on $\mathbb{R}\times\mathbb{R}_{++}$.
+        \item
+          $f(x_1,x_2)=x_1^\alpha x_2^{1-\alpha}$ on $\mathbb{R}^2_{++}$, where $0\le\alpha\le 1$.
+      \end{enumerate}
+      
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item $f''(x) = 2\log x + 3 < 0$ for $x \in [0, e^{-\frac{3}{2}})$, so $f$ is not convex.
+          \item $\nabla^2 f(x) = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}$, which is indefinite, so $f$ is not convex.
+          \item $\nabla^2 f(x) = \begin{pmatrix} 0 & -\frac{1}{x_2^2} \\ -\frac{1}{x_2^2} & \frac{2x_1}{x_2^3} \end{pmatrix}$, which is indefinite on $\mathbb{R}^2_{++}$, so $f$ is not convex.
+          \item $\nabla^2 f(x) = \begin{pmatrix} \frac{2}{x_2} & -\frac{2x_1}{x_2^2} \\ -\frac{2x_1}{x_2^2} & \frac{2x_1^2}{x_2^3} \end{pmatrix} \succeq 0 $ on $\mathbb{R}\times\mathbb{R}_{++}$, so $f$ is convex.
+          \item $\nabla^2 f(x) = \begin{pmatrix} \alpha(\alpha-1)x_1^{\alpha-2}x_2^{1-\alpha} & \alpha(1-\alpha)x_1^{\alpha-1}x_2^{-\alpha} \\ \alpha(1-\alpha)x_1^{\alpha-1}x_2^{-\alpha} & \alpha(\alpha-1)x_1^{\alpha}x_2^{-\alpha-1} \end{pmatrix} \succeq 0 $ iff. $\alpha \le 0$ or $\alpha \ge 1$.
+            \qedhere
+        \end{enumerate}
+      \end{solution}
+      
+    \item
+      Please show that the following functions are convex.
+      \begin{enumerate}
+        \item
+          $ f(\mb{x})=\log \sum_{i=1}^n e^{x_i}$
+          on $\dom f=\mathbb{R}^n$, where $x_i$ denotes the $i^{\text{th}}$ component of $\mb{x}$.
+          
+        \item
+          $f(\mb{x})=\sum_{i=1}^k x_{[i]}$ on $\dom f=\mathbb{R}^n$, where $1\le k\le n$ and $x_{[i]}$ denotes the $i^{\text{th}}$ largest component of $\mb{x}$.
+          
+        \item The extended-value extension of the indicator function of a convex set $C\subseteq\mathbb{R}^n$, i.e.,
+          \begin{align*}
+            \tilde{I}_C(\mb{x})=
+            \begin{cases}
+              0,      & \mb{x}\in C,     \\
+              \infty, & \mb{x}\notin C.
+            \end{cases}
+          \end{align*}
+          
+        \item
+          The negative entropy, i.e.,
+          $$
+            f(\mb{p})=\sum_{i=1}^n p_i\log p_i
+          $$
+          on $\dom f=\{ \mb{p}\in\mathbb{R}^n:0<p_i\le 1, \sum_{i=1}^n p_i=1\}$, where $p_i$ denotes the $i^{\text{th}}$ component of $\mb{p}$.
+          
+        \item
+          The spectral norm, i.e.,
+          $$
+            f(\mb{X})=\|\mb{X}\|_2=\sigma_{\max}(\textbf{X})
+          $$
+          on $\dom f=\mathbb{R}^{m\times n}$,
+          where $\sigma_{\max}$ denotes the largest singular value of $\textbf{X}$.
+          
+        \item
+          $f(\mb{X})=\tr (\mb{X}^{-1})$ on $\dom f=\mathbb{S}_{++}^n$, where $\mathbb{S}_{++}^n$ is the space of all $n\times n$ real positive definite matrices.
+          
+      \end{enumerate}
+      
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item 
+            % The gradient of $f$ is
+            % $$
+            %   \nabla f(\mb{x}) = \frac{1}{{\sum_i e^{x_i}}}
+            %   \begin{pmatrix}
+            %     e^{x_1} \\
+            %     \vdots  \\
+            %     e^{x_n}
+            %   \end{pmatrix}.
+            % $$
+            The Hessian of $f$ is
+            $$
+              \nabla^2 f(\mb{x}) = \frac{1}{({\sum_i e^{x_i}})^2}\begin{pmatrix}
+                e^{x_1}\sum\limits_{i\neq 1} e^{x_i} & -e^{x_1}e^{x_2}                      & \cdots & -e^{x_1}e^{x_n}                      \\
+                -e^{x_1}e^{x_2}                      & e^{x_2}\sum\limits_{i\neq 2} e^{x_i} & \cdots & -e^{x_2}e^{x_n}                      \\
+                \vdots                               & \vdots                               & \ddots & \vdots                               \\
+                -e^{x_1}e^{x_n}                      & -e^{x_2}e^{x_n}                      & \cdots & e^{x_n}\sum\limits_{i\neq n} e^{x_i}
+              \end{pmatrix}.
+            $$
+            $\nabla^2 f(\mb{x})$ is diagonally dominant with positive diagonal entries, so $\nabla^2 f(\mb{x}) \succeq 0$, and hence $f$ is convex.
+          \item We have
+            $$
+              f(\mb{x}) = \max \left\{\sum_{i\in I} x_i: I\subseteq\{1,\ldots,n\}, |I|=k\right\}.
+            $$
+            Given any $I$, the linear function $\sum_{i\in I} x_i$ is convex on $\mathbb{R}^n$. It follows that $f$ is also convex.
+          \item The epigraph of $\tilde{I}_C$ is
+            $$
+              \epi \tilde{I}_C = C \times \mathbb{R}_+,
+            $$
+            which is a convex set, so $\tilde{I}_C$ is convex.
+          \item The Hessian of $f$ is
+            $$
+              \nabla^2 f(\mb{p}) = \begin{pmatrix}
+                \frac{1}{p_1} & 0             & \cdots & 0             \\
+                0             & \frac{1}{p_2} & \cdots & 0             \\
+                \vdots        & \vdots        & \ddots & \vdots        \\
+                0             & 0             & \cdots & \frac{1}{p_n}
+              \end{pmatrix} \succ 0,
+            $$
+            and thus $f$ is convex.
+          \item We have
+            $$
+              f(\mb{X}) = \sup\left\{\langle\mb{u}, \mb{X}\mb{v}\rangle: \|\mb{u}\|_2 = \|\mb{v}\|_2 = 1,\mb{u}\in \mathbb{R}^m,\mb{v} \in \mathbb{R}^n\right\}.
+            $$
+            Given any $\mb{u}$ and $\mb{v}$, the linear function $\langle\mb{u}, \mb{X}\mb{v}\rangle$ is convex in $\mb{X}$, so $f$ is convex.
+          \item Let $\mb{X}\in \mathbb{S}^n_{++}$ and $\mb{Y}\in \mathbb{S}^n$. Then
+            \begin{align*}
+              (\mb{X}+t\mb{Y})^{-1} = (\mb{I}+t\mb{X}^{-1}\mb{Y})^{-1}\mb{X}^{-1}
+              = \left(\sum_{k=0}^\infty (-1)^k t^k \left(\mb{X}^{-1}\mb{Y}\right)^k\right)\mb{X}^{-1}.
+            \end{align*}
+            It follows that
+            \begin{align*}
+              f(\mb{X}+t\mb{Y}) = \tr \left((\mb{X}+t\mb{Y})^{-1}\right)                                                       
+              = \sum_{k=0}^\infty (-1)^k t^k  \tr \left(\left(\mb{X}^{-1}\mb{Y}\right)^k\mb{X}^{-1}\right).
+            \end{align*}
+            Therefore, we have
+            $$
+              \left.\frac{\diff^2}{\diff t^2} f(\mb{X}+t\mb{Y})\right|_{t=0} = 2\tr \left(\left(\mb{X}^{-1}\mb{Y}\right)^2\mb{X}^{-1}\right) \geq 0,
+            $$
+            as $\mb{X}^{-1}\succ 0$ and $\left(\mb{X}^{-1}\mb{Y}\right)^2\succeq 0$. By changing variables, we conclude that $\frac{\diff^2}{\diff t^2} f(\mb{X}+t\mb{Y}) \geq 0$ for any $t\in \{t: \mb{X}+t\mb{Y}\in \dom f\}$, which implies the convexity of $f$.
+            \qedhere
+        \end{enumerate}
+      \end{solution}
+      
+    \item
+      Please show that a continuously differentiable function $f$ is strongly convex with parameter $\mu>0$ if and only if
+      \begin{align*}
+        f(\mb{y})\ge f(\mb{x})+\langle\nabla f(\mb{x}),\mb{y}-\mb{x}\rangle+\frac{\mu}{2}\|\mb{y}-\mb{x}\|_2^2,\quad \forall\, \mb{x},\mb{y}\in\mathbb{R}^n.
+      \end{align*}
+      
+      \begin{solution}
+        By definition, $f$ is strongly convex with parameter $\mu>0$ if and only if $g(\mb{x}) = f(\mb{x}) - \frac{\mu}{2} \|\mb{x}\|_2^2$ is convex. Since $g$ is also continuously differentiable, we know $g$ is convex if and only if $g(\mb{y})\ge g(\mb{x})+\langle\nabla g(\mb{x}),\mb{y}-\mb{x}\rangle$ for all $\mb{x},\mb{y}\in\mathbb{R}^n$. Combining these two facts, $f$ is strongly convex with parameter $\mu>0$ if and only if
+        \begin{align*}
+          f(\mb{y}) & \ge \frac{\mu}{2} \|\mb{y}\|_2^2 + f(\mb{x}) - \frac{\mu}{2} \|\mb{x}\|_2^2 +\langle\nabla f(\mb{x}) - \mu \mb{x},\mb{y}-\mb{x}\rangle                         \\
+                    & = f(\mb{x}) + \langle\nabla f(\mb{x}),\mb{y}-\mb{x}\rangle + \frac{\mu}{2} \langle\mb{y}+\mb{x},\mb{y}-\mb{x}\rangle  - \mu \langle\mb{x},\mb{y}-\mb{x}\rangle \\
+                    & = f(\mb{x}) + \langle\nabla f(\mb{x}),\mb{y}-\mb{x}\rangle + \frac{\mu}{2} \|\mb{y}-\mb{x}\|_2^2,\quad \forall\, \mb{x},\mb{y}\in\mathbb{R}^n
+          \tag*{\qedhere}
+        \end{align*}
+      \end{solution}
+      
+    \item
+      Suppose that $f$ is twice continuously differentiable and strongly convex with parameter $\mu>0$. Please show that $\mu\leq \lambda_{\min}(\nabla^2 f(\mb{x}))$ for any $\mb{x}\in\mathbb{R}^n$, where $\lambda_{\min}(\nabla^2 f(\mb{x}))$ is the smallest eigenvalue of $\nabla^2 f(\mb{x})$.
+      
+      \begin{solution}
+        By the definition of strong convexity, $f(\mb{x})- \frac{\mu}{2} \|\mb{x}\|_2^2$ is convex and twice continuously differentiable, so we have $\nabla^2 \left(f(\mb{x})- \frac{\mu}{2} \|\mb{x}\|_2^2\right) = \nabla^2 f(\mb{x}) - \mu\mb{I} \succeq 0$, and hence $\lambda_{\min}(\nabla^2 f(\mb{x}) - \mu\mb{I}) \geq 0$, i.e. $\mu \leq \lambda_{\min}(\nabla^2 f(\mb{x}))$.
+        \qedhere
+      \end{solution}
+      
+    \item Suppose that $f:\mathbb{R}^n\rightarrow\mathbb{R}$ is twice continuously differentiable, and the gradient of $f$ is Lipschitz continuous, i.e.,
+      \begin{align*}
+        \|\nabla f(\mb{x})-\nabla f(\mb{y})\|_2\le L\|\mb{x}-\mb{y}\|_2,\quad \forall\,\mb{x},\mb{y}\in\mathbb{R}^n,
+      \end{align*}
+      where $L>0$ is the Lipschitz constant. Please show that $\lambda_{\max}(\nabla^2f(\mb{x}))\leq L$ for any $\mb{x}\in\mathbb{R}^n$, where $\lambda_{\max}(\nabla^2f(\mb{x}))$ is the largest eigenvalue of $\nabla^2 f(\mb{x})$.
+      
+      \begin{solution}
+        Suppose $\mb{x}\neq \mb{y}$ and let $\mb{y}\to \mb{x}$. Then
+        $$
+          \limsup_{\mb{y}\to \mb{x}}\frac{\|\nabla f(\mb{x})-\nabla f(\mb{y})\|_2}{\|\mb{x}-\mb{y}\|_2}\le L.
+        $$
+        On the other hand, by the definition of differentiability,
+        $$
+          \lim_{\mb{y}\to \mb{x}}\frac{\|\nabla f(\mb{x})-\nabla f(\mb{y}) - \nabla^2 f(\mb{x})^\top(\mb{x}-\mb{y})\|_2}{\|\mb{x}-\mb{y}\|_2} = 0.
+        $$
+        Adding the two equations above and using the triangle inequality, we yield
+        $$
+          \|\nabla^2 f(\mb{x})\|_2 = \limsup_{\mb{y}\to \mb{x}}\frac{\|\nabla^2 f(\mb{x})^\top(\mb{x}-\mb{y})\|_2}{\|\mb{x}-\mb{y}\|_2} \le L + 0 = L,
+        $$
+        i.e. $\lambda_{\max}(\nabla^2f(\mb{x}))\le L$ for any $\mb{x}\in\mathbb{R}^n$.
+        \qedhere
+      \end{solution}
+      
+    \item Consider the problem
+      \begin{align}\label{prob:solution_of_conv}
+        \min_{\mb{x}\in\mathbb{R}^n}f(\mb{x}),
+      \end{align}
+      where $f:\mathbb{R}^n\rightarrow\mathbb{R}$ is  continuously differentiable and convex, and $\dom  f$ is closed.
+      \begin{enumerate}
+        \item
+          Please show that the $\alpha$-sublevel set of $f$, i.e., $ C_\alpha=\{\mb{x}\in\dom f:f(\mb{x})\leq \alpha\}
+          $
+          is closed.
+        \item
+          Please give an example to show that Problem (\ref{prob:solution_of_conv}) may be unsolvable even if $f$ is strictly convex.
+        \item
+          Suppose that $f$ can attain its minimum. Please show that the optimal set $\mathcal{C}=\{ \mb{y}:f(\mb{y})=\min_{\mb{x}} f(\mb{x})\}$ is closed and convex. Does this property still hold if $\dom f$ is not closed?
+        \item
+          Suppose that $f$ is strongly convex with parameter $\mu>0$. Please show that Problem (\ref{prob:solution_of_conv}) admits a unique solution.
+      \end{enumerate}
+      
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item If $C_\alpha$ has no limit point, then it is trivially closed. Otherwise, let $\{\mb{x}_k\}\subset C_\alpha$ be an arbitrary sequence that converges to some $\mb{x}\in \dom f$. Since $f(\mb{x}_k)\le \alpha$ and $f$ is continuous, we have $f(\mb{x}) = \lim_{k\to\infty}f(\mb{x}_k)\le \alpha$. Thus $\mb{x}\in C_\alpha$, which implies that $C_\alpha$ is closed.
+          \item $f(x) = e^{-x}$ is strictly convex on $\mathbb{R}$ but its infimum cannot be attained.
+          \item $\mathcal{C}=\{ \mb{y}:f(\mb{y})\le\min_{\mb{x}} f(\mb{x})\}$ is a nonempty sublevel set of $f$. According to Question 6(a), it is closed. For any $\mb{y}_1, \mb{y}_2\in \mathcal{C}$ and $0 \le \theta \le 1$, we have $f(\theta\mb{y}_1+(1-\theta)\mb{y}_2)\leq \theta f(\mb{y}_1)+(1-\theta)f(\mb{y}_2)\leq \min_{\mb{x}} f(\mb{x})$, so $\theta\mb{y}_1+(1-\theta)\mb{y}_2\in \mathcal{C}$, and hence $\mathcal{C}$ is convex.
+            
+            This property does not hold if $\dom f$ is not closed. For example, $f(x) = 1$ on $(0,1)$.
+          \item Let $\mb{x}_0\in \dom f$ and $\alpha_0 = f(\mb{x}_0)$. Then, for any $\mb{x}\in C_{\alpha_0}$, we have
+            $$
+              f(\mb{x}_0) \ge f(\mb{x})\ge f(\mb{x}_0)+\langle\nabla f(\mb{x}_0),\mb{x}-\mb{x}_0\rangle+\frac{\mu}{2}\|\mb{x}-\mb{x}_0\|_2^2.
+            $$
+            Therefore,
+            $$
+              \frac{\mu}{2}\|\mb{x}-\mb{x}_0\|_2^2 \le \langle\nabla f(\mb{x}_0),\mb{x}_0-\mb{x}\rangle \le \|\nabla f(\mb{x}_0)\|_2\|\mb{x}-\mb{x}_0\|_2,
+            $$
+            which implies
+            $$
+              \|\mb{x}-\mb{x}_0\|_2 \le \frac{2}{\mu}\|\nabla f(\mb{x}_0)\|_2.
+            $$
+            That is, for any $\alpha \le \alpha_0$, the closed set $C_{\alpha}$ is bounded, and hence compact. Let $\{\alpha_k\}$ be a sequence converging to $\inf_{\mb{x}} f(\mb{x})$, where $\inf_{\mb{x}} f(\mb{x}) < \alpha_k \le \alpha_0$ and thus $C_{\alpha_k}$ is nonempty for all $k$. Let $\mb{x}_k\in C_{\alpha_k}$. Then, by Bolzano-Weierstrass theorem, there exists a subsequence $\{\mb{x}_{k_j}\}$ converging to some $\mb{x^*}$ such that $f(\mb{x^*}) = \inf_{\mb{x}} f(\mb{x})$.
+            
+            % The uniqueness of $\mb{x^*}$ follows from
+            % $$
+            %   \|\mb{x}-\mb{x}^*\|_2 \le \frac{2}{\mu}\|\nabla f(\mb{x}^*)\|_2 = 0,
+            % $$
+            % where $\mb{x}$ is an arbitrary point in $\mathcal{C}=\{ \mb{y}:f(\mb{y})=\min_{\mb{x}} f(\mb{x})\}$.
+            Assume that there exists another $\mb{x'}\in \mathcal{C}$. By the convexity of $f(\mb{x}) - \frac{\mu}{2}\|\mb{x}\|_2^2$, we have 
+            \begin{align*}
+              f\left(\frac{\mb{x^*} + \mb{x'}}{2}\right) & \le \frac{\mu}{2}\left\|\frac{\mb{x^*} + \mb{x'}}{2}\right\|_2^2  + \frac{1}{2}f(\mb{x^*}) - \frac{\mu}{4}\|\mb{x^*}\|_2^2 + \frac{1}{2}f(\mb{x'}) - \frac{\mu}{4}\|\mb{x'}\|_2^2 \\
+                                                         & = \min_{\mb{x}} f(\mb{x}) - \frac{\mu}{2}\left\|\frac{\mb{x^*} - \mb{x'}}{2}\right\|_2^2 < \min_{\mb{x}} f(\mb{x}),
+            \end{align*}
+            which is a contradiction. Therefore, $\mb{x^*}$ is the unique solution of Problem (\ref{prob:solution_of_conv}).
+            \qedhere
+        \end{enumerate}
+      \end{solution}
+      
+  \end{enumerate}
+  
+\end{exercise}
+\newpage
+
+
+
+\begin{exercise}[Operations that Preserve Convexity]
+  \begin{enumerate}
+
+    \item
+      \begin{enumerate}
+        \item Let $f:\mathbb{R}^m \rightarrow \left( -\infty,+\infty \right]$ be a given convex function, $\mb{A}\in \mathbb{R}^{m \times n}$ and $\mb{b} \in \mathbb{R}^m$. Please show that
+          \begin{align*}
+            F(\mb{x}) = f(\mb{Ax+b}),\quad\mb{x}\in\mathbb{R}^n.
+          \end{align*}
+          is convex.
+        \item Let $f_i:\mathbb{R}^n \rightarrow \left(-\infty,+\infty \right],i=1,\dots,m$, be given convex functions. Please show that
+          \begin{align*}
+            F(\mb{x}) = \sum_{i=1}^m w_if_i(\mb{x})
+          \end{align*}
+          is convex, where $w_i \geq 0,\,i=1,\dots,m$.
+          
+        \item
+          Let $f_i:\mathbb{R}^n \rightarrow \left(-\infty,+\infty \right]$ be given convex functions for $i \in I$, where $I$ is an arbitrary index set. Please show that the supremum
+          \begin{align*}
+            F(\mb{x}) = \sup_{i\in I}f_i(\mb{x})
+          \end{align*}
+          is convex.
+          
+      \end{enumerate}
+      
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item Restrict $\dom f$ to the image of $\mathbb{R}^m$ under the affine transformation $\mb{x} \mapsto \mb{Ax+b}$. Then $\dom f$ is convex and the epigraph of $f$ becomes $\{(\mb{Ax+b},y):x\in\mathbb{R}^m, y \ge f(\mb{Ax+b})\}$.
+            Since $\epi F = \{(\mb{x},y): \mb{x}\in\mathbb{R}^m, y \ge f(\mb{Ax+b})\}$, we have
+            $$
+              \epi f = \begin{pmatrix}
+                \mb{A} & \mb{0} \\
+                \mb{0} & 1
+              \end{pmatrix}\epi F + \begin{pmatrix}
+                \mb{b} \\
+                0
+              \end{pmatrix}. 
+            $$
+            Hence $\epi F$ is the inverse image of $\epi f$ under an affine transformation. As $\epi f$ is convex, $\epi F$ is also convex. Therefore, $F$ is convex.
+          \item Define $\mb{f}: \mathbb{R}^n \to \mathbb{R}^m, \mb{x} \mapsto (f_1(\mb{x}),\dots,f_m(\mb{x}))^\top$. Then we have
+            $$
+              \begin{pmatrix}
+                \mb{x} \\
+                F(\mb{x})
+              \end{pmatrix} = \begin{pmatrix}
+                \mb{I} & \mb{O}       \\
+                \mb{0} & \mb{w}^\top
+              \end{pmatrix}\begin{pmatrix}
+                \mb{x} \\
+                \mb{f}(\mb{x})
+              \end{pmatrix},
+            $$
+            and thus
+            $$
+              \epi F = \begin{pmatrix}
+                \mb{I} & \mb{O}       \\
+                \mb{0} & \mb{w}^\top
+              \end{pmatrix}\epi\mb{f},
+            $$
+            where $\mb{w} = (w_1,\dots,w_m)^\top$. Clearly, $\epi\mb{f}$ is convex, and its image under linear transformation is convex, so is $\epi F$. Therefore, $F$ is convex.
+          \item Because $F(\mb{x}) = \sup_{i\in I}f_i(\mb{x})$ if and only if $F(\mb{x}) \ge f_i(\mb{x})$ for all $i \in I$, we have
+            $$
+              \epi F = \bigcap_{i\in I}\epi f_i.
+            $$
+            The intersection of convex sets is convex, so $\epi F$ is convex. Therefore, $F$ is convex.
+            \qedhere
+        \end{enumerate}
+      \end{solution}
+      
+    \item (Optional) Let $\mb{A}\in \mathbb{R}^{n\times m},\mb{x}_0\in \mathbb{R}^n$. The restriction of $f:\mathbb{R}^n\rightarrow\mathbb{R}$ to the affine set $\{\mb{Az}+\mb{x}_0:\mb{z}\in\mathbb{R}^m\}$ is defined as the function $F:\mathbb{R}^m\rightarrow\mathbb{R}$ with
+      \begin{align*}
+        F(\mb{z})=f(\mb{Az}+\mb{x}_0)
+      \end{align*}
+      on $\dom F=\{\mb{z}:\mb{Az}+\mb{x}_0\in\dom f\}$. Suppose $f$ is twice differentiable with a convex domain.
+      \begin{enumerate}
+        \item Show that $F$ is convex if and only if for all $\mb{z}\in\dom F$, we have
+          \begin{align*}
+            \mb{A}^\top\nabla^2f(\mb{Az}+\mb{x}_0)\mb{A}\succeq 0.
+          \end{align*}
+        \item Suppose $\mb{B}\in\mathbb{R}^{p\times n}$ is a matrix whose nullspace is equal to the range of $\mb{A}$, i.e., $\mb{BA}=\mb{O}$ and $\operatorname{rank} (\mb{B})=n-\operatorname{rank}(\mb{A})$. Show that $F$ is convex if for all $\mb{z}\in\dom F$, there exists a $\lambda\in\mathbb{R}$ such that
+          \begin{align*}
+            \nabla^2f(\mb{Az}+\mb{x}_0)+\lambda\mb{B}^\top\mb{B}\succeq 0.
+          \end{align*}
+          
+          (\textbf{Hint:} you can use the result as follows. If $\mb{C}\in\mathbb{S}^n$ and $\mb{D}\in\mathbb{R}^{p\times n}$, then $\mb{x}^\top\mb{C}\mb{x}\geq 0$ for all $\mb{x}\in\mathcal{N}(\mb{D})$ if there exists a $\lambda$ such that $\mb{C}+\lambda\mb{D}^\top\mb{D}\succeq 0.$)
+      \end{enumerate}
+      
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item $F$ is convex if and only if for all $\mb{z}\in\dom F$, $\nabla^2F(\mb{z}) = \mb{A}^\top\nabla^2f(\mb{Az}+\mb{x}_0)\mb{A}\succeq 0.$
+          \item $F$ is convex if $\mb{A}^\top\nabla^2f(\mb{Az}+\mb{x}_0)\mb{A}\succeq 0$, or equivalently, if $\mb{x}^\top\nabla^2f(\mb{Az}+\mb{x}_0)\mb{x}\geq 0$ for all $\mb{x}\in\mathcal{C}(\mb{A})$. Because $\nabla^2f(\mb{Az}+\mb{x}_0)\in \mathbb{S}^n$ and $\mathcal{N}(\mb{B}) = \mathcal{C}(\mb{A})$, according to the hint, the result holds if there exists a $\lambda$ such that $\nabla^2f(\mb{Az}+\mb{x}_0)+\lambda\mb{B}^\top\mb{B}\succeq 0.$
+            \qedhere
+        \end{enumerate}
+      \end{solution}
+      
+    \item (Optional) \begin{enumerate}
+
+
+        \item
+          Consider the function $f(\mb{X})=\lambda_{\max}(\mb{X})$, with $\dom\, f =\mathbb{S}^n$, where $\lambda_{\max}(\mb{X})$ is the largest eigenvalue of $\mb{X}$ and $\mathbb{S}^n$ is the set of $n\times n$ real symmetric matrices. Show that $f$ is a convex function.
+        \item
+          Let $f:\mathbb{R}^n\to\mathbb{R}$ be a convex function, with $\dom f=\mathbb{R}^n$. Show that it can be represented as the pointwise supremum of a family of affine functions, i.e.,
+          $$
+            f(\mb{x})=\sup\{ g(\mb{x}): g\text{ is affine},g(\mb{z})\le f(\mb{z}) \text{ for all }\mb{z}\in\mathbb{R}^n\}.
+          $$
+      \end{enumerate}
+      
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item See Exercise 1 Question 2(e).
+          \item For any $g(\mb{x})$, we have $f(\mb{x}) \ge g(\mb{x})$, so $f(\mb{x}) \ge \sup\{ g(\mb{x}): g\text{ is affine},g(\mb{z})\le f(\mb{z})$ for all $\mb{z}\in\mathbb{R}^n\}$. Consider the epigraph of $f$, which is convex. Given any $(\mb{x},f(\mb{x}))\in \bd \epi f$, we can fine a supporting hyperplane to $\epi f$ at this point, i.e. there exists $\mb{a} \in \mathbb{R}^n, b\in \mathbb{R}$ such that
+            $$
+              \left\langle
+              \begin{pmatrix}
+                \mb{a} \\
+                b
+              \end{pmatrix},
+              \begin{pmatrix}
+                \mb{x} \\
+                f(\mb{x})
+              \end{pmatrix} -
+              \begin{pmatrix}
+                \mb{z} \\
+                t
+              \end{pmatrix}
+              \right\rangle \le 0
+            $$
+            for all $(\mb{z},t)\in \epi f$. Letting $\mb{z} = \mb{x}$, we have $b (f(\mb{x}) - t) \le 0$ for all $t \ge f(\mb{x})$, implying that $b \ge 0$. Clearly, $b \neq 0$, otherwise $\mb{a}^\top (\mb{x} -\mb{z})\le 0$ for all $\mb{z}\in \mathbb{R}^n$, which leads to $\mb{a} = \mb{0}$. Therefore, letting $t = f(\mb{z})$, we have $f(\mb{x}) + b^{-1}\mb{a}^\top (\mb{x}-\mb{z}) \le f(\mb{z})$, where the left hand side, as a function of $\mb{z}$, belongs to $\{ g(\mb{x}): g\text{ is affine},g(\mb{z})\le f(\mb{z})$ for all $\mb{z}\in\mathbb{R}^n\}$ and equals $f(\mb{x})$ at $\mb{z} = \mb{x}$. Therefore, $f(\mb{x}) \le \sup\{ g(\mb{x}): g\text{ is affine},g(\mb{z})\le f(\mb{z})$ for all $\mb{z}\in\mathbb{R}^n\}$, which completes the proof.
+            \qedhere
+        \end{enumerate}
+      \end{solution}
+      
+      
+    \item
+      Suppose that the training set is $\{(\mb{x}_i,y_i)\}_{i=1}^n$, where $\mb{x}_i\in\mathbb{R}^d$ is the $i^{\text{th}}$ data instance and $y_i\in\mathbb{R}$ is the corresponding label.
+      Recall that Lasso is the regression problem:
+      \begin{align*}
+        \min_{\mb{w}}\,\frac{1}{2n}\|\mb{X}\mb{w}-\mb{y}\|_2^2+\lambda\|\mb{w}\|_1,
+      \end{align*}
+      where $\mb{X}\in\mathbb{R}^{n\times d}$ with its $i^{\text{th}}$ row being $\mb{x}_i^{\top}$, $\mb{w} \in \mathbb{R}^d$, and $\lambda>0$ is the regularization parameter. Show that the objective function in the above problem is convex.
+      
+      \begin{solution}
+        The objective function is the weighted sum of $f(\mb{w}) = \|\mb{X}\mb{w}-\mb{y}\|_2^2$ and $g(\mb{w}) = \|\mb{w}\|_1$. We know that any $p$-norm of vectors is convex function, because $\|\theta\mb{x} + (1-\theta)\mb{y}\|_p \le \theta\|\mb{x}\|_p + (1-\theta)\|\mb{y}\|_p$ for all $0 \le \theta \le 1$, using the triangle inequality. Therefore, $g(\mb{w})$ is convex. For $f(\mb{w})$, it is the composition of an affine function and $l_2$-norm, and according to Exercise 2 Question 1(a), it is convex. Finally, according to Exercise 2 Question 1(b), the objective function is convex.
+        \qedhere
+      \end{solution}
+      
+  \end{enumerate}
+\end{exercise}
+\newpage
+
+
+
+\begin{exercise}[Subdifferentials]
+  \begin{enumerate}
+    \item Calculation of subdifferentials.
+      \begin{enumerate}
+        \item Let $H\subset\mathbb{R}^n$ be a hyperplane. The extended-value extension of its indicator function $I_H$ is
+          \begin{align*}
+            \tilde{I}_H(\mb{x})=\begin{cases}
+                                  0,      & \mb{x}\in H,      \\
+                                  \infty, & \mb{x}\not\in H.
+                                \end{cases}
+          \end{align*}
+          Find $\partial \tilde{I}_H(\mb{x})$.
+          
+        \item Let $f(\mb{x})=\exp{\|\mb{x}\|_1},\, \mb{x}\in\mathbb{R}^n$. Find $\partial f(\mb{x})$.
+          
+        \item Let $f(x)=\max\{0,x\},\,x\in\mathbb{R}$. Find $\partial f(x)$.
+          
+        \item For $\mb{x}\in\mathbb{R}^n$, let $x_{[i]}$ be the $i^{\text{th}}$ largest component of $\mb{x}$. Find the subdifferential of
+          \begin{align*}
+            f(\mb{x})=\sum_{i=1}^k x_{[i]}.
+          \end{align*}
+          
+        \item Let $f(\mb{x})=\max\limits_{1\le i\le n} x_i,\, \mb{x}\in\mathbb{R}^n$. Find $\partial f(\mb{x})$.
+          
+        \item Let $f(\mb{x})=\|\mb{x}\|_\infty,\, \mb{x}\in\mathbb{R}^n$. Find $\partial f(\mb{x})$.
+          
+          
+        \item Let $f(X)=\max\limits_{1\le i\le n}|\lambda_i|$, where $X\in \mathbb{S}^n$ and $\lambda_1,\dots,\lambda_n$ are the eigenvalues of $X$. Find $\partial f(X)$.
+          
+        \item (Optional) Let
+          \begin{align*}
+            f(\mb{x})=\left(\sum\limits_{i=1}^k x_i^2\right)^{\frac{1}{2}}+\left(\sum\limits_{i=k+1}^n x_i^2\right)^{\frac{1}{2}},\quad \mb{x}\in\mathbb{R}^n,
+          \end{align*}
+          where $1\le k\le n-1$. Find $\partial f(\mb{x})$.
+          
+        \item (Optional) Let $f(\textbf{X})=\|\textbf{X}\|_*$ be the trace norm of $\textbf{X}\in\mathbb{R}^{m\times n}$. Find $\partial f(\textbf{X})$.
+          
+      \end{enumerate}
+      
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item Note that $\epi \tilde{I}_H = H \times \mathbb{R}_+$ is a convex set, so $\tilde{I}_H(\mb{x})$ is convex. By definition, $\mb{g}\in \partial \tilde{I}_H(\mb{x})$ if and only if $\tilde{I}_H(\mb{y}) \ge \tilde{I}_H(\mb{x}) + \mb{g}^\top(\mb{y}-\mb{x})$ for all $\mb{y}\in \mathbb{R}^n$. If $\tilde{I}_H(\mb{x}) = \infty$, then $\partial \tilde{I}_H(\mb{x}) = \emptyset$. If $\tilde{I}_H(\mb{x}) = 0$, we only need to consider the case where $\tilde{I}_H(\mb{y}) = 0 < \infty$. That is,
+            $$
+              \langle \mb{g}, \mb{y}-\mb{x} \rangle \le 0, \quad \forall \mb{y}\in H.
+            $$
+            Hence $\mb{x}$ is the projection of $\mb{g} + \mb{x}$ onto $H$, which holds if and only if $\mb{g} \perp H$. In conclusion, 
+            $$
+              \partial \tilde{I}_H(\mb{x}) = \begin{cases}
+                H^\perp,   & \mb{x}\in H,      \\
+                \emptyset, & \mb{x}\not\in H.
+              \end{cases}
+            $$
+            Here, we denote $H^\perp$ as the orthogonal complement of the subspace $H - \mb{x}, \forall\mb{x}\in H$.
+          \item Note that
+            $$
+              f(\mb{x}) = \max\left\{\exp \langle \mb{s}, \mb{x} \rangle : \mb{s}\in\mathbb{R}^n, s_i = \pm 1\right\}.
+            $$
+            Given any $\mb{s}$, we see that $\exp \langle \mb{s}, \mb{x} \rangle$ is closed and convex in $\mb{x}$ because it is the composition of a closed convex function and an affine function. Moreover, the gradient of $\exp \langle \mb{s}, \mb{x} \rangle$ is  $\mb{s} \exp \langle \mb{s}, \mb{x} \rangle$. Hence, the subdifferential of $f(\mb{x})$ is given by
+            \begin{align*}
+              \partial f(\mb{x}) & = \conv \left\{ \mb{s} \exp \langle \mb{s}, \mb{x} \rangle : \mb{s}\in\mathbb{R}^n, s_i = \pm 1, \langle \mb{s}, \mb{x} \rangle = \| \mb{x} \|_1 \right\} \\
+                                 & = \left\{
+              \mb{v} \in \mathbb{R}^n : 
+              \begin{cases}
+                v_i = \exp \| \mb{x} \|_1,                             & \text{if } x_i > 0, \\
+                -\exp \| \mb{x} \|_1 \le v_i \le  \exp \| \mb{x} \|_1, & \text{if } x_i = 0, \\
+                v_i = -\exp \| \mb{x} \|_1,                            & \text{if } x_i < 0
+              \end{cases}
+              \right\}.
+            \end{align*}
+          \item Note that $f(x) = \max\{f_1(x), f_2(x)\}$, where both $f_1(x) = 0$ and $f_2(x) = x$ are closed and convex. Clearly, we have $\nabla f_1(x) = 0$ and $\nabla f_2(x) = 1$. Hence, the subdifferential of $f(x)$ is given by
+            \begin{align*}
+              \partial f(x) & = \conv \{\nabla f_i(x): f_i(x) = f(x)\} \\
+                            & =  
+              \begin{cases}
+                0,      & \text{if } x < 0,  \\
+                [0, 1], & \text{if } x = 0,  \\
+                1,      & \text{if } x > 0.
+              \end{cases}
+            \end{align*}
+          \item Note that
+            $$
+              f(\mb{x}) = \max \left\{\sum_{i\in I} x_i: I\subseteq\{1,\ldots,n\}, |I|=k\right\}.
+            $$
+            Given any $I$, the linear function $\sum_{i\in I} x_i$ is closed and convex, so $f$ is also closed and convex. Moreover, the gradient of $\sum_{i\in I} x_i$ is $\sum_{i\in I} \mb{e}_i$. Hence, the subdifferential of $f(\mb{x})$ is given by
+            \begin{align*}
+              \partial f(\mb{x}) & = \conv \left\{ \sum_{i\in I} \mb{e}_i : I\subseteq\{1,\ldots,n\}, |I|=k, \sum_{i\in I} x_i = \sum_{i=1}^k x_{[i]} \right\} \\
+                                 & = \left\{\mb{v} \in \mathbb{R}^n : v_i = 
+              \begin{cases}
+                1,             & \text{if } x_i > x_{[k]},  \\
+                \alpha_i\ge 0, & \text{if } x_i = x_{[k]},  \\
+                0,             & \text{if } x_i < x_{[k]};
+              \end{cases}\ \sum_{x_i = x_{[k]}} \alpha_i = 1\right\},
+            \end{align*}
+          \item Note that $f(\mb{x}) = \max_{1\le i \le n} f_i(\mb{x})$, where $f_i(\mb{x}) = x_i$ is closed and convex and $\nabla f_i(\mb{x}) = \mb{e}_i$. Hence, the subdifferential of $f(\mb{x})$ is given by
+            \begin{align*}
+              \partial f(\mb{x}) & = \conv \left\{ \mb{e}_i : x_i = x_{[1]} \right\} \\
+                                 & = \left\{ \mb{v} \in \mathbb{R}^n : v_i = 
+              \begin{cases}
+                \alpha_i\ge 0, & \text{if } x_i = x_{[1]},  \\
+                0,             & \text{if } x_i < x_{[1]};
+              \end{cases}\  \sum_{x_i = x_{[1]}} \alpha_i = 1\right\}.
+            \end{align*}
+          \item Note that $f(\mb{x}) = \max_{1\le i \le n} f_i(\mb{x})$, where $f_i(\mb{x}) = |x_i|$ is closed and convex and
+            $$
+              \partial f_i(\mb{x}) = \begin{cases}
+                \mb{e}_i,             & \text{if } x_i > 0,  \\
+                \conv\{\pm\mb{e}_i\}, & \text{if } x_i = 0,  \\
+                -\mb{e}_i,            & \text{if } x_i < 0.
+              \end{cases}
+            $$
+            Hence, the subdifferential of $f(\mb{x})$ is given by
+            \begin{align*}
+              \partial f(\mb{x}) & = \conv \left\{ \partial f_i(\mb{x}) : |x_i| = \|\mb{x}\|_\infty \right\}                                                                 \\
+                                 & = 
+              \begin{cases}
+                \conv (\left\{ \mb{e}_i : x_i = \|\mb{x}\|_\infty \right\} \cup \left\{ -\mb{e}_i : x_i = -\|\mb{x}\|_\infty \right\}), & \text{if } \|\mb{x}\|_\infty > 0, \\
+                \conv \bigcup\left\{ \conv \{\pm\mb{e}_i\} : x_i = 0 \right\},                                                          & \text{if } \|\mb{x}\|_\infty = 0
+              \end{cases} \\
+                                 & =\conv (\left\{ \mb{e}_i : x_i = \|\mb{x}\|_\infty \right\} \cup \left\{ -\mb{e}_i : x_i = -\|\mb{x}\|_\infty \right\})                   \\
+                                 & =
+              % \begin{cases}
+              %   \left\{\mb{v} \in \mathbb{R}^n : v_i = 
+              %   \begin{cases}
+              %     1
+              %   \end{cases}
+              %   \right\}, & \text{if } \|\mb{x}\|_\infty > 0,  \\
+              %   \left\{\mb{v} \in \mathbb{R}^n : v_i =
+              %   \begin{cases}
+              %     2
+              %   \end{cases}
+              %   \right\}, & \text{if } \|\mb{x}\|_\infty = 0.
+              % \end{cases}
+              \left\{\mb{v} \in \mathbb{R}^n : v_i =
+              \begin{cases}
+                \alpha_i \ge 0, & \text{if } x_i = \|\mb{x}\|_\infty \neq 0,  \\
+                \alpha_i \le 0, & \text{if } x_i = -\|\mb{x}\|_\infty \neq 0, \\
+                \alpha_i,       & \text{if } x_i = \|\mb{x}\|_\infty = 0,     \\
+                0,              & \text{otherwise};
+              \end{cases}
+              \sum_{|x_i| = \|\mb{x}\|_\infty} |\alpha_i| = 1\right\}.
+            \end{align*}
+          \item Note that $f(X) = \max\left\{\lambda_{\max}(X), -\lambda_{\min}(X)\right\} = \max\left\{\lambda_{\max}(X), \lambda_{\max}(-X)\right\}$. By Exercise 1 Question 2(e) and Exercise 2 Question 1(a), we see that both $\lambda_{\max}(X)$ and $\lambda_{\max}(-X)$ are convex, and clearly also closed, so is $f(X)$.
+            % Consider the eigen-decomposition $X = U \Lambda U^\top$, where $U^\top U=\mb{I}$ and $\Lambda = \diag(\lambda,\dots,\lambda_n)$ with $\lambda_1 \ge \cdots \ge \lambda_n$. Let $U = (\mb{u}_1,\dots,\mb{u}_n)$, i.e. 
+            
+            Suppose that $\lambda_{\max}(X),\lambda_{\min}(X)$ have multiplicity $r,s$, respectively. Let $U = (\mb{u}_1,\dots,\mb{u}_r)$ and $V = (\mb{v}_1,\dots,\mb{v}_s)$, where $\mb{u}_i$ and $\mb{v}_i$ are the corresponding eigenvectors of $\lambda_{\max}(X)$ and $\lambda_{\min}(X)$, respectively. Then
+            \begin{gather*}
+              \partial \lambda_{\max}(X) = \left\{U^r G (U^r)^\top : G \succeq 0, \tr G = 1\right\},\\
+              \partial \lambda_{\max}(-X) = \left\{-V^s G (V^s)^\top : G \succeq 0, \tr G = 1\right\},
+            \end{gather*}
+            If $\lambda_{\max}(X) > -\lambda_{\min}(X)$, then $\partial f(X) = \partial \lambda_{\max}(X)$. If $\lambda_{\max}(X) < -\lambda_{\min}(X)$, then $\partial f(X) = \partial \lambda_{\max}(-X)$. If $\lambda_{\max}(X) = -\lambda_{\min}(X)$, then $\partial \lambda_{\max}(X) = -\partial \lambda_{\max}(-X)$ and hence $\partial f(X) = \conv \left\{\partial \lambda_{\max}(X), -\partial \lambda_{\max}(X)\right\}.$ In conclusion,
+            $$
+              \partial f(X) = \begin{cases}
+                \left\{U^r G (U^r)^\top : G \succeq 0, \tr G = 1\right\},                        & \text{if } \lambda_{\max}(X) > -\lambda_{\min}(X),  \\
+                \left\{-V^s G (V^s)^\top : G \succeq 0, \tr G = 1\right\},                       & \text{if } \lambda_{\max}(X) < -\lambda_{\min}(X),  \\
+                \left\{\alpha U^r G (U^r)^\top : G \succeq 0, \tr G = 1, |\alpha| \le 1\right\}, & \text{if } \lambda_{\max}(X) = -\lambda_{\min}(X).
+              \end{cases}
+            $$
+          \item Denote $\mb{x}_1 = (x_1,\dots,x_k)$ and $\mb{x}_2 = (x_{k+1},\dots,x_n)$. Let $\mb{A}_1 = (\mb{e}_1,\dots,\mb{e}_k,\mb{O}) \in \mathbb{R}^{n\times n}$ and $\mb{A}_2 = (\mb{O},\mb{e}_{k+1},\dots,\mb{e}_n) \in \mathbb{R}^{n\times n}$. Then $$
+              f(\mb{x}) = \|\mb{x}_1\|_2 + \|\mb{x}_2\|_2 = \|\mb{A}_1\mb{x}\|_2 + \|\mb{A}_2\mb{x}\|_2.
+            $$
+            By Exercise 2 Question 1(a), we see that both $\|\mb{A}_1\mb{x}\|_2$ and $\|\mb{A}_2\mb{x}\|_2$ is convex in $\mb{x}$, so is $f(\mb{x})$. Note that, by definition, the subdifferential of $l_2$-norm at $\mb{x}=\mb{0}$, denoted by $\mb{g}$, satisfies $\|\mb{x}\|_2 \ge \mb{g}^\top\mb{x}$ for all $\mb{x} \in \mathbb{R}^n$, or equivalently, $$
+              \left. \partial \|\mb{x}\|_2 \right|_{\mb{x}=\mb{0}} = \left\{\mb{g}:\sup_{\|\mb{x}\|_2 = 1}\mb{g}^\top\mb{x} \le 1\right\}.
+            $$
+            Hence, the subdifferential of $f(\mb{x})$ is given by 
+            \begin{align*}
+              \partial f(X) & = \partial \|\mb{A}_1\mb{x}\|_2 + \partial \|\mb{A}_2\mb{x}\|_2 \\
+                            & = 
+              \begin{cases}
+                \left(\frac{\mb{x}_1}{\|\mb{x}_1\|_2}, \frac{\mb{x}_1}{\|\mb{x}_1\|_2}\right),                                                                     & \text{if } \|\mb{x}_1\|_2 > 0,\|\mb{x}_2\|_2 > 0,   \\
+                \left\{\left(\frac{\mb{x}_1}{\|\mb{x}_1\|_2}, \mb{h}\right): \sup\limits_{\|\mb{x}_2\|_2 = 1}\mb{h}^\top\mb{x}_2 \le 1\right\},                        & \text{if } \|\mb{x}_1\|_2 > 0, \|\mb{x}_2\|_2 = 0   \\
+                \left\{\left(\mb{g}, \frac{\mb{x}_2}{\|\mb{x}_2\|_2}\right): \sup\limits_{\|\mb{x}_1\|_2 = 1}\mb{g}^\top\mb{x}_1 \le 1\right\},                      & \text{if } \|\mb{x}_1\|_2 = 0, \|\mb{x}_2\|_2 > 0,  \\
+                \left\{(\mb{g}, \mb{h}): \sup\limits_{\|\mb{x}_1\|_2 = 1}\mb{g}^\top\mb{x}_1 \le 1, \sup\limits_{\|\mb{x}_2\|_2 = 1}\mb{h}^\top\mb{x}_2 \le 1\right\}, & \text{if } \|\mb{x}_1\|_2 = 0, \|\mb{x}_2\|_2 = 0.
+              \end{cases}
+            \end{align*}
+          \item The trace norm is defined as $$
+              f(\mb{X}) = \|\mb{X}\|_* = \tr \left(\sqrt{\mb{X}^\top\mb{X}}\right) = \sum_{i=1}^n \sigma_i(\mb{X}).
+            $$
+            The subdifferential of the trace norm is
+            $$
+              \partial f(\mb{X}) = \left\{\mb{U}\mb{V}^\top + \mb{W} : \|\mb{W}\|_2 \le 1, \mb{U}^\top \mb{W} = \mb{W}\mb{V} = \mb{O}\right\}.
+            $$
+            where $\mb{U}\bm{\Sigma} \mb{V}^\top = \mb{X}$ is the singular value decomposition of $\mb{X}$.
+
+
+            \textbf{To be proved.}
+        \end{enumerate}
+      \end{solution}
+      
+  \end{enumerate}
+\end{exercise}
+\newpage
+
+
+
+\begin{exercise}[Problems from the Lecture Notes]
+  \begin{enumerate}
+    \item \textbf{Mean Value Theorem in Vector Functions.}
+      The mean value theorem is generally not holds in vector valued functions. In the proof of Theorem 5 in Lecture 06, we use some techniques to avoid applying mean value theorem directly on vector valued functions.
+      
+      \noindent\textbf{Theorem 5 in Lecture 06}. Suppose that $f$ is twice continuously differentiable. Then, $f$ is convex if and only if $\dom  f$ is convex and  $\nabla^{2} f(\mb{x}) \succeq 0$.
+      
+      In the proof of necessity, we let $\mb{x}_t=\mb{x}+t\mb{s}, t>0$.
+      
+      \begin{enumerate}
+        \item We write down the following formula without proof in class,
+          \begin{align*}
+            0 & \le \frac{1}{t^{2}}\langle\nabla f\left(\mb{x}_{t}\right)-\nabla f(\mb{x}), \mb{x}_{t}-\mb{x}\rangle=\frac{1}{t}\langle\nabla f\left(\mb{x}_{t}\right)-\nabla f(\mb{x}), \mb{s}\rangle \\
+              & =\frac{1}{t} \int_{0}^{t}\langle\nabla^{2} f(\mb{x}+\tau \mb{s}) \mb{s}, \mb{s}\rangle \diff \tau .
+          \end{align*}
+          Please show why the second equality holds.
+        \item By the mean value theorem, we can find an $\alpha \in(0, t)$ such that
+          \begin{align*}
+            \int_{0}^{t}\left\langle\nabla^{2} f(\mb{x}+\tau \mb{s}) \mb{s}, \mb{s}\right\rangle \diff\tau=t\left\langle\nabla^{2} f(\mb{x}+\alpha \mb{s}) \mb{s}, \mb{s}\right\rangle.
+          \end{align*}
+          Please explain how we use the mean value theorem in detail.
+      \end{enumerate}
+      
+      
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item By Newton-Leibniz formula,
+            $$
+              \nabla f\left(\mb{x}_{t}\right)
+              = \nabla f(\mb{x}) + \int_{\mb{x}}^{\mb{x}_t}\nabla^{2} f(\mb{z}) \diff \mb{z}
+              = \nabla f(\mb{x}) + \int_{0}^{t}\nabla^{2} f(\mb{x}+\tau \mb{s}) \diff \tau.
+            $$
+            Since integral is linear and $\mb{s}$ is a constant vector, we have
+            $$
+              \langle\nabla f\left(\mb{x}_{t}\right)-\nabla f(\mb{x}), \mb{s}\rangle
+              = \langle\int_{0}^{t}\nabla^{2} f(\mb{x}+\tau \mb{s}) \diff \tau, \mb{s}\rangle
+              = \int_{0}^{t}\langle\nabla^{2} f(\mb{x}+\tau \mb{s}) \mb{s}, \mb{s}\rangle \diff \tau.
+            $$
+          \item Let $g(\xi) = \int_{0}^{\xi}\left\langle\nabla^{2} f(\mb{x}+\tau \mb{s}) \mb{s}, \mb{s}\right\rangle \diff \tau$. Then, $g$ is a continuous function on $[0, t]$. By the mean value theorem, there exists an $\alpha \in (0, t)$ such that
+            $$
+              g(t) - g(0) = g'(\alpha) (t - 0),
+            $$
+            or equivalently,
+            $$
+              \int_{0}^{t}\left\langle\nabla^{2} f(\mb{x}+\tau \mb{s}) \mb{s}, \mb{s}\right\rangle \diff \tau - 0 = \left\langle\nabla^{2} f(\mb{x}+\alpha \mb{s}) \mb{s}, \mb{s}\right\rangle (t - 0).
+            $$
+            This is the desired result.
+            \qedhere
+        \end{enumerate}
+        \qedhere
+      \end{solution}
+      
+    \item \textbf{Log-determinant Function.}
+      Recall Example 3 in Lecture06, the log-determinant function $f(X)=-\log \operatorname{det} X$ with $\dom f=\mathbb{S}_{++}^{n}$.
+      Let $X_{0} \in \mathbb{S}_{++}^{n}$ and $V \in \mathbb{S}^{n}$. We define
+      \begin{align*}
+        g(t)=f\left(X_{0}+t V\right)
+      \end{align*}
+      with $\dom g=\left\{t: X_{0}+t V \in \mathbb{S}_{++}^{n}\right\}$.
+      \begin{enumerate}
+        \item Please show that $\dom g$ is nonempty.
+        \item (\textbf{Optional}) Please find $\dom g$.
+      \end{enumerate}
+      
+      
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item $X_0 + 0V = X_0 \in \dom f = \mathbb{S}_{++}^{n}$, so $0 \in \dom g$.
+          \item Note that $$
+              X_0+t V = X_0^{\frac{1}{2}} (\mb{I} + t X_0^{-\frac{1}{2}} V X_0^{-\frac{1}{2}}) X_0^{\frac{1}{2}},
+            $$
+            which is positive definite if and only if $\mb{I} + t X_0^{-\frac{1}{2}} V X_0^{-\frac{1}{2}} \succ 0$. 
+            Let $\lambda_1, \dots, \lambda_n$ be the eigenvalues of $X_0^{-\frac{1}{2}} V X_0^{-\frac{1}{2}}$. Then, the eigenvalues of $\mb{I} + t X_0^{-\frac{1}{2}} V X_0^{-\frac{1}{2}}$ become $1 + t\lambda_1, \dots,\\ 1 + t\lambda_n$, which are all positive if and only if $t \in \dom g$. That is,
+            $$
+              \dom g = \begin{cases}
+                (-\frac{1}{\lambda_{\max}}, \infty),                    & \text{if } \lambda_{\min} \ge 0, \lambda_{\max} > 0, \\
+                (-\frac{1}{\lambda_{\max}}, -\frac{1}{\lambda_{\min}}), & \text{if } \lambda_{\min} < 0 < \lambda_{\max},      \\
+                (-\infty, -\frac{1}{\lambda_{\min}}),                   & \text{if } \lambda_{\min} < 0, \lambda_{\max} \le 0, \\
+                (-\infty, \infty),                                      & \text{if } \lambda_{\min} = \lambda_{\max} = 0.
+              \end{cases}
+            $$
+            where $\lambda_{\min}$ and $\lambda_{\max}$ are the smallest and the largest eigenvalues of $X_0^{-\frac{1}{2}} V X_0^{-\frac{1}{2}}$, respectively.
+            \qedhere
+        \end{enumerate}
+      \end{solution}
+      
+    \item \textbf{Subdifferential.}
+      Recall the Example 5 in Lecture 07. Let $f: \mathbb{S}^{n} \rightarrow \mathbb{R}$ be defined by $f(X)=\lambda_{\max }(X)$. We want to Find $\partial f(X)$.
+      
+      By eigen-decomposition, a symmetric matrix can be written as $X=U \Lambda U^{\top}$, where $U^{\top} U=I$ and $ \Lambda=\diag\left(\lambda_{1}, \ldots, \lambda_{n}\right)$ with $\lambda_{1} \geq \cdots \geq \lambda_{n}$. Let $U=\left(\mb{u}_{1}, \ldots, \mb{u}_{n}\right)$, i.e., $\mb{u}_{i}$ is the eigenvector corresponding to $\lambda_{i}$. We then write $f(X)$ as
+      \begin{align*}
+        f(X) =\max \{\langle\mb{s}, X\mb{s}\rangle :\|\mb{s}\|=1\} =\max \{\langle\mb{s}\mb{s}^\top, X\rangle :\|\mb{s}\|=1\} .
+      \end{align*}
+      Assume that $\lambda_{\max }=\lambda_{1}=\cdots=\lambda_{r}$, where $1 \leq r \leq n$. Let $U^{r}=\left(\mb{u}_{1}, \ldots, \mb{u}_{r}\right)$,
+      \begin{align*}
+        S^{*}:=\argmax_{\|\mb{s}\|=1}\langle \mb{s}\mb{s}^{\top},X\rangle
+      \end{align*}
+      
+      \begin{enumerate}
+        \item Please show that
+          \begin{align*}
+            S^*=\left\{\mb{v}: \mb{v} \in \lspan U^{r},\|\mb{v}\|=1\right\} =\left\{\mb{v}: \mb{v}=U^{r} \mb{q}, \mb{q} \in \mathbb{R}^{r}, \|\mb{q}\|=1\right\}.
+          \end{align*}
+        \item Please find $\frac{\diff}{\diff X}\langle \mb{ss}^\top, X\rangle$, then show that
+          \begin{align*}
+            \partial f(X)=\conv\left\{\mb{v} \mb{v}^{\top}: \mb{v} \in S^{*}\right\}=\left\{U^{r} G\left(U^{r}\right)^{\top}: G \succeq 0, \tr G=1\right\}.
+          \end{align*}
+          
+        \item Suppose $n=3$, please find $\partial f(X)$ at $X=\diag(2,4,4)$ and $X=\diag(1,2,4)$.
+      \end{enumerate}
+      
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item Let $\mb{s} = \mb{v} + \mb{w}$, where $\mb{v} = U \mb{q} \in \lspan U$ and $\mb{w} \in (\lspan U)^\perp$. Then
+            \begin{align*}
+              \left\langle \mb{s}\mb{s}^{\top},X\right\rangle & = \left\langle U^\top (\mb{v} + \mb{w})(U^\top (\mb{v} + \mb{w}))^\top,\Lambda \right\rangle \\ 
+                                                              & = \left\langle U^\top \mb{v} \mb{v}^\top U, \Lambda \right\rangle                            \\
+                                                              & = \left\langle \mb{q} \mb{q}^\top, \Lambda \right\rangle                                     \\ 
+                                                              & = \sum_{i = 1}^n \lambda_i q_i^2 \le \lambda_1 \|\mb{q}\|^2 \le \lambda_1.
+            \end{align*}
+            The first inequality becomes equality if and only if $q_i = 0$ for $i > r$, i.e. $\mb{v} \in \lspan U^r$. The second inequality becomes equality if and only if $\|\mb{q}\| = \|\mb{v}\| = 1$, i.e. $\mb{s} = \mb{v}$. Thus, $S^* = \left\{\mb{v}: \mb{v} \in \lspan U^{r}, \|\mb{v}\| = 1\right\} = \left\{\mb{v}: \mb{v}=U^{r} \mb{q}, \mb{q} \in \mathbb{R}^{r}, \|\mb{q}\|=1\right\}$.
+          \item We have
+            $$
+              \frac{\partial}{\partial x_{ij}} \langle \mb{ss}^\top, X\rangle = s_i s_j \implies \diff \langle \mb{ss}^\top, X\rangle = \langle \mb{ss}^\top, \diff X\rangle \implies \frac{\diff}{\diff X} \langle \mb{ss}^\top, X\rangle = \langle \mb{ss}^\top, \,\cdot\,\rangle.
+            $$
+            That is, $\nabla_X \langle \mb{ss}^\top, X\rangle = \mb{ss}^\top$. Clearly, $\langle \mb{ss}^\top, X\rangle$ is closed and convex in $X$. Moreover, $\mb{s}$ belongs to a compact set and $\langle \mb{ss}^\top, X\rangle$ is continuous in $\mb{s}$. Hence, the subdifferential of $f(X)$ is given by
+            \begin{align*}
+              \partial f(X) & = \conv\left\{\nabla_X \langle \mb{ss}^\top, X\rangle: \mb{s}= f(X)\right\}                       \\
+                            & = \conv\left\{\mb{v} \mb{v}^\top: \mb{v} \in S^*\right\}                                          \\
+                            & = \conv\left\{U^r \mb{q} \mb{q}^\top (U^r)^\top : \mb{q} \in \mathbb{R}^r, \|\mb{q}\| = 1\right\} \\ 
+                            & = \conv\left\{U^r Q (U^r)^\top : Q \succeq 0, \rank Q = 1, \tr Q = 1\right\}                      \\
+                            & = \left\{U^r G (U^r)^\top : G \succeq 0, \tr G = 1\right\}.
+            \end{align*}
+            To see that the fourth equality holds, note that $\rank {\mb{q}\mb{q}^\top} = \rank {\mb{q}^\top\mb{q}} = 1$, $\tr \left({\mb{q}\mb{q}^\top}\right) = \tr \left({\mb{q}^\top\mb{q}}\right) = 1$ and $(\mb{x}^\top\mb{q})^2 \ge 0, \forall \mb{x} \in \mathbb{R}^r$. Conversely, any positive semidefinite $Q$ with a single nonzero eigenvalue $\lambda = 1$ and the corresponding eigenvector $\mb{q}$ can be decomposed as $Q = \lambda\mb{q}\mb{q}^\top = \mb{q}\mb{q}^\top$.
+            
+            To see that the last equality holds, note that $\left\{G\in \mathbb{S}_+ : \tr G = 1\right\}$ is a convex set, so $\left\{G\in \mathbb{S}_+ : \tr G = 1\right\} \supset \conv \left\{Q\in \mathbb{S}_+ : \rank Q = 1,\tr Q = 1\right\}$. Conversely, any $G$ can be decomposed as $\sum_{i=1}^n \lambda_i \mb{u}_i \mb{u}_i^\top$, where $\lambda_i$ are the eigenvalues of $G$ and $\mb{u}_i$ are the corresponding unit eigenvectors. Since $\|\mb{u}_i\| = 1$ and $\sum_{i=1}^n \lambda_i = 1$, we have $G\in \conv \left\{Q\in \mathbb{S}_+ : \rank Q = 1,\tr Q = 1\right\}$. Therefore,
+            $$
+              \left\{G\in \mathbb{S}_+ : \tr G = 1\right\}
+              = \conv \left\{Q\in \mathbb{S}_+ : \rank Q = 1,\tr Q = 1\right\}.
+            $$
+            It is easy to see that, under an affine transformation, the image of the convex hull of a set is the same as the convex hull of the image of the set. This completes the proof of the last equality.
+          \item \begin{enumerate}
+              \item For $X = \diag (2,4,4)$, we have
+                $$ U^2 =
+                  \begin{pmatrix}
+                    0 & 0  \\
+                    1 & 0  \\  
+                    0 & 1
+                  \end{pmatrix},\ G = 
+                  \begin{pmatrix}
+                    \frac{1}{2} + a & b                \\
+                    b               & \frac{1}{2} - a
+                  \end{pmatrix}, \text{ where } a^2 + b^2 \le \frac{1}{4}.
+                $$
+                Hence the subdifferential is
+                $$
+                  \partial f(X) = \left\{
+                  \begin{pmatrix}
+                    0 & 0               & 0                \\
+                    0 & \frac{1}{2} + a & b                \\
+                    0 & b               & \frac{1}{2} - a
+                  \end{pmatrix}: a^2 + b^2 \le \frac{1}{4}\right\}.
+                $$
+              \item For $X = \diag (1,2,4)$, we have
+                $$ U^1 =
+                  \begin{pmatrix}
+                    0 \\
+                    0 \\  
+                    1
+                  \end{pmatrix},\ G = 1.
+                $$
+                Hence the subdifferential is
+                \begin{align*}
+                  \partial f(X) = \left\{
+                  \begin{pmatrix}
+                    0 & 0 & 0  \\
+                    0 & 0 & 0  \\
+                    0 & 0 & 1
+                  \end{pmatrix}\right\}.
+                  \tag*{\qedhere}
+                \end{align*}
+            \end{enumerate}
+        \end{enumerate}
+      \end{solution}
+      
+      
+  \end{enumerate}
+\end{exercise}
+\newpage
+
+
+\bibliography{refs}
+\bibliographystyle{abbrv}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

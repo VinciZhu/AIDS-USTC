@@ -1,0 +1,9 @@
+*-handin.tar
+.csim_results
+.marker
+csim
+test-trans
+trace.tmp
+tracegen
+trans.o
+*.dSYM

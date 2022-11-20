@@ -1,0 +1,43 @@
+\documentclass{ned-article}
+
+\usetikzlibrary{matrix,positioning,arrows.meta,shapes.geometric,chains}
+
+\tikzset{
+    font = \small,
+    rect/.style = {
+        anchor = north,
+        draw,
+        thick,
+        minimum height = 20pt
+    },
+    trace/.style = {
+        ->,
+        > = {Stealth[round]},
+        shorten > = 1pt,
+        thick
+    },
+    process/.style = {rectangle, minimum width=3cm, minimum height=1cm,text centered, draw},
+    startstop/.style = {process, rounded corners},
+    io/.style = {trapezium, trapezium left angle=70, trapezium right angle=110, trapezium stretches, minimum width=3cm, minimum height=1cm, text centered, text width=#1, draw},
+    decision/.style = {diamond, aspect=2, minimum width=3cm, minimum height=1cm, text centered, draw}
+}
+
+
+\setinfo{
+    type    =   {实验报告},
+    course  =   {计算机系统详解},
+    title   =   {Cache Lab},
+    author  =   {朱云沁},
+    id      =   {PB20061372},
+    date    =   {2022-05-28},
+}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\input{cachelab}
+
+\end{document}

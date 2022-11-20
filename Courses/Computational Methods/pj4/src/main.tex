@@ -1,0 +1,608 @@
+\documentclass{nedsart}
+
+\setinfo{
+    type    =   {实验报告},
+    course  =   {计算方法},
+    title   =   {Final Project},
+    author  =   {朱云沁},
+    id      =   {PB20061372},
+    date    =   {2022-05-30},
+}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{实验题目}
+
+\def\uh{\bm{u}_h}
+\def\fh{\bm{f}_h}
+\def\Ah{\bm{A}_h}
+
+考虑数值求解如下的优化问题
+\begin{equation}\label{eq:problem}
+    \min_{u(x) \in C^1_0([0,1])} \quad {\int^1_0 \left\{ \frac{1}{2} \left[ u'(x) \right]^2 + \frac{\alpha}{4} u^4(x) - f(x)u(x) \right\} \rmd x} \\ 
+\end{equation}
+令 $h=1/n$, $x_i=ih,i=0$, $\cdots,n$. 记 $f_i = f(x_i)$, $u_i$ 为 $u(x_i)$ 的数值逼近, 则 $u_0 = u_n = 0$.  对 \eqref{eq:problem} 采用如下的数值积分格式
+\begin{equation}\label{eq:integral}
+    \min_{u_1, \cdots, u_{n-1}} \quad \sum^n_{i=1} {\frac{1}{2} \left( \frac{u_i - u_{i-1}}{h} \right)^2 h } + \sum^{n-1}_{i=1} {  \left( \frac{\alpha}{4} u^4_i - f_i u_i \right) h}
+\end{equation}
+分别记 $\uh=(u_1,\cdots,u_{n-1})^\Tr$, $\fh=(f_1,\cdots,f_{n-1})^\Tr$.
+\begin{enumerate}
+    \item 当 $\alpha = 0$ 时， 推导 $u_1,\cdots,u_{n-1}$ 满足的线性方程组 $\Ah \uh = \fh$.
+    \item 当 $f(x) = \pi^2 \sin(\pi x)$, $n = 10, 20, 40, 80, 160$ 时, 分别利用 Jacobi 和 Gauss-Seidel 迭代法求解 $\Ah \uh = \fh$ (迭代法的终止准则 $\varepsilon = 10^{-10}$), 并比较 $\uh$ 与精确解 $u_e(x) = \sin(\pi x)$ 之间的误差 $e_h = ||\uh - \bm{u}_e||_2$, 记录在一张表中.
+    \item 假设 \eqref{eq:integral} 中的 $\uh$ 对 \eqref{eq:problem} 中的 $u(x)$ 的逼近误差满足 $e_h = \Theta(h^\beta)$ , 基于上表中的数据试利用最小二乘法找到 $\beta$.
+    \item 对 $n = 10, 20, 40, 80, 160$, 分别记录 Jacobi 和 Gauss-Seidel 迭代法收敛所需要的迭代次数在同一张表中, 从中能得到什么结论?
+    \item 当 $\alpha = 1$ 时， 推导 $u_1,\cdots,u_{n-1}$ 满足的非线性方程组.
+    \item 当 $f(x) = \pi^2 \sin(\pi x) + \sin^3(\pi x)$, $n = 10, 20, 40, 80, 160$ 时, 利用 Newton 迭代法求解上一小题中的非线性方程组 (迭代法的终止准则 $\varepsilon = 10^{-8}$), 并比较 $\uh$ 与精确解 $u_e(x) = \sin(\pi x)$ 之间的误差 $e_h = ||\uh - \bm{u}_e||_2$, 记录在一张表中, 并利用最小二乘法找出该情形下算法的收敛阶.
+\end{enumerate}
+
+\clearpage
+
+\section{实验结果}
+
+\subsection[第1题]{}
+当 $\alpha = 0$ 时, $\uh$ 满足的线性方程组为
+\begin{equation}\label{eq:ans1}
+    \frac{1}{h^2}
+    \begin{pmatrix*}[r]
+        2   & -1     &        &     \\
+        -1  & 2      & \ddots &     \\
+            & \ddots & \ddots & -1  \\
+            &        & -1     & 2   \\
+    \end{pmatrix*}
+    \begin{pmatrix}
+        u_1     \\
+        u_2     \\
+        \vdots  \\
+        u_{n-1} \\
+    \end{pmatrix}
+    =
+    \begin{pmatrix}
+        f_1     \\
+        f_2     \\
+        \vdots  \\
+        f_{n-1} \\
+    \end{pmatrix}
+\end{equation}
+
+\subsection[第2题]{}
+利用 Jacobi 迭代法解得 $\uh$. 取 $ x = 0.1, 0.2, \cdots, 0.9$ 处的数值解 $u_h(x)$, 如\tabref{tab:jacobi}~所示. 当 $n = 10, 160$ 时, 作得$u_h(x)$ 的图象, 如\figref{fig:jacobi}~所示.
+\begin{table}[H]
+    \small\centering
+    \caption{Jacobi 迭代法求得数值解}\label{tab:jacobi}
+    \includecsv{../assets/output/jacobi.csv}{
+        \roundnum{1}{\csvcolii} & 
+        \roundnum{8}{\csvcoliii} & 
+        \roundnum{8}{\csvcoliv} &
+        \roundnum{8}{\csvcolv} &
+        \roundnum{8}{\csvcolvi} &
+        \roundnum{8}{\csvcolvii} &
+        \roundnum{8}{\csvcolviii}
+    }{  
+        $x$ & 
+        $u_{0.1}(x)$ &
+        $u_{0.05}(x)$ &
+        $u_{0.025}(x)$ &
+        $u_{0.0125}(x)$ &
+        $u_{0.00625}(x)$ &
+        $u_{e}(x)$
+    }{*7c}
+\end{table}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../assets/output/jacobi.pdf}
+    \caption{Jacobi 迭代法求得数值解}\label{fig:jacobi}
+\end{figure}\noindent
+
+利用 Gauss-Seidel 迭代法解得 $\uh$. 取 $ x = 0.1, 0.2, \cdots, 0.9$ 处的数值解 $u_h(x)$, 如\tabref{tab:gauss-seidel}~所示. 当 $n = 10, 160$ 时, 作得$u_h(x)$ 的图象, 如\figref{fig:gauss-seidel}~所示.
+\begin{table}[H]
+    \small\centering
+    \caption{Gauss-Seidel 迭代法求得数值解}\label{tab:gauss-seidel}
+    \includecsv{../assets/output/gauss-seidel.csv}{
+        \roundnum{1}{\csvcolii} & 
+        \roundnum{8}{\csvcoliii} & 
+        \roundnum{8}{\csvcoliv} &
+        \roundnum{8}{\csvcolv} &
+        \roundnum{8}{\csvcolvi} &
+        \roundnum{8}{\csvcolvii} &
+        \roundnum{8}{\csvcolviii}
+    }{  
+        $x$ & 
+        $u_{0.1}(x)$ &
+        $u_{0.05}(x)$ &
+        $u_{0.025}(x)$ &
+        $u_{0.0125}(x)$ &
+        $u_{0.00625}(x)$ &
+        $u_{e}(x)$
+    }{*7c}
+\end{table}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../assets/output/gauss-seidel.pdf}
+    \caption{Gauss-Seidel迭代法求得数值解}\label{fig:gauss-seidel}
+\end{figure}\noindent
+
+分别求得两种方法的误差 $e_h = ||\uh - \bm{u}_e||_2$, 如\tabref{tab:linear-itr-error}~所示.
+\begin{table}[H]
+    \small\centering
+    \caption{$\alpha = 0$ 时的逼近误差}\label{tab:linear-itr-error}
+    \includecsv[0.6\textwidth]{../assets/output/linear-itr-error.csv}{
+        \num{\csvcolii} &
+        \num{\csvcoliii} & 
+        \roundnum[exponent-mode = scientific]{8}{\csvcoliv} &
+        \roundnum[exponent-mode = scientific]{8}{\csvcolv}
+    }{  
+        \multirow{2}[2]{*}{$n$} &
+        \multirow{2}[2]{*}{$h$} &
+        \multicolumn{2}{c}{$e_h$}\\\cmidrule{4-5} &
+        & & Jacobi & Gauss-Seidel 
+    }{*4c}
+\end{table}
+\begin{center}
+    \small
+    \includecsv[0.6\textwidth]{../assets/output/linear-itr-error.csv}{
+        \num{\csvcolii} & 
+        \roundnum{8}{\csvcolvi} &
+        \roundnum{8}{\csvcolvii} &
+        \roundnum{8}{\csvcolviii}
+        }{  
+            \multirow{2}[2]{*}{$n$} &
+            \multirow{2}[2]{*}{$\log h$} &
+            \multicolumn{2}{c}{$\log e_h$}\\\cmidrule{4-5} &
+            & & Jacobi & Gauss-Seidel 
+        }{*4c}
+\end{center}
+可见, 随区间剖分点数 $n$ 增大, 误差 $e_h$ 逐渐减小而趋于0. 
+
+\subsection[第3题]{}
+假设 $e_h = \Theta(h^\beta)$, 则$\log e_h \approx \beta_0 + \beta \log h$. 利用最小二乘法拟合, 得到曲线如\figref{fig:linear-itr-error}~所示.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../assets/output/linear-itr-error.pdf}
+    \caption{$\alpha = 1$ 时的误差拟合}\label{fig:linear-itr-error}
+\end{figure}\noindent
+使用Jacobi迭代法时, 数值算法的收敛阶为
+\begin{equation}
+    \beta = 2.00642821 \approx 2
+\end{equation}
+使用Gauss-Seidel迭代法时, 数值算法的收敛阶为
+\begin{equation}
+    \beta = 2.00399771 \approx 2
+\end{equation}
+
+\subsection[第4题]{}
+
+Jacobi 和 Gauss-Seidel 迭代法满足精度时的迭代次数如\tabref{tab:linear-itr-k}~所示. 其
+图象如\figref{fig:linear-itr-k}~所示.
+\begin{table}[H]
+    \small\centering
+    \caption{求解线性方程组所需迭代次数}\label{tab:linear-itr-k}
+    \includecsv[0.4\textwidth]{../assets/output/linear-itr-k.csv}{
+        \num{\csvcolii} &
+        \num{\csvcoliii} & 
+        \num{\csvcoliv}
+    }{  
+        $n$ &
+        Jacobi &
+        Gauss-Seidel 
+    }{*3c}
+\end{table}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../assets/output/linear-itr-k.pdf}
+    \caption{求解线性方程组所需迭代次数}\label{fig:linear-itr-k}
+\end{figure}\noindent
+
+得出如下结论:
+\begin{itemize}[noitemsep]
+    \item 随$A_h$的维数增大, Jacobi 和 Gauss-Seidel 方法所需的迭代次数呈非线性增长, 且增长速率加快, 具有$\Omega(n)$复杂度. 可见, 求解线性方程组的迭代方法存在效率瓶颈, 不一定优于直接解法.
+    \item 在此问题中, 当$n$相同时, Gauss-Seidel 方法的收敛速度总是比 Jacobi 方法快接近一倍, 效率相对较高. 可见, 在迭代计算过程中及时更新$\uh$分量是改善收敛的有效措施.
+    \item 计算发现, 当$n$趋于无穷时, Jacobi 迭代矩阵的谱半径 和 Gauss-Seidel 迭代矩阵的$\infty$-范数单调趋于1, 这与迭代次数的增长存在一定相关性. 可见, 线性方程组的迭代收敛取决于迭代矩阵的性质. 
+    \item 相较求解非线性方程组的 Newton 迭代法, 求解\eqref{eq:ans1}线性方程组的 Jacobi 和 Gauss-Seidel 方法收敛所需的迭代次数较多, 收敛速度较慢.
+\end{itemize}
+
+\subsection[第5题]{}
+当 $\alpha = 1$ 时, $\uh$ 满足的非线性方程组为
+\begin{equation}\label{eq:ans2}
+    \begin{pmatrix}
+        - u_0 + 2 u_1 - u_2 + h^2 u_1^3 - h^2 f_1 \\
+        - u_1 + 2 u_2 - u_3 + h^2 u_2^3 - h^2 f_2 \\
+        \vdots \\
+        - u_{n-2} + 2 u_{n-1} - u_n + h^2 u_{n-1}^3 - h^2 f_{n-1} \\
+    \end{pmatrix}
+    = \bm{0}
+\end{equation}
+
+\subsection[第6题]{}
+利用 Newton 迭代法解得 $\uh$. 取 $ x = 0.1, 0.2, \cdots, 0.9$ 处的数值解 $u_h(x)$, 如\tabref{tab:newton}~所示. 当 $n = 10, 160$ 时, 作得$u_h(x)$ 的图象, 如\figref{fig:newton}~所示.
+\begin{table}[H]
+    \small\centering
+    \caption{Newton 迭代法求得数值解}\label{tab:newton}
+    \includecsv{../assets/output/newton.csv}{
+        \roundnum{1}{\csvcolii} & 
+        \roundnum{8}{\csvcoliii} & 
+        \roundnum{8}{\csvcoliv} &
+        \roundnum{8}{\csvcolv} &
+        \roundnum{8}{\csvcolvi} &
+        \roundnum{8}{\csvcolvii} &
+        \roundnum{8}{\csvcolviii}
+    }{  
+        $x$ & 
+        $u_{0.1}(x)$ &
+        $u_{0.05}(x)$ &
+        $u_{0.025}(x)$ &
+        $u_{0.0125}(x)$ &
+        $u_{0.00625}(x)$ &
+        $u_{e}(x)$
+    }{*7c}
+\end{table}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../assets/output/newton.pdf}
+    \caption{Newton 迭代法求得数值解}\label{fig:newton}
+\end{figure}\noindent
+
+求得误差 $e_h = ||\uh - \bm{u}_e||_2$, 如\tabref{tab:newton-error}~所示.
+\begin{table}[H]
+    \small\centering
+    \caption{$\alpha = 1$ 时的逼近误差}\label{tab:newton-error}
+    \includecsv[0.7\textwidth]{../assets/output/newton-error.csv}{
+        \num{\csvcolii} &
+        \num{\csvcoliii} & 
+        \roundnum[exponent-mode = scientific]{8}{\csvcoliv} &
+        \roundnum{8}{\csvcolv} &
+        \roundnum{8}{\csvcolvi}
+    }{  
+        $n$ &
+        $h$ &
+        $e_h$ &
+        $\log h$ &
+        $\log e_h$
+    }{*5c}
+\end{table}\noindent
+可见, 随区间剖分点数 $n$ 增大, 误差 $e_h$ 逐渐减小而趋于0. 
+
+假设 $e_h = \Theta(h^\beta)$, 则$\log e_h \approx \beta_0 + \beta \log h$. 利用最小二乘法拟合, 得到曲线如\figref{fig:newton-error}~所示.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../assets/output/newton-error.pdf}
+    \caption{$\alpha = 1$ 时的误差拟合}\label{fig:newton-error}
+\end{figure}\noindent
+求得收敛阶为
+\begin{equation}
+    \beta = 2.00048858 \approx 2
+\end{equation}
+
+\section{解题过程}
+
+\subsection[\texorpdfstring{$\alpha = 0$}{alpha=0}]{$\bm{\alpha = 0}$}
+
+\subsubsection{线性方程组}
+
+记目标函数为
+\begin{equation}
+    F(\uh) = h \left[ \sum^n_{i=1} {\frac{1}{2} \left( \frac{u_i - u_{i-1}}{h} \right)^2} - \sum^ {n-1}_{i=1} {f_i u_i} \right]
+\end{equation}
+其梯度为
+\begin{equation}
+    \bm{\nabla} F(\uh) = \frac{1}{h}
+    \begin{pmatrix}
+        - u_0 + 2 u_1 - u_2 - h^2 f_1  \\
+        - u_1 + 2 u_2 - u_3 - h^2 f_2  \\
+        \vdots \\
+        - u_{n-2} + 2 u_{n-1} - u_n - h^2 f_{n-1} \\
+    \end{pmatrix}
+\end{equation}
+Hessian矩阵为
+\begin{equation}
+    \bm{\nabla}^2 F(\uh) = \frac{1}{h} 
+    \begin{pmatrix*}[r]
+        2   & -1     &        &     \\
+        -1  & 2      & \ddots &     \\
+            & \ddots & \ddots & -1  \\
+            &        & -1     & 2   \\
+    \end{pmatrix*}  
+\end{equation}
+计算得其$m$阶主子式为$(m+1)/h$, 故$\bm{\nabla}^2 F(\uh)>0$. $\bm{\nabla} F(\uh) = \bm0$处为极小值点, 满足
+\begin{equation}
+    \begin{dcases}
+        - u_0 + 2 u_1 - u_2 = h^2 f_1  \\
+        - u_1 + 2 u_2 - u_3 = h^2 f_2  \\
+        \hspace{4.5em} \vdots \\
+        - u_{n-2} + 2 u_{n-1} - u_n = h^2 f_{n-1} \\ 
+    \end{dcases}
+\end{equation}
+写为矩阵形式 $\Ah \uh = \fh$, 如 \eqref{eq:ans1} 所示.
+
+\subsubsection{Jacobi迭代法}
+
+\def\bD{\bm{D}}
+\def\bL{\bm{L}}
+\def\bU{\bm{U}}
+
+令 $\Ah = \bD + \bL + \bU$, 其中 $\bD$ 为对角矩阵, $\bL$ 为下三角矩阵, $\bU$ 为上三角矩阵, 即
+\begin{equation}\label{eq:dlu}
+    \bD = \frac{1}{h^2}
+    \begin{pmatrix*}[c]
+        2   &        &        &     \\
+            & 2      &        &     \\
+            &        & \ddots &     \\
+            &        &        & 2   \\
+    \end{pmatrix*},\quad
+    \bL = \bU^\Tr = \frac{1}{h^2}
+    \begin{pmatrix*}[c]
+            &        &        &     \\
+        -1  &        &        &     \\
+            & \ddots &        &     \\
+            &        & -1     &     \\
+    \end{pmatrix*}
+\end{equation}
+由 $\Ah\uh = \fh$, 得 $\bD\uh = -(\bL+\bU)\uh + \fh$, 进而有 Jacobi 迭代公式
+\begin{equation}
+    \uh^{(k+1)} = -\bD^{-1}(\bL+\bU)\uh^{(k)} + \bD^{-1}\fh
+\end{equation}
+代入\eqref{eq:dlu}化简得
+\begin{equation}\label{eq:jacobi}
+    \begin{dcases}
+        u_1^{(k+1)} = \frac{u_2^{(k)} + h^2 f_1}{2}\\
+        u_2^{(k+1)} = \frac{u_1^{(k)} + u_3^{(k)} + h^2 f_2}{2}\\
+        \hspace{3em} \vdots \\
+        u_{n-1}^{(k+1)} = \frac{u_{n-2}^{(k)} + h^2 f_{n-1}}{2}\\[1ex]
+    \end{dcases}
+\end{equation}
+
+下证 Jacobi 迭代的收敛性. 迭代矩阵的特征值 $\lambda$ 满足
+\begin{equation}
+    |\bm{I} + \lambda \bD^{-1}(\bL+\bU)| =
+    \begin{vmatrix*}[c]
+        \lambda & -\dfrac{1}{2} & & \\[1ex]
+        -\dfrac{1}{2} & \lambda & \ddots & \\[1ex]
+        & \ddots & \ddots & -\dfrac{1}{2} \\[1ex]
+        & & -\dfrac{1}{2} & \lambda \\
+    \end{vmatrix*} = \frac{\alpha^n - \beta^n}{\alpha - \beta} = 0
+\end{equation}
+其中 $\alpha$, $\beta$ 为 $4 x^2 - 4 \lambda x + 1 = 0$ 的两根. 若 $\lambda = \pm 1$, 则
+\begin{equation}
+    \frac{\alpha^n - \beta^n}{\alpha - \beta} = \frac{n}{(\pm 2)^{n-1}} \neq 0
+\end{equation}
+故 $\lambda \neq 1$. 此时应有 $\alpha^n = \beta^n$ 且 $\alpha \neq \beta$, 可知 $\alpha$, $\beta$ 必为复根. 于是 $|\lambda| < 1$. 事实上,
+\begin{equation}
+    \rho(-\bD^{-1}(\bL+\bU)) = \max |\lambda| = \cos \left( \frac{\pi}{n} \right) < 1
+\end{equation}
+因而 Jacobi 迭代收敛.
+
+每次迭代均按\eqref{eq:jacobi}计算. 当$||\Delta \uh^{(k)}||_\infty < \varepsilon$时,满足精度, 终止迭代. 算法描述如下\\
+\begin{algorithm}[H]
+    \caption{Jacobi迭代法求解\eqref{eq:ans1}线性方程组}
+    \KwData{初始点$\uh^{(0)}$, 精度控制值$\varepsilon$.}
+    \KwResult{迭代次数$k$, 第$k$步的迭代解$\uh^{(k)}$.}
+    $u_0, u_{n} \leftarrow 0$\;
+    $(u_1,\cdots,u_{n-1}) \leftarrow \uh^{(0)}$\;
+    \For(\tcp*[f]{$\mathtt{M}$为最大迭代次数.}){$k \leftarrow 1$ \KwTo $\mathtt{M}$}{
+        $m \leftarrow 0$\tcp*{$m$用于计算$||\Delta \uh^{(k)}||_\infty$.}
+        \For{$i \leftarrow 1$ \KwTo $n-1$}{
+            $v_i \leftarrow 0.5(u_{i-1} + u_{i+1} + h^2f_i)$\;
+            $m \leftarrow \max \{ m, |v_i - u_i| \}$\;
+        }
+        \If{$m < \varepsilon$}{
+            \KwRet $k, (v_1,\cdots,v_{n-1})$\;   
+        }
+        $(u_1,\cdots,u_{n-1}) \leftarrow (v_1,\cdots, v_{n-1})$\;
+    }
+    \KwRet \texttt{NULL}\;
+\end{algorithm}\noindent
+单步迭代的复杂度为$O(n)$. 用Python实现以上算法, 取 $\uh^{(0)} = \bm{0}$, 求得数值解 $u_h(x)$ 和逼近误差 $e_h$, 代码见附录 \ref{sec:python} (\nameref{py:linear-itr}). 运行程序, 得到结果如\tabref{tab:jacobi}, \tabref{tab:linear-itr-error}, \figref{fig:jacobi} 所示.
+
+\subsubsection{Gauss-Seidel迭代法}
+
+由 $\Ah\uh = \fh$, 得 $(\bD+\bL)\uh = -\bU\uh + \fh$, 进而有 Gauss-Seidel 迭代公式
+\begin{equation}
+    \uh^{(k+1)} = -(\bD+\bL)^{-1}\bU\uh^{(k)} + (\bD+\bL)^{-1}\fh
+\end{equation}
+代入\eqref{eq:dlu}化简得
+\begin{equation}\label{eq:gauss-seidel}
+    \begin{dcases}
+        u_1^{(k+1)} = \frac{u_2^{(k)} + h^2 f_1}{2}\\
+        u_2^{(k+1)} = \frac{u_1^{(k+1)} + u_3^{(k)} + h^2 f_2}{2}\\
+        \hspace{3em} \vdots \\
+        u_{n-1}^{(k+1)} = \frac{u_{n-2}^{(k+1)} + h^2 f_{n-1}}{2}\\[1ex]
+    \end{dcases}
+\end{equation}
+
+下证 Gauss-Seidel 迭代的收敛性. 迭代矩阵为
+\begin{equation}
+    - (\bD+\bL)^{-1}\bU =
+    \begin{pmatrix*}[c]
+        0 & \dfrac{1}{2} &              &              &              \\[1.5ex]
+        0 & \dfrac{1}{4} & \dfrac{1}{2} &              &              \\[1.5ex]
+        0 & \dfrac{1}{8} & \dfrac{1}{4} & \ddots       &              \\[1.5ex]
+        0 & \vdots       & \vdots       & \ddots       & \,\dfrac{1}{2} \\[1.5ex]
+        0 & \dfrac{1}{2^{n-1}} & \dfrac{1}{2^{n-2}} & \cdots & \,\dfrac{1}{4} \\
+    \end{pmatrix*}
+\end{equation}
+当 $n \geq 3$ 时, 其$\infty$-范数为 $1-2^{-(n-1)} < 1$ , 故Gauss-Seidel 迭代收敛.
+
+每次迭代均按\eqref{eq:gauss-seidel}计算. 当$||\Delta \uh^{(k)}||_\infty < \varepsilon$时,满足精度, 终止迭代. 算法描述如下\\
+\begin{algorithm}[H]
+    \caption{Gauss-Seidel迭代法求解\eqref{eq:ans1}线性方程组}
+    \KwData{初始点$\uh^{(0)}$, 精度控制值$\varepsilon$.}
+    \KwResult{迭代次数$k$, 第$k$步的迭代解$\uh^{(k)}$.}
+    $u_0, u_{n} \leftarrow 0$\;
+    $(u_1,\cdots,u_{n-1}) \leftarrow \uh^{(0)}$\;
+    \For(\tcp*[f]{$\mathtt{M}$为最大迭代次数.}){$k \leftarrow 1$ \KwTo $\mathtt{M}$}{
+        $m \leftarrow 0$\tcp*{$m$用于计算$||\Delta \uh^{(k)}||_\infty$.}
+        $v_1 \leftarrow 0.5(u_{2} + h^2f_1)$\;
+        \For{$i \leftarrow 2$ \KwTo $n-1$}{
+            $v_i \leftarrow 0.5(v_{i-1} + u_{i+1} + h^2f_i)$\;
+            $m \leftarrow \max \{ m, |v_i - u_i| \}$\;
+        }
+        \If{$m < \varepsilon$}{
+            \KwRet $k, (v_1,\cdots,v_{n-1})$\;   
+        }
+        $(u_1,\cdots,u_{n-1}) \leftarrow (v_1,\cdots, v_{n-1})$\;
+    }
+    \KwRet \texttt{NULL}\;
+\end{algorithm}\noindent
+单步迭代的复杂度为$O(n)$. 用Python实现以上算法, 取 $\uh^{(0)} = \bm{0}$, 求得数值解 $u_h(x)$ 和逼近误差 $e_h$, 代码见附录 \ref{sec:python} (\nameref{py:linear-itr}). 运行程序, 得到结果如\tabref{tab:gauss-seidel}, \tabref{tab:linear-itr-error}, \figref{fig:gauss-seidel} 所示.
+
+\subsection[\texorpdfstring{$\alpha = 1$}{alpha=1}]{$\bm{\alpha = 1}$}
+
+\subsubsection{非线性方程组}
+
+目标函数为
+\begin{equation}
+    F(\uh) = h \left[ \sum^n_{i=1} {\frac{1}{2} \left( \frac{u_i - u_{i-1}}{h} \right)^2} + \sum^{n-1}_{i=1} {  \left( \frac{u^4_i}{4} - f_i u_i \right)} \right]
+\end{equation}
+其梯度为
+\begin{equation}
+    \bm{\nabla} F(\uh) = \frac{1}{h}
+    \begin{pmatrix}
+        - u_0 + 2 u_1 - u_2 + h^2 u_1^3 - h^2 f_1  \\
+        - u_1 + 2 u_2 - u_3 + h^2 u_2^3 - h^2 f_2  \\
+        \vdots \\
+        - u_{n-2} + 2 u_{n-1} - u_n + h^2 u_{n-1}^3 - h^2 f_{n-1} \\
+    \end{pmatrix}
+\end{equation}
+Hessian矩阵为
+\begin{equation}
+    \bm{\nabla}^2 F(\uh) = \frac{1}{h} 
+    \begin{pmatrix}
+        2 + 3 h^2 u_1^2 & -1 & & \\[8pt]
+        -1 & 2 + 3 h^2 u_2^2 & \ddots & \\[8pt]
+        & \ddots & \ddots & -1 \\[8pt]
+        & & -1 & 2 + 3 h^2 u_{n-1}^2
+    \end{pmatrix}  
+\end{equation}
+易证其$m$阶主子式不小于$(m+1)/h$, 故$\bm{\nabla}^2 F(\uh)>0$. $\bm{\nabla} F(\uh) = \bm0$处为极小值点, 满足
+\begin{equation}
+    \begin{dcases}
+        - u_0 + 2 u_1 - u_2 + h^2 u_1^3 - h^2 f_1 = 0 \\
+        - u_1 + 2 u_2 - u_3 + h^2 u_2^3 - h^2 f_2 = 0\\
+        \hspace{6.5em} \vdots \\
+        - u_{n-2} + 2 u_{n-1} - u_n + h^2 u_{n-1}^3 - h^2 f_{n-1} = 0\\
+    \end{dcases}
+\end{equation}
+记作$\bm{g}(\uh) = (g_1(\uh), \cdots, g_{n-1}(\uh))^\Tr = \bm{0}$, 如 \eqref{eq:ans2} 所示.
+
+\subsubsection{Newton迭代法}
+
+记 $\bm{J}(\uh)= (\bm{\nabla} g_1(\uh), \cdots, \bm{\nabla} g_{n-1}(\uh))^\Tr$ 为 $\bm{g}(\uh)$ 的 Jacobian 矩阵, 则Newton迭代公式为
+\begin{equation}
+    \uh^{(k+1)} = \uh^{(k)} - \bm{J}^{-1} (\uh^{(k)}) \bm{g}(\uh^{(k)})
+\end{equation}
+当 $\uh^{(0)}$ 充分接近 $\uh$ 时, Newton 迭代收敛. 注意到
+\begin{equation}\label{eq:jacobian}
+    \bm{J}(\uh) = h \bm{\nabla}^2 F(\uh) =
+    \begin{pmatrix*}[c]
+        2 + 3 h^2 u_1^2 & -1 & & \\[8pt]
+        -1 & 2 + 3 h^2 u_1^2 & \ddots & \\[8pt]
+        & \ddots & \ddots & -1 \\[8pt]
+        & & -1 & 2 + 3 h^2 u_{n-1}^2
+    \end{pmatrix*}
+\end{equation}
+每步迭代, 先求解 $\bm{J} (\uh^{(k)}) \Delta \uh^{(k+1)} = - \bm{g}(\uh^{(k)}) $, 再计算 $\uh^{(k+1)} = \uh^{(k)} + \Delta \uh^{(k+1)}$. 当$||\Delta \uh^{(k)}||_\infty \\ < \varepsilon$时, 满足精度, 终止迭代. 算法描述如下\\
+\begin{algorithm}[H]
+    \caption{Newton迭代法求解\eqref{eq:ans2}非线性方程组}
+    \KwData{初始点$\uh^{(0)}$, 精度控制值$\varepsilon$.}
+    \KwResult{迭代次数$k$, 第$k$步的迭代解$\uh^{(k)}$.}
+    
+    $\uh \leftarrow \uh^{(0)}$\;
+    \For(\tcp*[f]{$\mathtt{M}$为最大迭代次数.}){$k \leftarrow 1$ \KwTo $\mathtt{M}$}{
+        按\eqref{eq:jacobian}计算$\bm{J} (\uh)$\;
+        求解$\bm{J} (\uh)\Delta \uh = -\bm{g}(\uh)$\;
+        $\uh \leftarrow \uh + \Delta \uh$\;
+        \If{$||\Delta \uh||_\infty\ < \varepsilon$}{
+            \KwRet $k, \uh$\;
+        }
+    }
+    \KwRet \texttt{NULL}\tcp*{$\uh^{(0)}$附近无解.}
+\end{algorithm}\noindent
+用Python实现以上算法, 取 $\uh^{(0)} = \bm{0}$, 求得数值解 $u_h(x)$ 和逼近误差 $e_h$, 代码见附录 \ref{sec:python} (\nameref{py:newton}). 运行程序, 得到结果如\tabref{tab:newton}, \tabref{tab:newton-error}, \figref{fig:newton} 所示.
+
+\subsection{最小二乘法求收敛阶}
+
+\def\bX{\bm{X}}
+\def\bb{\bm{\beta}}
+\def\by{\bm{y}}
+\def\nab{\bm{\nabla}_{\bb}}
+
+设逼近误差 $e_h = C(h) h^\beta = \Theta(h^\beta)$, 两边取对数得 
+\begin{equation}
+    \log e_h = \log C(h) + \beta \log h
+\end{equation}
+设 $\log C(h) = \beta_0 + \varepsilon$, 其中 $\beta_0$ 为常数, $\varepsilon = \varepsilon(h)$ 为干扰项. 记 $y = \log e_h$, $x = \log h$, 则
+\begin{equation}
+    y = \beta_0 + \beta x + \varepsilon \approx \beta_0 + \beta x
+\end{equation}
+根据\tabref{tab:linear-itr-error} 或\tabref{tab:newton-error} 中数据, 记
+\begin{equation}
+    \by = \pmat{\log e_{0.1} \\ \log e_{0.05} \\ \vdots \\ \log e_{0.00625}},
+    \bX = \begin{pmatrix*}[c]
+        1 & \log 0.1 \\
+        1 & \log 0.05 \\
+        \vdots & \vdots \\
+        1 & \log 0.00625 \\
+    \end{pmatrix*},
+    \bb = \pmat{\beta_0 \\ \beta}
+\end{equation} 
+则误差平方和为
+\begin{equation}
+    \begin{aligned}
+        \hat{Q} & = (\by - \bX\bb)^\Tr (\by - \bX\bb) \\
+                     & = \by^\Tr\by - 2 \bb^\Tr\bX^\Tr\by + \bb^\Tr\bX^\Tr\bX\bb \\       
+    \end{aligned}
+\end{equation}
+对$\bb$求梯度和 Hessian 矩阵
+\begin{equation}
+    \begin{gathered}
+        \nab \hat{Q} = -2 \bX^\Tr\by + 2 \bX^\Tr\bX\bb \\
+        \nab^2 \hat{Q} = 2 \bX^\Tr\bX \ge 0
+    \end{gathered}
+\end{equation}
+故 $\hat{Q}(\bb)$ 取最小值时必有 $\nab \hat{Q} = 0$, 即$\bb$满足法方程
+\begin{equation}
+    \bX^\Tr\bX\bb = \bX^\Tr\by
+\end{equation}
+其公式解为
+\begin{equation}
+    \bb = (\bX^\Tr\bX)^{-1}\bX^\Tr\by = \pmat{
+        \dfrac{\sum{x^2}\sum{y} - \sum{x}\sum{xy}}{\sum{1}\sum{x^2} - (\sum{x})^2} \\[16pt]
+        \dfrac{\sum{1}\sum{xy} - \sum{x}\sum{y}}{\sum{1}\sum{x^2} - (\sum{x})^2}}
+\end{equation}
+算法描述如下\\
+\begin{algorithm}[H]
+    \caption{最小二乘法求\eqref{eq:integral}数值方法收敛阶}
+    \KwData{数据点个数$N$, 步长$h_1$\textasciitilde$h_N$, 逼近误差$e_{h_1}$\textasciitilde$e_{h_N}$.}
+    \KwResult{收敛阶$\beta$.}
+    
+    $(a, b, c, d) \leftarrow \bm{0}$\;
+    \For{$i \leftarrow 1$ \KwTo $N$}{
+        $(x, y) \leftarrow (\log h_i, \log e_{h_i})$\;
+        $(a, b, c, d) \leftarrow  (a, b, c, d) + (x_i, y_i, x^2_i, x_iy_i)$\;
+    }
+    \KwRet $(Nd - ab) / (Nc - a^2)$\;
+\end{algorithm}\noindent
+时间复杂度为$O(N)$. 用Python实现以上算法, 代码见附录 \ref{sec:python} (\nameref{py:linear-ols}). 
+
+代入\tabref{tab:linear-itr-error} 数据, 求得 $\alpha = 0$, $f(x) = \pi^2 \sin(\pi x)$ 情形下, 基于Jacobi迭代的数值算法的收敛阶 $\beta = 2.00642821$ 及 $\beta_0 = -0.17388792$; 基于Gauss-Seidel迭代的数值算法的收敛阶 $\beta = 2.00399771$ 及 $\beta_0 = -0.18111161$. 拟合得到的曲线如\figref{fig:linear-itr-error} 所示. 
+
+代入\tabref{tab:newton-error} 数据, 求得 $\alpha = 1$, $f(x) = \pi^2 \sin(\pi x) + \sin^3(\pi x)$ 情形下, 基于Newton迭代的数值算法的收敛阶 $\beta = 2.00048858$ 及 $\beta_0 = -0.40640145$. 拟合得到的曲线如\figref{fig:newton-error} 所示. 
+
+\setupappendix
+
+\clearpage
+\section{Python程序代码}\label{sec:python}
+
+\subsection{linear-iteration.py}\label{py:linear-itr}
+\includecode{python}{linear-iteration.py}
+
+\subsection{newton.py}\label{py:newton}
+\includecode{python}{newton.py}
+
+\subsection{linear-ols.py}\label{py:linear-ols}
+\includecode{python}{linear-ols.py}
+
+\end{document}

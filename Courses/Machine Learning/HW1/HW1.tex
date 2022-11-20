@@ -1,0 +1,870 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Course info
+\newcommand{\school}{\text{University of Science and Technology of China}}
+\newcommand{\course}{\text{Introduction to Machine Learning}}
+\newcommand{\semester}{\text{Fall 2022}}
+\newcommand{\lecturer}{\text{Jie Wang}}
+% Homework info
+\newcommand{\posted}{\text{Sep. 17, 2022}}
+\newcommand{\due}{\text{Oct. 8, 2022}}
+\newcommand{\hwno}{\text{1}}
+% Student info
+\newcommand{\name}{\text{Yunqin Zhu}}
+\newcommand{\id}{\text{PB20061372}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{../common/HW.tex}
+\begin{document}
+\maketitle
+
+
+\begin{exercise}[Limit and Limit Points]
+	\begin{enumerate}
+
+		\item Show that $\{\mb{x}_n\}$ in $\mathbb{R}^n$ converges to $\mb{x}\in \mathbb{R}^n$ if and only if $\{\mb{x}_n\}$ is bounded and has a unique limit point $\mb{x}$.
+
+			\begin{solution}
+				\begin{itemize}
+					\item []
+					\item [($\Rightarrow$)]
+						Suppose that $\mb{x}_n \to \mb{x}$.
+						For any $\epsilon>0$, there exists a positive integer $N$ such that $\|\mb{x}_k-\mb{x}\|_2 < \epsilon$ whenever $k\ge N$.
+						Hence $\|\mb{x}_k\|_2\le \|\mb{x}_k-\mb{x}\|_2+\|\mb{x}\|_2 < \epsilon + \|\mb{x}\|_2$.
+						Let $M = \max \{\|\mb{x}_1\|, \|\mb{x}_2\|, \dots, \|\mb{x}_{N-1}\|, \epsilon + \|\mb{x}\|_2\}$.
+						Then $\|\mb{x}_n\|_2\le M$, which implies that $\{\mb{x}_n\}$ is bounded.\\
+						Let $\{\mb{x}_{n_k}\}_k$ be an arbitrary subsequence of $\{\mb{x}_n\}$.
+						Since $n_k\ge k$, we have $\|\mb{x}_{n_k}-\mb{x}\|_2 < \epsilon$ whenever $k\ge N$, i.e. $\lim_{k\to\infty}\mb{x}_{n_k}=\mb{x}$.
+						Clearly $\mb{x}_{n_k} \neq \mb{x}$, so $\mb{x}$ is a unique limit point of $\{\mb{x}_n\}$.
+					\item [($\Leftarrow$)]
+						Suppose that $\{\mb{x}_n\}$ is bounded and has a unique limit point $\mb{x}$. Assume that $\mb{x}_n\not\to \mb{x}$.
+						Then there exists $\delta>0$ such that given any positive integer $N$, we can find $k\ge N$ satisfying $\|\mb{x}_k-\mb{x}\|_2\ge \delta$.
+						Let $n_1 = 1$ and, for any $n_k$, find $n_{k+1}\ge n_k + 1$ such that $\|\mb{x}_{n_{k+1}}-\mb{x}\|_2\ge \delta$.
+						By Bolzano-Weierstrass theorem, the bounded sequence $\{\mb{x}_{n_k}\}$ has a convergent subsequence $\{\mb{x}_{m_k}\}$.
+						Since $\mb{x}$ is the unique limit point, $\{\mb{x}_{m_k}\}$ must converge to $\mb{x}$, which contradicts $\|\mb{x}_{m_k}-\mb{x}\|_2\ge \delta$.
+						Therefore, $\mb{x}_n\to \mb{x}$.
+						\qedhere
+				\end{itemize}
+			\end{solution}
+
+		\item (\textbf{Limit Points of a Set}). Let $C$ be a subset of $\mathbb{R}^n$. A point $\mb{x}\in \mathbb{R}^n$ is called a limit point of $C$ if there is a sequence $\{\mb{x}_n\}$ in $C$ such that $\mb{x}_n\to \mb{x}$ and $\mb{x}_n \not=\mb{x}$ for all positive integers $n$. If $\mb{x}\in C$ and $\mb{x}$ is not a limit point of $C$, then $\mb{x}$ is called an isolated point of $C$. Let $C'$ be the set of limit points of the set $C$. Please show the following statements.
+			\begin{enumerate}
+				\item If $C = (0,1)\cup\{2\}\subset \mathbb{R}$, then $C' =[0,1]$ and $x=2$ is an isolated point of $C$.
+				\item The set $C'$ is closed.
+				\item The closure of $C$ is the union of $C'$ and $C$; that is $\cl C=C' \cup C$. Moreover, $C' \subset C$ if and only if $C$ is closed.
+			\end{enumerate}
+
+			\begin{solution}
+				\begin{enumerate}
+					\item []
+					\item For $x \in (0,1]$, the sequence $\{(1-2^{-n})x\}\subset C$ converges to $x$.
+						For $x=0$, $\{2^{-n}\}\subset C$ converges to $x$. Hence $C' \supset [0,1]$. \\
+						Suppose $\{x_n\}$ converges to some $x \not\in [0,1]$.
+						For $x \in (-\infty,0)$, the neighborhood $(-2x,0)$ intersects $\{x_n\}$ but does not intersects $C$.
+						For $x \in (1,\infty)$, the neighborhood $(1,x)\cap(x,2x-1)$ intersects $\{x_n\}$ but does not intersects $C$.
+						Hence $\{x_n\}\not\subset C \implies C' \subset [0,1] \implies  C' = [0,1]$. \\
+						Specifically, $x=2\in C\,\backslash\,C'$ is an isolated point.
+					\item Let $\mb{x}$ be a limit point of $C'$.
+						From a sequence $\{\mb{x}_n\}\subset C'$ converging to $\mb{x}$, pick $\mb{x}_{n_k}$ satisfying $\|\mb{x}_{n_k}-\mb{x}\|_2 < \frac{1}{k}$, where $k$ is a positive integer.
+						Since $\mb{x}_{n_k}$ is a limit point of $C$, we can similarly find some $\mb{y}_k \in C$ satisfying $\|\mb{y}_k-\mb{x}_{n_k}\|_2 < \frac{1}{k}$ and $\mb{y}_k\neq \mb{x}$.
+						Then we have $\|\mb{y}_k-\mb{x}\|_2 \le \|\mb{y}_k-\mb{x}_{n_k}\|_2 + \|\mb{x}_{n_k}-\mb{x}\|_2 < \frac{2}{k}$, which implies that $\lim_{k\to \infty}\mb{y}_k = \mb{x}$.
+						Hence $\mb{x}$ is a limit point of $C$ $\implies$ $\mb{x} \in C'$.
+						Since $\mb{x}$ is arbitrary, we know $C'$ contains all of its limit points.
+						According to (c), $C'$ is closed.
+					\item %$C' \subset C$ $\iff$ $\mathbb{R}^n\,\backslash\,C$ is open.
+						\begin{itemize}
+							\item [($\Rightarrow$)]
+								Assume that $C' \subset C$ but $C$ is not closed.
+								Let $\mb{x}$ be a point in $\mathbb{R}^n\,\backslash\,C$.
+								Since $\mathbb{R}^n\,\backslash\,C$ is not open, for any $\epsilon>0$, the $\epsilon$-neighborhood $N_\epsilon(\mb{x})$ must intersect $C$.
+								For each positive integer $n$, we can let $\epsilon=\frac{1}{n}$ and find some $\mb{x}_n \in N_\epsilon(\mb{x})\cap C$.
+								Clearly $\mb{x}_n \neq \mb{x}$ and $\lim_{n\to\infty}\mb{x}_n=\mb{x}$, so $\mb{x}\in C'$.
+								But $\mb{x}\not\in C$, which is a contradiction.
+							\item [($\Leftarrow$)]
+								If $\mb{x}$ is a limit point of $C$, then there exists $\{\mb{x}_n\}\subset C$ converging to $\mb{x}$.
+								Given any $N_\epsilon(\mb{x})$ with $\epsilon>0$, we can always find some $\mb{x}_n$ in $N_\epsilon(\mb{x})$, which implies that $N_\epsilon(\mb{x})$ intersects $C$, i.e. $N_\epsilon(\mb{x})\not\subset \mathbb{R}^n\,\backslash\,C$.
+								Since $\mathbb{R}^n\,\backslash\,C$ is open, $\mb{x}$ must be in $C$.
+								Hence $C' \subset C$.
+								\qedhere
+						\end{itemize}
+				\end{enumerate}
+			\end{solution}
+
+	\end{enumerate}
+\end{exercise}
+
+
+\newpage
+\begin{exercise}[Open and Closed Sets]
+	The norm ball $\{\mb{y} \in \mathbb{R}^n:\|\mb{y}-\mb{x}\|_2<r, \mb{x}\in \mathbb{R}^n\}$ is denoted by $B_r(\mb{x})$.
+	\begin{enumerate}
+
+		\item Given a set $C \subset \mathbb{R}^n$, please show the following are equivalent.
+			\begin{enumerate}
+				\item The set $C$ is closed; that is $\cl C=C$.
+				\item The complement of $C$ is open.
+				\item If $B_{\epsilon}(\mb{x})\cap C \not=\emptyset$ for every $\epsilon>0$, then $\mb{x}\in C$.
+			\end{enumerate}
+
+			\begin{solution}
+				\begin{itemize}
+					\item []
+					\item [(a) $\Rightarrow$ (b)]
+						Assume that $\mathbb{R}^n\,\backslash\,C$ is not open.
+						Let $\mb{x}$ be a point in $\mathbb{R}^n\,\backslash\,C$.
+						For each positive integer $n$, we have $B_{\frac{1}{n}}(\mb{x}) \not\subset \mathbb{R}^n\,\backslash\,C$, so there exists $\mb{x}_n \in B_{\frac{1}{n}}(\mb{x})\cap C$.
+						Clearly $\mb{x}_n \neq \mb{x}$ and $\lim_{n\to\infty}\mb{x}_n=\mb{x}$, so $\mb{x}$ is a limit point of $C$, i.e. $\mb{x}\in \cl C = C$.
+						But $\mb{x}\in \mathbb{R}^n\,\backslash\,C$, which is a contradiction.
+					\item [(b) $\Rightarrow$ (c)]
+						If $B_\epsilon(\mb{x})\cap C \not=\emptyset \implies B_\epsilon(\mb{x})\not\subset \mathbb{R}^n\,\backslash\,C$ for every $\epsilon>0$, then $\mb{x}$ is not an interior point of $\mathbb{R}^n\,\backslash\,C$.
+						Since $\mathbb{R}^n\,\backslash\,C$ is open, $\mb{x}$ must be in $C$.
+					\item [(c) $\Rightarrow$ (a)]
+						Suppose $\mb{x}$ is a limit point of $C$. Then there exists $\{\mb{x}_n\}\subset C \,\backslash \{\mb{x}\}$ converging to $\mb{x}$.
+						Given any $\epsilon>0$, we can always find some $\mb{x}_n \in B_\epsilon(\mb{x})$ $\implies$ $B_\epsilon(\mb{x})\cap C \not=\emptyset$ $\implies$ $ \mb{x}\in C$.
+						Since $\mb{x}$ is arbitrary, it follows that $C$ contains all of its limit points, i.e. $\cl C = C$.
+						\qedhere
+				\end{itemize}
+			\end{solution}
+
+		\item Given $A\subset\mathbb{R}^n$, a set $C\subset A$ is called open in $A$ if $$C=\{\mb{x}\in C: B_{\epsilon}(\mb{x})\cap A \subset C\ \text{for some}\ \epsilon>0\}.$$
+			A set $C$ is said to be closed in $A$ if $A\setminus C$ is open in $A$.
+			\begin{enumerate}
+				\item Let $B= [0,1] \cup \{2\}$.  Please show that $[0,1]$ is not an open set in $\mathbb{R}$, while it is both open and closed in $B$.
+				\item Please show that a set $C \subset A$ is open in $A$ if and only if $C=A\cap U$, where $U$ is open in $\mathbb{R}^n$.
+			\end{enumerate}
+
+			\begin{solution}
+				\begin{enumerate}
+					\item []
+					\item For every $\epsilon>0$, we have $(\epsilon,0]\subset B_\epsilon(0)$ and $(\epsilon,0]\not\subset [0,1]$.
+						Hence $B_\epsilon(0)\,\cap\, \mathbb{R} \not\subset [0,1]$, i.e. $x=0$ is not an interior point of $[0,1]$. Therefore, $[0,1]$ is not an open set in $\mathbb{R}$. \\
+						For every $x\in [0,1]$, $B_1(x) \cap B \subset (-1,2)\cap B = [0,1]$, so $[0,1]$ is open in $B$.\\
+						For $x\in B\,\backslash\,[0,1] = \{2\}$, $B_1(x) \cap B = \{2\}$, so $\{2\}$ is open in $B$, i.e. $[0,1]$ is closed in $B$.
+					\item
+						\begin{itemize}
+							\item [($\Rightarrow$)]
+								For every $\mb{x}\in C$, there exists $\epsilon_\mb{x}>0$ such that $B_{\epsilon_\mb{x}}(\mb{x})\cap A \subset C$. Let $U = \bigcup_{\mb{x}\in C}B_{\epsilon_\mb{x}}(\mb{x})$.
+								On the one hand, since $\mb{x} \in B_{\epsilon_\mb{x}}(\mb{x})$, it follows that $C \subset U \implies C \subset U\cap A$.
+								On the other hand, $U \cap A=\bigcup_{\mb{x}\in C} (B_{\epsilon_\mb{x}}(\mb{x}) \cap A) \subset C$. Hence $U \cap A = C$. Since every $B_{\epsilon_\mb{x}}(\mb{x})$ is open in $\mathbb{R}^n$, $U$ is also open in $\mathbb{R}^n$.
+							\item [($\Leftarrow$)]
+								For every $\mb{x}\in C\subset U$, there exists $\epsilon>0$ such that $B_\epsilon(\mb{x})\subset U $ $\implies$ $ B_\epsilon(\mb{x})\cap A \subset (U\cap A) = C$. Hence $C$ is open in $A$.
+								\qedhere
+						\end{itemize}
+				\end{enumerate}
+			\end{solution}
+
+	\end{enumerate}
+\end{exercise}
+
+
+\newpage
+\begin{exercise}[Bolzano-Weierstrass Theorem]
+	\textbf{The Least Upper Bound Axiom}
+
+	\emph{Any nonempty set of real numbers with an upper bound has a least upper bound. That is, $\sup  C$ always exists for a nonempty bounded above set $C \subset \mathbb{R}$.}
+
+	Please show the following statements from \textbf{the least upper bound axiom}.
+	\begin{enumerate}
+
+		\item Let $C$ be a nonempty subset of $\mathbb{R}$ that is bounded above. Prove that $u = \sup C$ if and only if $u$ is an upper bound of $C$ and
+			\begin{align*}
+				\forall\,\epsilon>0,\exists\,a \in C\,\text{ such that }\,a>u-\epsilon.
+			\end{align*}
+
+			\begin{solution}
+				\begin{itemize}
+					\item []
+					\item [($\Rightarrow$)]
+						Since $u$ is the least upper bound, for any $\epsilon>0$, $u-\epsilon$ cannot be an upper bound of $C$. Hence, there must be some $a\in C$ such that $a>u-\epsilon$.
+					\item [($\Leftarrow$)]
+						For any $u'<u$, there exists some $a\in C$ such that $a>u'$, implying that $u'$ is not an upper bound of $C$. Hence, $u$ is the least upper bound.
+						\qedhere
+				\end{itemize}
+			\end{solution}
+
+		\item Every bounded sequence in $\mathbb{R}$ has at least one limit point.
+
+			\begin{solution}
+				Suppose $\{x_n\}$ to be a bounded sequence in $\mathbb{R}$.
+				Let $C = \{x : x < x_n$ for an infinite number of $ x_n\}$. $C$ is nonempty because it contains all lower bounds of ${x_n}$.
+				Moreover, $C$ is bounded above by every upper bound of ${x_n}$.
+				By the least upper bound axiom, $u = \sup C$ must exist.
+				Then we can find $a\in C$ satisfying $a>u-\frac{1}{k}$ for each positive integer $k$.
+				That is, there exist infinitely many $x_n$ greater than $u-\frac{1}{k}$.
+				Furthermore, since $u+\frac{1}{k}\not\in C$, only a finite number of $x_n$ is greater than $u+\frac{1}{k}$.
+				From those infinitely many $x_n$ who satisfy $|x_n-u|<\frac{1}{k}$, pick $x_{n_k}$ such that $x_{n_k} \neq u$.
+				Since $\lim_{k\to\infty}x_{n_k}=u$, we know $u$ is a limit point of $\{x_n\}$.
+				\qedhere
+			\end{solution}
+
+		\item Every bounded sequence in $\mathbb{R}^n$ has at least one limit point.
+
+			\begin{solution}
+				Suppose $\{\mb{x}^m\}$ to be a bounded sequence in $\mathbb{R}^n$ and $\mb{x}^m = (x_1^m,x_2^m,\ldots,x_n^m)$.
+				Then $\{x_1^m\}$ is a bounded sequence in $\mathbb{R}$ with at least one limit point $x_1$, which implies that it has a subsequence $\{x_1^{m_{1,k}}\}_k$ converging to $x_1$.
+				For each $d = 2,3,\dots,n$, let $x_d$ be a limit point of the bounded sequence $\{x_d^{m_{d-1,k}}\}_k$.
+				Then there exists a subsequence $\{x_d^{m_{d,k}}\}_k \subset \{x_d^{m_{d-1,k}}\}_k$ converging to $x_d$.
+				Now, consider the components of $\{\mb{x}^{m_{n,k}}\}_k$.
+				Since $\{x_1^{m_{n,k}}\}_k\subset \{x_1^{m_{1,k}}\}_k$, $\{x_1^{m_{n,k}}\}_k$ must converge to $x_1$.
+				Analogously, $\{x_d^{m_{n,k}}\}_k$ must converge to $x_d$ for each $d = 2,3,\dots,n-1$.
+				If we denote $(x_1,x_2,\dots,x_n)$ by $\mb{x}$, then  $\lim_{k\to\infty}\mb{x}^{m_{n,k}}=\mb{x}$.
+				Clearly $\mb{x}^{m_{n,k}} \neq \mb{x}$, so $\{\mb{x}^m\}$ has a limit point $\mb{x}$.
+				\qedhere
+			\end{solution}
+
+	\end{enumerate}
+\end{exercise}
+
+
+\newpage
+\begin{exercise}[Extreme Value Theorem]
+	\begin{enumerate}
+		\item Show that a set $C \subset \mathbb{R}^n$ is compact if and only if $C$ is closed and bounded.
+
+			\begin{solution}
+				\begin{itemize}
+					\item []
+					\item [($\Rightarrow$)]
+						Let $C$ be compact.
+						Assume that $C$ is not bounded.
+						Then, given any positive integer $n$, there must exist some $\mb{x}_n \in C$ such that $\|\mb{x}_n\|_2 > n$.
+						Since $C$ is compact, $\{\mb{x}_n\}$ has a convergent subsequence $\{\mb{x}_{n_k}\}$.
+						According to Exercise 1.1, $\{\mb{x}_{n_k}\}$ must be bounded, but $\|\mb{x}_{n_k}\|_2 > n_k$, which is a contradiction.
+						Therefore, $C$ is bounded.\\
+						Let $\mb{x}$ be a limit point of $C$.
+						Then there is a sequence $\{\mb{x}_n\}\subset C \,\backslash\, \{\mb{x}\}$ that converges to $\mb{x}$.
+						Since $C$ is compact, $\{\mb{x}_n\}$ has a convergent subsequence $\{\mb{x}_{n_k}\}$ and $\lim_{k\to\infty}\mb{x}_{n_k}\in C$.
+						According to Exercise 1.1, we have $\lim_{k\to\infty}\mb{x}_{n_k}=\mb{x}$ $\implies$ $\mb{x}\in C$.
+						Since $\mb{x}$ is arbitrary, we know $C$ contains all of its limit points.
+						Therefore, $C$ is closed.
+
+					\item [($\Leftarrow$)]
+						Let $C \subset \mathbb{R}^n$ be closed and bounded.
+						Then any sequence $\{\mb{x}_n\} \subset C$ is also bounded. By Bolzano-Weierstrass theorem, we can find a convergent subsequence $\{\mb{x}_{n_k}\}$ whose limit $\mb{x}$ is also a limit point of $C$. Because $C$ is closed, it follows that $\mb{x}\in C$ . Hence $C$ is compact.
+						\qedhere
+				\end{itemize}
+			\end{solution}
+
+		\item Let $C$ be a compact subset of $\mathbb{R}^n$ and $f:C \rightarrow \mathbb{R}$ be continuous. Please show that there exist $\mb{a},\mb{b} \in C$ such that
+			\begin{align*}
+				f(\mb{a}) \leq f(\mb{x}) \leq f(\mb{b}),\,\forall\,\mb{x}\in C.
+			\end{align*}
+			(\textbf{Hint:} first prove that $f(C)$ is compact, in $\mathbb{R}$.)
+
+			\begin{solution}
+				Consider an arbitrary sequence $\{y_n\} \subset f(C)$.
+				For each positive integer $n$, there exists $\mb{x}_n \in C$ such that $f(\mb{x}_n) = y_n$.
+				Since $C$ is compact, $\{\mb{x}_n\} \subset C$ has a convergent subsequence $\{\mb{x}_{n_k}\}$ satisfying $\lim_{k\to\infty}\mb{x}_{n_k}\in C$.
+				Denote $\lim_{k\to\infty}\mb{x}_{n_k}$ by $\mb{x}$.
+				Because $f$ is continuous, $\mb{x}_{n_k} \to \mb{x}$ $\implies$ $\mb{y}_{n_k} \to f(\mb{x})$.
+				Moreover, $\mb{x}\in C$ $\implies$ $f(\mb{x}) \in f(C)$.
+				Therefore, $f(C)$ is compact in $\mathbb{R}$, i.e. bounded and closed.\\
+				Since $f(C)$ is bounded, we can find $u = \sup f(C)$ and $l = \inf f(C)$.
+				For each positive $n$, there exists $u_n \in f(C)$ such that $u - \frac{1}{n} < u_n \leq u$, which implies that $\lim_{n\to\infty}u_n = u$.
+				If $u_n = u$ for some $n$, then $u\in f(C)$.
+				Otherwise $u$ is a limit point of $f(C)$, and
+				since $f(C)$ is closed, it still follows that $u\in f(C)$.
+				Analogously, we can conclude that $l\in f(C)$.
+				Hence, there exists $\mb{a}, \mb{b} \in C$ such that $f(\mb{a}) = l$ and $f(\mb{b}) = u$, which leads to the desired statement.
+				\qedhere
+			\end{solution}
+
+		\item Let $f: \left[ a,b \right] \rightarrow\mathbb{R}$ be continuous. Show that the range of $f$ is a compact interval $\left[c,d \right]$ for some $c,d \in \mathbb{R}$.
+
+			\begin{solution}
+				Clearly, $[a,b]$ is a compact in $\mathbb{R}$.
+				By Exercise 4.2, we know that $f([a,b])$ is also compact in $\mathbb{R}$ and $c = \min f([a,b])$, $d = \max f([a,b])$ both exist.
+				For any $y\in (c,d)$, we define $C = \{x\in[a,b] : f(x)\leq y\}$.
+				Since $C$ is nonempty and bounded above, $u=\sup C$ must exist. \\
+				Assume that $f(u) > y$.
+				Since $f$ is continuous, there exists $\epsilon > 0$ such that $f(x) > y$ for all $x\in (u-\epsilon,u+\epsilon)$.
+				Then $u-\epsilon$ is an upper bound of $C$ less than $u$, which is a contradiction. \\
+				Assume that $f(u) < y$.
+				Since $f$ is continuous, there exists $\epsilon > 0$ such that $f(x) < y$ for all $x\in (u-\epsilon,u+\epsilon)$.
+				Then $u+\frac{\epsilon}{2}$ is an element of $C$ greater than $u$, which is a contradiction.\\
+				Hence $f(u) = y$, from which we conclude that $f([a,b]) \supset [c,d]$, i.e. $f([a,b]) = [c,d]$.
+				\qedhere
+			\end{solution}
+
+	\end{enumerate}
+\end{exercise}
+
+
+\newpage
+\begin{exercise}[Basis and Coordinates]
+	Suppose that $\{\mb{a}_1, \mb{a}_2,\dots,\mb{a}_n\}$ is a basis of an $n$-dimensional vector space $V$.
+	\begin{enumerate}
+		\item Show that $\{\lambda_1 \mb{a}_1, \lambda_2 \mb{a}_2, \dots, \lambda_n\mb{a}_n\}$ is also a basis of $V$ for nonzero scalars $\lambda_1,\lambda_2, \dots, \lambda_n$.
+
+			\begin{solution}
+				Because $\{\mb{a}_1, \mb{a}_2,\dots,\mb{a}_n\}$ is a basis of $V$, for every $\mb{v} \in V$, there exists $x_1, x_2, \dots, x_n$ such that $\mb{v} = x_1 \mb{a}_1 + x_2 \mb{a}_2 + \dots + x_n \mb{a}_n$.
+				Let $y_i = \frac{x_i}{\lambda_i}$, then $\mb{v} = y_1 \lambda_1 \mb{a}_1 + y_2 \lambda_2 \mb{a}_2 + \dots + y_n \lambda_n \mb{a}_n$.
+				Therefore, $\{\lambda_1 \mb{a}_1, \lambda_2 \mb{a}_2, \dots, \lambda_n\mb{a}_n\}$ is a basis of $V$.
+				\qedhere
+			\end{solution}
+
+		\item Let $V =\mathbb{R}^n$ and  $(\mb{b}_1,\mb{b}_2,\dots, \mb{b}_n) = (\mb{a}_1,\mb{a}_2, \dots, \mb{a}_n)\mb{P}$, where $\mb{P}\in \mathbb{R}^{n\times n}$ and $\mb{b}_i\in \mathbb{R}^n$, for any $i\in\{1,\dots,n\}$. Show that $\{ \mb{b}_1, \mb{b}_2, \dots, \mb{b}_n\}$ is also a basis of $V$ for any invertible  matrix $\mb{P}$.
+
+			\begin{solution}
+				Let $\mb{A} = (\mb{a}_1, \mb{a}_2, \dots, \mb{a}_n)$ and $\mb{B} = (\mb{b}_1, \mb{b}_2, \dots, \mb{b}_n)$, then $\mb{B} = \mb{A}\mb{P}$.
+				Because $\{\mb{a}_1, \mb{a}_2,\dots,\mb{a}_n\}$ is a basis of $V$, for every $\mb{v} \in V$, there exists $\mb{x} = (x_1, x_2, \dots, x_n)^\top$ such that $\mb{v} = \mb{A} \mb{x}$.
+				Let $\mb{y} = \mb{P}^{-1} \mb{x}$, then $\mb{v} = \mb{B} \mb{y}$.
+				Therefore, $\{ \mb{b}_1, \mb{b}_2, \dots, \mb{b}_n\}$ is a basis of $V$.
+				\qedhere
+			\end{solution}
+
+		\item Suppose that the coordinate of a vector $\mb{v}$ under the basis $\{\mb{a}_1,  \mb{a}_2,\dots,\mb{a}_n\}$ is $\mb{x}=(x_1,x_2,\dots,$ $ x_n)$.
+			\begin{enumerate}
+				\item What is the coordinate of $\mb{v}$ under $\{\lambda_1 \mb{a}_1, \lambda_2 \mb{a}_2, \dots, \lambda_n\mb{a}_n\}$?
+				\item What are the coordinates of $\mb{w} = \mb{a}_1+\dots + \mb{a}_n$ under $\{\mb{a}_1, \mb{a}_2,\dots,\mb{a}_n\}$ and $\{\lambda_1 \mb{a}_1, \lambda_2 \mb{a}_2, \dots, $ $\lambda_n\mb{a}_n\}$? Note that  $\lambda_i \neq 0$ for any $i\in \{1,\dots,n\}$.
+			\end{enumerate}
+
+			\begin{solution}
+				\begin{enumerate}
+					\item []
+					\item By Exercise 5.1, the coordinate under $\{\lambda_1 \mb{a}_1, \lambda_2 \mb{a}_2, \dots, \lambda_n\mb{a}_n\}$ is $(\frac{x_1}{\lambda_1}, \frac{x_2}{\lambda_2}, \dots, \frac{x_n}{\lambda_n})$.
+					\item The coordinate under $\{\mb{a}_1, \mb{a}_2, \dots, \mb{a}_n\}$ is $(1,1,\dots,1)$. \\
+						The coordinate under $\{\lambda_1 \mb{a}_1, \lambda_2 \mb{a}_2, \dots, \lambda_n\mb{a}_n\}$ is $(\frac{1}{\lambda_1}, \frac{1}{\lambda_2}, \dots, \frac{1}{\lambda_n})$.
+						\qedhere
+				\end{enumerate}
+			\end{solution}
+
+	\end{enumerate}
+\end{exercise}
+
+
+\newpage
+\begin{exercise}[Derivatives with Matrices]
+	\begin{definition}[Differentiability]\cite{Tao}\label{def:diff}
+		Let $f:\mathbb{R}^n\to\mathbb{R}^m$ be a function, $\mb{x}_0\in\mathbb{R}^n$ be a point, and let $L:\mathbb{R}^n\to\mathbb{R}^m$ be a linear transformation. We say that $f$ is \emph{differentiable at $\mb{x}_0$ with derivative $L$} if we have
+		\begin{align*}
+			\lim_{\mb{x}\to\mb{x}_0;\mb{x}\neq\mb{x}_0}\frac{\|f(\mb{x})-f(\mb{x}_0)-L(\mb{x}-\mb{x}_0)\|_2}{\|\mb{x}-\mb{x}_0\|_2}=0.
+		\end{align*}
+		We denote this derivative by $f'(\mb{x}_0)$.
+	\end{definition}
+
+	% Let $\textbf{X} \in \mathbb{R}^{p\times q}$, the derivative of a scalar function with respect to the matrix $\mb{X}$ is given by
+	% $$
+	% \frac{\partial f(\mb{X})}{\partial \mb{X}}=\left[\begin{array}{cccc}
+	% 	\frac{\partial f}{\partial x_{11}} & \frac{\partial f}{\partial x_{21}} & \cdots & \frac{\partial f}{\partial x_{p 1}} \\
+	% 	\frac{\partial f}{\partial x_{12}} & \frac{\partial f}{\partial x_{22}} & \cdots & \frac{\partial f}{\partial x_{p 2}} \\
+	% 	\vdots & \vdots & \ddots & \vdots \\
+	% 	\frac{\partial f}{\partial x_{1 q}} & \frac{\partial f}{\partial x_{2 q}} & \cdots & \frac{\partial f}{\partial x_{p q}}
+	% \end{array}\right]
+	% $$
+
+	\begin{enumerate}
+		\item Let $\mb{x},\mb{a}\in \mathbb{R}^n$ and $\mb{y}\in \mathbb{R}^m$. Consider the functions as follows. Please show that they are differentiable and find $f'(\mb{x})$.
+			\begin{enumerate}
+				\item[(a)] $f(\mb{x}) = \mb{a}^{\top}\mb{x}$.
+				\item[(b)] $f(\mb{x}) = \mb{x}^{\top}\mb{x}$.
+				\item[(c)] $f(\mb{x})=\| \mb{y} - \mb{A}\mb{x} \|_2^2$, where $\mb{A}\in\mathbb{R}^{m\times n}$.
+			\end{enumerate}
+
+			\begin{solution}
+				\begin{enumerate}
+					\item []
+					\item ~\\\vspace{-8ex}
+						\begin{flalign*}
+							       & \lim_{\mb{x}\to\mb{x}_0;\mb{x}\neq\mb{x}_0}\frac{\mb{a}^\top\mb{x}-\mb{a}^\top\mb{x}_0-\mb{a}^\top(\mb{x}-\mb{x}_0)}{\|\mb{x}-\mb{x}_0\|_2} & \\
+							=\quad & \lim_{\mb{x}\to\mb{x}_0;\mb{x}\neq\mb{x}_0}\frac{0}{\|\mb{x}-\mb{x}_0\|_2}\quad = \quad0 \quad \implies f'(\mb{x}) \equiv \mb{a}^\top.      &
+						\end{flalign*}
+					\item ~\\\vspace{-8ex}
+						\begin{flalign*}
+							                                                          & \lim_{\mb{x}\to\mb{x}_0;\mb{x}\neq\mb{x}_0} \frac{\mb{x}^\top\mb{x}-\mb{x}_0^\top\mb{x}_0-2\mb{x}_0^\top(\mb{x}-\mb{x}_0)}{\|\mb{x}-\mb{x}_0\|_2} & \\
+							=\quad                                                    & \lim_{\mb{x}\to\mb{x}_0;\mb{x}\neq\mb{x}_0} \frac{(\mb{x}-\mb{x}_0)^\top(\mb{x}-\mb{x}_0)}{\|\mb{x}-\mb{x}_0\|_2}                                 & \\
+							=\quad                                                    & \lim_{\mb{x}\to\mb{x}_0;\mb{x}\neq\mb{x}_0} \|\mb{x}-\mb{x}_0\|_2
+							\quad = \quad 0 \quad \implies f'(\mb{x}) = 2\mb{x}^\top. &
+						\end{flalign*}
+					\item ~\\\vspace{-8ex}
+						\begin{flalign*}
+							f(\mb{x})\quad=\quad & \| \mb{y} - \mb{A}\mb{x} \|_2^2                                                     & \\
+							=\quad               & ( \mb{y} - \mb{A}\mb{x} )^\top( \mb{y} - \mb{A}\mb{x} )                             & \\
+							=\quad               & \mb{y}^\top\mb{y} - 2 \mb{y}^\top\mb{A}\mb{x} + \mb{x}^\top\mb{A}^\top\mb{A}\mb{x}. &
+						\end{flalign*}
+						\vspace{-6ex}
+						\begin{flalign*}
+							                                                                                     & \lim_{\mb{x}\to\mb{x}_0;\mb{x}\neq\mb{x}_0} \frac{f(\mb{x})-f(\mb{x}_0) - (-2\mb{y}^\top\mb{A} + 2\mb{x}_0^\top\mb{A}^\top\mb{A})(\mb{x}-\mb{x}_0)} {\|\mb{x}-\mb{x}_0\|_2}                          & \\
+							=\quad                                                                               & \lim_{\mb{x}\to\mb{x}_0;\mb{x}\neq\mb{x}_0} \frac{\mb{x}^\top\mb{A}^\top\mb{A}\mb{x}  - 2\mb{x}_0^\top\mb{A}^\top\mb{A}\mb{x} + \mb{x}_0^\top\mb{A}^\top\mb{A}\mb{x}_0^\top} {\|\mb{x}-\mb{x}_0\|_2} & \\
+							=\quad                                                                               & \lim_{\mb{x}\to\mb{x}_0;\mb{x}\neq\mb{x}_0} \frac{(\mb{x}-\mb{x}_0)^\top\mb{A}^\top\mb{A}(\mb{x}-\mb{x}_0)} {\|\mb{x}-\mb{x}_0\|_2}                                                                  & \\
+							\leq\quad                                                                            & \lim_{\mb{x}\to\mb{x}_0;\mb{x}\neq\mb{x}_0} \|\mb{A}^\top\mb{A}\|_2 \cdot \|\mb{x}-\mb{x}_0\|_2
+							\ = \ 0 \ \implies f'(\mb{x}) = -2\mb{y}^\top\mb{A} + 2\mb{x}^\top\mb{A}^\top\mb{A}. & \tag*{\qedhere}
+						\end{flalign*}
+				\end{enumerate}
+			\end{solution}
+
+		\item Please follow Definition \ref{def:diff} and give the definition of the differentiability of the functions $f:\mathbb{R}^{n\times n}\rightarrow\mathbb{R}$.
+
+			\begin{solution}
+				Let $f:\mathbb{R}^{n\times n}\to\mathbb{R}$ be a function, $\mb{X}_0\in\mathbb{R}^{n\times n}$ be a matrix, and let $L:\mathbb{R}^{n\times n}\to\mathbb{R}$ be a linear transformation. We say that $f$ is \emph{differentiable at $\mb{X}_0$ with derivative $L$} if we have
+				\begin{align*}
+					\lim_{\mb{X}\to\mb{X}_0;\mb{X}\neq\mb{X}_0}\frac{f(\mb{X})-f(\mb{X}_0)-L(\mb{X}-\mb{X}_0)}{\|\mb{X}-\mb{X}_0\|_F}=0.
+				\end{align*}
+				We denote this derivative by $f'(\mb{X}_0)$.
+				\qedhere
+			\end{solution}
+
+		\item Let $f(\mb{X}) = \det(\mb{X})$, where $\det(\mb{X})$ is the determinant of $\mb{X} \in \mathbb{R}^{n \times n}$. Please discuss the differentiability of $f$ rigorously according to your definition in the last part. If $f$ is differentiable, please find $f'(\mb{X})$.
+
+			\begin{solution}
+				~\\\vspace{-6ex}
+				\begin{flalign*}
+					                                                                                                                                          & \det(\mb{X}+\Delta\mb{X})                                                                                     & \\
+					%
+					=\quad                                                                                                                                    & \sum_{\sigma \in S_n}\left(\sgn(\sigma )\prod_{i=1}^n\left(x_{i,\sigma_i}+\Delta x_{i,\sigma_i}\right)\right) & \\
+					%
+					=\quad                                                                                                                                    & \sum_{\sigma \in S_n}\left(\sgn(\sigma )\prod_{i=1}^n x_{i,\sigma_i}\right)
+					+ \sum_{i=1}^n\sum_{\sigma \in S_n}\left(\sgn(\sigma )\Delta x_{i,\sigma_i}\prod_{j\neq i}x_{j,\sigma_j}\right) + O(\|\Delta\mb{X}\|^2_F) &                                                                                                                 \\
+					%
+					=\quad                                                                                                                                    & \det(\mb{X}+\Delta\mb{X})
+					+ \sum_{i=1}^n\sum_{j=1}^n\cof(\mb{X})_{ij}\Delta x_{ij} + O(\|\Delta\mb{X}\|^2_F)                                                        &                                                                                                                 \\
+					%
+					=\quad                                                                                                                                    & \det(\mb{X}+\Delta\mb{X})
+					+ \tr(\adj(\mb{X})\Delta\mb{X}) + o(\|\Delta\mb{X}\|_F).                                                                                  &
+				\end{flalign*}
+				\vspace{-3ex}
+				\begin{flalign*}
+					\therefore\quad & \lim_{\Delta\mb{X}\to \mb{O}}\frac{\det(\mb{X}+\Delta\mb{X})-\det(\mb{X})-\tr(\adj(\mb{X})\Delta\mb{X})}{\|\Delta\mb{X}\|_F} & \\
+					%
+					=\quad          & \lim_{\Delta\mb{X}\to \mb{O}}\frac{o(\|\Delta\mb{X}\|_F)} {\|\Delta\mb{X}\|_F}
+					\quad = \quad 0 \quad \implies
+					f'(\mb{X}): \mb{\Xi}  \mapsto  \tr(\adj(\mb{X})\mb{\Xi})
+					.               & \tag*{\qedhere}
+				\end{flalign*}
+			\end{solution}
+
+		\item Let $f(\mb{X})=\tr(\mb{A}^\top\mb{X})$, where $\mb{A},\mb{X}\in\mathbb{R}^{n\times m}$, and $\tr(\cdot)$ denotes the trace of a matrix. Please discuss the differentiability of $f$ and find $f'$ if it is differentiable.
+
+			\begin{solution}
+				~\\\vspace{-6ex}
+				\begin{flalign*}
+					       & \lim_{\mb{X}\to\mb{X}_0;\mb{X}\neq\mb{X}_0}\frac{\tr(\mb{A}^\top\mb{X})-\tr(\mb{A}^\top\mb{X}_0)-\tr(\mb{A}^\top(\mb{X}-\mb{X}_0))}{\|\mb{X}-\mb{X}_0\|_F}       &                 \\
+					=\quad & \lim_{\mb{X}\to\mb{X}_0;\mb{X}\neq\mb{X}_0}\frac{0}{\|\mb{X}-\mb{X}_0\|_F}\quad = \quad0 \quad \implies f'(\mb{X}): \mb{\Xi}  \mapsto  \tr(\mb{A}^\top\mb{\Xi}). & \tag*{\qedhere}
+				\end{flalign*}
+			\end{solution}
+
+		\item Let $\mb{S}_{++}^n$ be the space of all positive definite $n\times n$ matrices. Prove the function $f: \mb{S}_{++}^{n} \rightarrow \mathbb{R}$ defined by $f(\mb{X})=\tr{\mb{X}^{-1}}$ is differentiable on $ \mb{S}_{++}^{n} $. (Hint: Expand the expression $(\mb{X}+t\mb{Y})^{-1}$ as a power series.)
+
+			\begin{solution}
+				~\\\vspace{-6ex}
+				\begin{flalign*}
+					 & \frac {\mathrm {d} \mb{X} ^{-1}}{\mathrm {d} t}\mb{X} +\mb{X} ^{-1}\frac {\mathrm {d} \mb{X} }{\mathrm {d} t}=\frac {\mathrm {d} (\mb{X} ^{-1}\mb{X} )}{\mathrm {d} t}=\frac {\mathrm {d} \mb {I} }{\mathrm {d} t}=\mb {O}
+					\implies
+					\frac {\mathrm {d} \mb{X} ^{-1}}{\mathrm {d} t}=-\mb{X} ^{-1}{\frac {\mathrm {d} \mb{X} }{\mathrm {d} t}}\mb{X} ^{-1}.
+					 &
+				\end{flalign*}
+				\vspace{-5ex}
+				\begin{flalign*}
+					\therefore\quad & \left(\mb{X} + t \mb{Y} \right)^{-1} = \mb{X} ^{-1} - \mb{X}^{-1}(t\mb{Y})\mb{X}^{-1} + O(t^2). &
+				\end{flalign*}
+				\vspace{-5ex}
+				\begin{flalign*}
+					\therefore\quad & \lim_{t\to 0}\frac{\tr(\mb{X}+t\mb{Y})-\tr(\mb{X})+\tr( \mb{X}^{-1}(t\mb{Y})\mb{X}^{-1})}{\|t\mb{Y}\|_F} & \\
+					%
+					=\quad          & \lim_{t\to 0}\frac{o(t)} {O(t)}
+					\quad = \quad 0 \quad \implies
+					f'(\mb{X}): \mb{\Xi}  \mapsto  \tr( - \mb{X}^{-1}\mb{\Xi}\mb{X}^{-1})
+					.               & \tag*{\qedhere}
+				\end{flalign*}
+			\end{solution}
+
+
+		\item Define a function $ f: \mb{S}_{++}^{n}\to\mathbb{R} $ by $f(\mb{X})=\log\det{\mb{X}}$. Prove $\nabla{f(\mb{I})=\mb{I}}$. Deduce $\nabla{f(\mb{X})=\mb{X}^{-1}}$ for any $\mb{X}$ in $\mb{S}^n_{++}$.
+
+			\begin{solution}
+				~\\\vspace{-6ex}
+				\begin{flalign*}
+					 & \frac{\partial \det(\mb{X}) }{ \partial x_{ij}} = \sum^n_{k=1}\left(\frac{\partial x_{ik} }{ \partial x_{ij}}\cof(\mb{X})_{ik} + x_{ik}\frac{\partial \cof(\mb{X})_{ik} }{ \partial x_{ij}}\right) = \cof(\mb{X})_{ij} & \\
+					 & \implies \frac{\partial f(\mb{X}) }{ \partial x_{ij}} = \frac{\mathrm {d} f(\mb{X}) }{ \mathrm {d} \det(\mb{X})} \frac{\partial \det(\mb{X}) }{ \partial x_{ij}} = \frac{\cof(\mb{X})_{ij}}{\det(\mb{X})}              & \\
+					 & \implies \nabla f(\mb{X})=\frac{\cof(\mb{X})}{\det(\mb{X})} = \mb{X}^{-\top}.                                                                                                                                          &
+				\end{flalign*}
+				Let $\mb{X}=\mb{I}$ $\implies$ $\nabla{f(\mb{I})=\mb{I}}$. For any $\mb{X} \in \mb{S}^n_{++}$, $\mb{X} = \mb{X}^\top$ $\implies$ $\nabla f(\mb{X})=\mb{X}^{-1}$.
+				\qedhere
+			\end{solution}
+
+	\end{enumerate}
+\end{exercise}
+
+
+\newpage
+\begin{exercise}[Rank of Matrices ]
+	Let $\mb{A} \in \mathbb{R}^{m\times n}$ and $\mb{B}\in \mathbb{R}^{n\times p}$.
+	\begin{enumerate}
+		\item Please show that
+			\begin{enumerate}
+				\item $\rank{\mb{A}} = \rank{\mb{A}^{\top}}$;
+				\item $\rank{\mb{A}\mb{B}} \leq \rank{\mb{A}}$;
+				\item $\rank{\mb{A}\mb{B}} \leq \rank{\mb{B}}$;
+				\item $\rank{\mb{A}} = \rank{\mb{A}^{\top}  \mb{A}}$.
+			\end{enumerate}
+
+			\begin{solution}
+				\begin{enumerate}
+					\item []
+					\item Suppose $\{ \mb{c}_1, \mb{c}_2, \dots, \mb{c}_r \}$ is a basis of $\mathcal{C}(\mb{A})$, where $r=\rank{\mb{A}}$. Let $\mb{C}=(\mb{c}_1, \mb{c}_2, \dots, \mb{c}_r) $ $\in \mathbb{R}^{m\times r}$. Since all $n$ columns of $\mb{A}$ are linear combinations of $\{ \mb{c}_1, \mb{c}_2, \dots, \mb{c}_r \}$, there exists a matrix $\mb{R}\in \mathbb{R}^{r\times n}$ such that $\mb{A}=\mb{C}\mb{R}$. Then each row of $\mb{A}$ can be written as a linear combination of rows of $\mb{R}$, implying that $\rank {\mb{A}^\top} \leq \rank {\mb{R}} \leq r$. Moreover, $\rank{\mb{A}} = \rank{(\mb{A}^\top)^\top} \leq \rank{\mb{A}^\top}$. Therefore, $\rank{\mb{A}} = \rank{\mb{A}^{\top}}$.
+					\item Columns of $\mb{AB}$ are linear combinations of columns of $\mb{A}$ $\implies$ $\mathcal{C}(\mb{AB}) \subset \mathcal{C}(\mb{A})$ $\implies$ $\rank{\mb{AB}} = \dim (\mathcal{C}( \mb{AB} ))\leq \dim (\mathcal{C}( \mb{A} )) = \rank{\mb{A}}$.
+					\item Rows of $\mb{AB}$ are linear combinations of rows of $\mb{B}$ $\implies$ $\mathcal{C}(\mb{B}^\top \mb{A}^\top) \subset \mathcal{C}(\mb{B}^\top)$ $\implies$ $\rank{\mb{AB}} = \dim (\mathcal{C}(\mb{B}^\top \mb{A}^\top))\leq \dim (\mathcal{C}(\mb{B}^\top)) = \rank{\mb{B}}$.
+					\item According to (a), $\mb{A}=\mb{C}\mb{R}$, where $\mb{C}$ has full column rank and $\mb{R}$ has full row rank. If $\mb{C}^\top\mb{C}\mb{x} = \mb{0}$ for some $\mb{x}\in \mathbb{R}^r$, then $\mb{x}^\top\mb{C}^\top\mb{C}\mb{x} = \mb{0}$ $\implies$ $\mb{C}\mb{x} = \mb{0}$ $\implies$ $\mb{x}=\mb{0}$. Hence $\mb{C}^\top\mb{C}$ also has full rank. Analogously, we show that $\mb{R}\mb{R}^\top$ has full rank. Then $\mb{A} = \mb{C} (\mb{C}^\top \mb{C})^{-1} (\mb{R} \mb{R}^\top)^{-1} \mb{R} \mb{A}^\top \mb{A}$, which implies that $\rank{\mb{A}}\leq\rank{\mb{A}^\top \mb{A}}$. On the other hand, $\rank{\mb{A}^\top \mb{A}}\leq\rank{\mb{A}}$, so $\rank{\mb{A}}=\rank{\mb{A}^\top \mb{A}}$.
+						\qedhere
+				\end{enumerate}
+			\end{solution}
+
+		\item The \emph{column space} of $\mb{A}$ is defined by
+			\begin{align*}
+				\mathcal{C}(\mb{A} ) = \{ \mb{y}\in \mathbb{R}^m : \mb{y} = \mb{Ax},\,\mb{x}\in\mathbb{R}^n\}.
+			\end{align*}
+			The \emph{null space} of $\mb{A}$ is defined by
+			\begin{align*}
+				\mathcal{N}(\mb{A})  = \{ \mb{x}\in \mathbb{R}^n : \mb{Ax}=0\}.
+			\end{align*}
+			Notice that, the rank of $\mb{A}$ is the dimension of the column space of $\mb{A}$.
+
+			Please show that
+			\begin{enumerate}
+				\item $\rank{\mb{A}} + \dim ( \mathcal{N}( \mb{A} ) ) = n$;
+				\item $\mb{y}=\mb{0}$ if and only if $\mb{a}_i^{\top}\mb{y}=0$ for $i=1,\ldots,m$, where $\mb{y}\in \mathbb{R}^m$ and  $\{\mb{a}_1,\mb{a}_2,\ldots,\mb{a}_m\}$ is a basis of $\mathbb{R}^m$.
+			\end{enumerate}
+
+			\begin{solution}
+				\begin{enumerate}
+					\item []
+					\item
+						Let $r=\rank{\mb{A}}$. There exists a permutation matrix $\mb{P}\in \mathbb{R}^{n\times n}$ such that $\mb{A}\mb{P}=(\mb{C}\quad\mb{CR})$, where $\mb{C}\in \mathbb{R}^{m\times r}$ is $r$ linearly independent columns of $\mb{A}$ and $\mb{CR}\in \mathbb{R}^{m\times (n-r)}$ is the other columns.
+						\\
+						Let $\mb{X}=\mb{P}\begin{pmatrix} -\mb{R} \\ \mb{I}_{n-r} \end{pmatrix}\in \mathbb{R}^{n\times (n-r)}$.
+						Then $\mb{AX}=(\mb{C}\quad\mb{CR})\begin{pmatrix} -\mb{R} \\ \mb{I}_{n-r} \end{pmatrix}=\mb{0}$, implying that all columns of $\mb{X}$ are in $\mathcal{N}(\mb{A})$.
+						\\
+						If $\mb{Xu}=\mb{0}$ for some $\mb{u}\in \mathbb{R}^{n-r}$, then $\mb{P}\begin{pmatrix} -\mb{Ru} \\ \mb{u} \end{pmatrix} = \mb{0}$ $\implies$ $\mb{u}=\mb{0}$.
+						Hence columns of $\mb{X}$ are linearly independent.
+						\\
+						If $\mb{Ax}=\mb{0} $ for some $\mb{x}=\mb{P}\begin{pmatrix} \mb{u}_1 \\ \mb{u}_2 \end{pmatrix}$ where $\mb{u}_1\in \mathbb{R}^r$ and $\mb{u}_2\in\mathbb{R}^{n-r}$, then $\mb{C}(\mb{I}_r\quad\mb{R}) \begin{pmatrix} \mb{u}_1 \\ \mb{u}_2 \end{pmatrix} = \mb{0}$ $\implies$ $(\mb{I}_r\quad\mb{R}) \begin{pmatrix} \mb{u}_1 \\ \mb{u}_2 \end{pmatrix} = \mb{0}$ $\implies$ $\mb{u}_1 = -\mb{Ru}_2$ $\implies$ $\mb{x}=\mb{P}\begin{pmatrix} -\mb{Ru}_2 \\ \mb{u}_2 \end{pmatrix}=\mb{Xu}_2$, i.e. any $\mb{x}\in \mathcal{N}(\mb{A})$ is a linear combination of columns of $\mb{X}$.
+						\\
+						To conclude, columns of $\mb{X}$ form a basis of $\mathcal{N}(\mb{A})$.
+						Therefore, $\rank{\mb{A}} + \dim(\mathcal{N}(\mb{A})) = \rank{\mb{A}} + \rank{\mb{X}} = r + (n-r) = n$.
+					\item
+						\begin{itemize}
+							\item [($\Rightarrow$)]
+								$\mb{y}=\mb{0}$ $\implies$ $\mb{a}_i^\top\mb{y}=\mb{a}_i^\top\mb{0}=0$, $\forall\,i=1,2,\dots,m$.
+							\item [($\Leftarrow$)]
+								$\{\mb{a}_1,\mb{a}_2,\ldots,\mb{a}_m\}$ is a basis of $\mathbb{R}^m$ $\implies$ $\mb{A} = (\mb{a}_1,\mb{a}_2,\ldots,\mb{a}_m) \in \mathbb{R}^{m\times m}$ is invertible. Then $\mb{Ay}=\mb{0}$ $\implies$ $\mb{y}=\mb{A}^{-1}\mb{0}=\mb{0}$.
+								\qedhere
+						\end{itemize}
+				\end{enumerate}
+			\end{solution}
+
+		\item Show that
+			\begin{align}\label{eqn:rankaba}
+				\rank{\mb{AB}}=\rank{\mb{B}}-\dim(\mathcal{C}(\mb{B})\cap \mathcal{N}(\mb{A})).
+			\end{align}
+
+			\begin{solution}
+				Suppose $\mb{A} \in \mathbb{R}^{m\times n}$ and $\mb{B}\in \mathbb{R}^{n\times p}$. Let $r=\rank{\mb{AB}}$ and $s=\rank{\mb{B}}$.
+				Factor $\mb{B}$ as $\mb{C_B R_B}$, where $\mb{C_B}\in \mathbb{R}^{n\times s}$ has full column rank and $\mb{R_B}\in \mathbb{R}^{s\times p}$ has full row rank.
+				$\mb{AB}=\mb{A C_B}\mb{R_B}$ $\implies$ $\rank{\mb{AB}} \leq \rank{\mb{A C_B}}$.
+				$\mb{A C_B}=\mb{A B}\mb{R}_\mb{B}^\top(\mb{R_B}\mb{R}_\mb{B}^\top)^{-1}$ $\implies$ $\rank{\mb{A C_B}} \leq \rank{\mb{AB}}$.
+				Hence $\rank{\mb{A C_B}} = r$.
+				Find a permutation matrix $\mb{P}\in \mathbb{R}^{s\times s}$ such that $\mb{AC_B P}=(\mb{C}\quad\mb{CR})$, where $\mb{C}\in \mathbb{R}^{m\times r}$ is $r$ linearly independent columns of $\mb{AC_B}$ and $\mb{CR}\in \mathbb{R}^{m\times (s-r)}$ is the other columns.
+				\\
+				Let $\mb{X}=\mb{C_B P}\begin{pmatrix} -\mb{R} \\ \mb{I}_{s-r} \end{pmatrix}\in \mathbb{R}^{n\times (s-r)}$.
+				Clearly, columns of $\mb{X}$ are in $\mathcal{C}(\mb{B })$.
+				Since $\mb{AX}=(\mb{C}\quad\mb{CR})\begin{pmatrix} -\mb{R} \\ \mb{I}_{s-r} \end{pmatrix}=\mb{0}$, columns of $\mb{X}$ are also in $\mathcal{N}(\mb{A})$, and thus in $\mathcal{C}(\mb{B })\cap \mathcal{N}(\mb{A})$.
+				\\
+				If $\mb{Xu}=\mb{0}$ for some $\mb{u}\in \mathbb{R}^{s-r}$, then $(\mb{C}_\mb{B}^\top\mb{C_B})^{-1}\mb{C}_\mb{B}^\top \mb{Xu}=\mb{0}$ $\implies$ $\mb{P}\begin{pmatrix} -\mb{Ru} \\ \mb{u} \end{pmatrix} = \mb{0}$ $\implies$ $\mb{u}=\mb{0}$.
+				Hence columns of $\mb{X}$ are linearly independent.
+				\\
+				If $\mb{Ax}=\mb{0} $ for some $\mb{x}=\mb{C_B P}\begin{pmatrix} \mb{u}_1 \\ \mb{u}_2 \end{pmatrix}$ where $\mb{u}_1\in \mathbb{R}^r$ and $\mb{u}_2\in\mathbb{R}^{s-r}$, then $\mb{C}(\mb{I}_r\quad\mb{R}) \begin{pmatrix} \mb{u}_1 \\ \mb{u}_2 \end{pmatrix} = \mb{0}$ $\implies$ $(\mb{I}_r\quad\mb{R}) \begin{pmatrix} \mb{u}_1 \\ \mb{u}_2 \end{pmatrix} = \mb{0}$ $\implies$ $\mb{u}_1 = -\mb{Ru}_2$ $\implies$ $\mb{x}=\mb{C_B P}\begin{pmatrix} -\mb{Ru}_2 \\ \mb{u}_2 \end{pmatrix}=\mb{Xu}_2$, i.e. any $\mb{x}\in\mathcal{C}(\mb{B })\cap \mathcal{N}(\mb{A})$ is a linear combination of columns of $\mb{X}$.
+				\\
+				To conclude, columns of $\mb{X}$ form a basis of $\mathcal{C}(\mb{B })\cap \mathcal{N}(\mb{A})$.
+				Therefore, $\rank{\mb{AB }}=r=s-(s-r)=\rank{\mb{B }}-\rank{\mb{X }}=\rank{\mb{B }}-\dim(\mathcal{C}(\mb{B })\cap \mathcal{N}(\mb{A}))$.
+				\qedhere
+			\end{solution}
+
+		\item Suppose that the first term on the right-hand side (RHS) of \eqref{eqn:rankaba} changes to $\rank{\mb{A}}$. Please find the second term on the RHS of \eqref{eqn:rankaba} such that it still holds.
+
+			\begin{solution}
+				$\rank{\mb{B}^\top\mb{A}^\top}=\rank{\mb{A}^\top}-\dim(\mathcal{C}(\mb{A}^\top)\cap \mathcal{N}(\mb{B}^\top))$ \\
+				$\implies$ $\rank{\mb{AB}}=\rank{\mb{A}}-\dim(\mathcal{C}(\mb{A}^\top)\cap \mathcal{N}(\mb{B}^\top))$.\\
+				The second term on the RHS changes to $\dim(\mathcal{C}(\mb{A}^\top)\cap \mathcal{N}(\mb{B}^\top))$.
+				\qedhere
+			\end{solution}
+
+		\item Show the results in 1. by \eqref{eqn:rankaba} or the one you established in 4.
+
+			\begin{solution}
+				\begin{enumerate}
+					\item []
+					\item $\rank{\mb{IA}}=\rank{\mb{I}}-\dim(\mathcal{C}(\mb{I})^\top\cap \mathcal{N}(\mb{A}^\top))$ $\implies$ $\rank{\mb{A}}=n-\dim(\mathcal{N}(\mb{A}^\top))$.\\
+						$\rank{\mb{A}^\top\mb{I}}=\rank{\mb{I}}-\dim(\mathcal{C}(\mb{I})\cap \mathcal{N}(\mb{A}^\top))$ $\implies$ $\rank{\mb{A}^\top}=n-\dim(\mathcal{N}(\mb{A}^\top))$.\\
+						Hence $\rank{\mb{A}}=\rank{\mb{A}^\top}$.
+					\item $\rank{\mb{AB}}=\rank{\mb{A}}-\dim(\mathcal{C}(\mb{A}^\top)\cap \mathcal{N}(\mb{B}^\top))\leq\rank{\mb{A}}$.
+					\item $\rank{\mb{AB}}=\rank{\mb{B}}-\dim(\mathcal{C}(\mb{B})\cap \mathcal{N}(\mb{A}))\leq\rank{\mb{B}}$.
+					\item $\rank{\mb{A}^\top\mb{A}}=\rank{\mb{A}}-\dim(\mathcal{C}(\mb{A})\cap \mathcal{N}(\mb{A}^\top))$.
+						For any $\mb{x}=\mb{Au}\in \mathcal{C}(\mb{A})\cap \mathcal{N}(\mb{A}^\top)$, we have $\mb{x}^\top\mb{x}=\mb{u}^\top\mb{A}^\top\mb{x}=\mb{u}^\top\mb{0}=0$ $\implies$ $\mb{x}=\mb{0}$, so $\dim(\mathcal{C}(\mb{A})\cap \mathcal{N}(\mb{A}^\top)) = 0$, and hence $\rank{\mb{A}^\top\mb{A}}=\rank{\mb{A}}$.
+						\qedhere
+				\end{enumerate}
+			\end{solution}
+
+	\end{enumerate}
+\end{exercise}
+
+
+\newpage
+\begin{exercise}[Linear Equations]
+
+	Consider the system of linear equations in $\mb{w}$
+	\begin{align}\label{eq1}
+		\mb{y} = \mb{X} \mb{w} ,
+	\end{align}
+	where $\mb{y} \in \mathbb{R}^{n}$, $\mb{w} \in \mathbb{R}^{d}$, and $\mb{X} \in \mathbb{R}^{n \times d}$.
+
+	\begin{enumerate}
+		\item Give an example for ``$\mb{X}$'' and ``$\mb{y}$'' to satisfy the following three situations respectively:
+			\begin{enumerate}
+				\item there exists one unique solution;
+				\item there does not exist any solution;
+				\item there exists more than one solution.
+			\end{enumerate}
+
+			\begin{solution}
+				\begin{enumerate}
+					\item []
+					\item $\mb{X}=\begin{pmatrix}\mb{I}\\\mb{O}\end{pmatrix}$($n>d$), $\mb{y}=\mb{0}$. The unique solution is $\mb{w}=\mb{0}$.
+					\item $\mb{X}=\mb{O}$, $\mb{y}\neq\mb{0}$. No solution because $\mb{X}\mb{w}\equiv\mb{0}$.
+					\item $\mb{X}=\mb{O}$, $\mb{y}=\mb{0}$. The solution can be any $\mb{w}\in\mathbb{R}^d$.
+						\qedhere
+				\end{enumerate}
+			\end{solution}
+
+		\item Suppose that $\mb{X}$ has full column rank and $\rank{(\mb{X}, \mb{y})} = \rank{\mb{X}}$. Show that the system of linear equations (\ref{eq1}) always admits a unique solution.
+
+			\begin{solution}
+				$\rank{(\mb{X}, \mb{y})} = \rank{\mb{X}}$ $\implies$ $\dim{\mathcal{C}((\mb{X}, \mb{y}))} = \dim{\mathcal{C}(\mb{X})} = d$. Since $\mb{X}$ has full column rank, the $d$ columns of $\mb{X}$ are linearly independent and thus form a basis of $\mathcal{C}((\mb{X}, \mb{y}))$. Then $\mb{y}$ can be represented as a linearly combination of columns of $\mb{X}$, i.e. $\mb{y} = \mb{Xw}$ admits a solution. Because $\mb{X}^\top\mb{X}$ is invertible, we have $\mb{w} = (\mb{X}^\top\mb{X})^{-1}\mb{X}^\top\mb{y}$, which must be unique.
+				\qedhere
+			\end{solution}
+
+		\item (\textbf{Normal equations}) Consider  another system of linear equations in $\mb{w}$
+			\begin{align}\label{eq_normal}
+				\mb{X}^{\top}\mb{y} = \mb{X}^{\top}\mb{X}\mb{w}.
+			\end{align}
+			Please show that the system (\ref{eq_normal}) always admits a solution. Moreover, does it always admit a unique solution?
+
+			\begin{solution}
+				$\rank{\mb{X}^\top}=\rank{\mb{X}^\top\mb{X}}\leq\rank{(\mb{X}^\top\mb{X} \quad \mb{X}^\top\mb{y})}\leq\rank{\mb{X}^\top}$ $\implies$ $\rank{\mb{X}^\top\mb{X}}=\rank{(\mb{X}^\top\mb{X} \quad \mb{X}^\top\mb{y})}$. According to Exercise 8.2, $\mb{X}^\top\mb{y} = \mb{X}^\top\mb{X}\mb{w}$ admits a solution.\\
+				If $\mb{X}$ has full column rank, then $\mb{X}^\top\mb{X}$ is invertible and $\mb{w} = (\mb{X}^\top\mb{X})^{-1}\mb{X}^\top\mb{y}$ is the unique solution. \\
+				If $\mb{X}\neq\mb{O}$ is rank-deficient, it can be factored as $\mb{CR}$, where $\mb{C}$ has full column rank and $\mb{R}$ has full row rank. Then $\mb{w}_0=\mb{R}^\top(\mb{R}\mb{R}^\top)^{-1}(\mb{C}^\top\mb{C})^{-1}\mb{C}^\top\mb{y}$ is a solution to $\mb{X}^\top\mb{y} = \mb{X}^\top\mb{X}\mb{w}$. For any $\mb{u}\in\mathbb{R}^d$, $\mb{v}=(\mb{I}-\mb{R}^\top(\mb{R}\mb{R}^\top)^{-1}\mb{R})\mb{u}\neq\mb{0}$ is a solution to $\mb{0} = \mb{X}^\top\mb{X}\mb{w}$, and hence $\mb{w}=\mb{w}_0+\mb{v}$ is a solution to $\mb{X}^\top\mb{y} = \mb{X}^\top\mb{X}\mb{w}$, which is not unique.
+				\qedhere
+			\end{solution}
+
+	\end{enumerate}
+\end{exercise}
+
+
+\newpage
+\begin{exercise}[Properties of Eigenvalues and Singular Values]
+	\begin{enumerate}
+		\item Suppose the maximum eigenvalue, minimum eigenvalue of a given symmetric matrix $\mb{A}\in S^n$ are denoted by $\lambda_{\max}(\mb{A})$ and $ \lambda_{\min}(\mb{A})$, respectively. Please show that
+			\begin{align*}
+				\lambda_{\max}(\mb{A})=\sup_{\mb{x}\in\mathbb{R}^n, \mb{x}\not=\mb{0}} \frac{\mb{x}^\top\mb{A}\mb{x}}{\mb{x}^\top\mb{x}},\,\,\,\,\,
+				\lambda_{\min}(\mb{A})=\inf_{\mb{x}\in\mathbb{R}^n, \mb{x}\not=\mb{0}} \frac{\mb{x}^\top\mb{A}\mb{x}}{\mb{x}^\top\mb{x}}.
+			\end{align*}
+
+			\begin{solution}
+				Consider the optimization problem $\max / \min \ R_\mb{A} = \frac{\mb{x}^\top\mb{A}\mb{x}}{\mb{x}^\top\mb{x}} \text{ s.t. } \mb{x}^\top\mb{x} = 1$.
+				We have the Lagrangian $L(\mb{x},\lambda)=\mb{x}^\top\mb{A}\mb{x}-\lambda(\mb{x}^\top\mb{x}-1)$.
+				Then the first order conditions become $\nabla_\mb{x} L(\mb{x},\lambda) = 2\mb{A}\mb{x}-2\lambda\mb{x}=0$ $\implies$ $(\mb{A}-\lambda\mb{I})\mb{x}=0$ and $\mb{x}^\top\mb{x}=1$, implying that $\lambda$ is an eigenvalue of $\mb{A}$ and $\mb{x}$ is a unit eigenvector corresponding to $\lambda$.
+				For the maximization problem, the second order condition is $\nabla^2_\mb{xx} L(\mb{x},\lambda) = 2\mb{A}-2\lambda\mb{I} \leq 0$ $\implies$ $\mb{A}-\lambda\mb{I} \leq 0$, which is satified if and only if $\lambda = \lambda_{\max}(\mb{A})$.
+				For the minimization problem, the second order condition is $\nabla^2_\mb{xx} L(\mb{x},\lambda) = 2\mb{A}-2\lambda\mb{I} \geq 0$ $\implies$ $\mb{A}-\lambda\mb{I} \geq 0$, which is satified if and only if $\lambda = \lambda_{\min}(\mb{A})$.
+				Therefore, the global maximum is $R_\mb{A} = \mb{x}^\top\lambda_{\max}(\mb{A})\mb{x} = \lambda_{\max}(\mb{A})$ and the global minimum is $R_\mb{A} = \mb{x}^\top\lambda_{\min}(\mb{A})\mb{x} = \lambda_{\min}(\mb{A})$. In other words, $\lambda_{\max}(\mb{A})=\sup_{\mb{x}\in\mathbb{R}^n, \mb{x}\not=\mb{0}} \frac{\mb{x}^\top\mb{A}\mb{x}}{\mb{x}^\top\mb{x}}$ and $
+					\lambda_{\min}(\mb{A})=\inf_{\mb{x}\in\mathbb{R}^n, \mb{x}\not=\mb{0}} \frac{\mb{x}^\top\mb{A}\mb{x}}{\mb{x}^\top\mb{x}}$.
+				\qedhere
+			\end{solution}
+
+		\item Suppose $\mb{B}=(b_{ij})\in \mathbb{R}^{m\times n}$ with maximum singular value $\sigma_{\max}(\mb{B})$.
+			\begin{enumerate}
+				\item Let $\|\mb{B}\|_2:=\sup_{\mb{x}\in\mathbb{R}^n, \mb{x}\not=\mb{0}}\frac{\|\mb{Bx}\|_2}{\|\mb{x}\|_2}$. Please show that
+					\begin{align*}
+						\sigma_{\max}(\mb{B})=\|\mb{B}\|_2.
+					\end{align*}
+
+				\item Please show that
+					\begin{align*}
+						\sigma_{\max}(\mb{B})=\sup_{\mb{x}\in\mathbb{R}^m, \mb{y}\in\mathbb{R}^n, \mb{x},\mb{y}\not=0}\frac{\mb{x}^\top \mb{B}\mb{y}}{\|\mb{x}\|_2\|\mb{y}\|_2}.
+					\end{align*}
+
+				\item Let $\|\mb{B}\|_1:=\sup_{\mb{x}\in\mathbb{R}^n, \mb{x}\not=\mb{0}}\frac{\|\mb{Bx}\|_1}{\|\mb{x}\|_1}$. Please show that
+					\begin{align*}
+						\|\mb{B}\|_1=\max_{1\le j\le n}\sum_{i=1}^m|b_{ij}|.
+					\end{align*}
+
+				\item Let $\|\mb{B}\|_\infty:=\sup_{\mb{x}\in\mathbb{R}^n, \mb{x}\not=\mb{0}}\frac{\|\mb{Bx}\|_\infty}{\|\mb{x}\|_\infty}$. Please show that
+					\begin{align*}
+						\|\mb{B}\|_\infty=\max_{1\le i\le m}\sum_{j=1}^n|b_{ij}|.
+					\end{align*}
+			\end{enumerate}
+
+			\begin{solution}
+				\begin{enumerate}
+					\item []
+					\item $\|\mb{B}\|_2=\sup_{\mb{x}\in\mathbb{R}^n, \mb{x}\not=\mb{0}}\sqrt{\frac{\mb{x}^\top\mb{B}^\top\mb{Bx}}{\mb{x}^\top\mb{x}}}$. Since $\mb{B}^\top\mb{B}$ is symmetric, by Exercise 9.1, we have $\|\mb{B}\|_2=\sqrt{\lambda_{\max}(\mb{B}^\top\mb{B})}=\sigma_{\max}(\mb{B})$.
+					\item
+						Consider maximizing $\ R_\mb{B} = \frac{\mb{x}^\top\mb{B}\mb{y}}{\|\mb{x}\|_2 \|\mb{y}\|_2}$ subject to $\|\mb{x}\|_2 = \|\mb{y}\|_2 = 1$.
+						Let $\mb{z} = \begin{pmatrix}
+								\mb{x} \\
+								\mb{y}
+							\end{pmatrix}$ and the Lagrangian $L(\mb{z},\bm{\lambda})=\mb{x}^\top\mb{B}\mb{y}-\frac{1}{2}\lambda_1(\|\mb{x}\|^2_2-1) - \frac{1}{2}\lambda_2(\|\mb{y}\|^2_2-1)$. The necessary conditions
+						$\nabla_\mb{z} L(\mb{z},\bm{\lambda}) = \begin{pmatrix}
+								\mb{B}\mb{y}-\lambda_1\mb{x} \\
+								\mb{B}^\top\mb{x}-\lambda_2\mb{y}
+							\end{pmatrix}=0$ and $\mb{x}^\top\mb{x}=\mb{y}^\top\mb{y}=1$ imply that $\sigma:=\lambda_1=\lambda_2$ is a singular value of $\mb{B}$ with unit left and right singular vectors $\mb{x}$ and $\mb{y}$, respectively.
+						Let $\mb{A} = \begin{pmatrix}
+								            & \mb{B} \\
+								\mb{B}^\top &
+							\end{pmatrix}$.
+						Then $\nabla^2_\mb{zz} L(\mb{z},\bm{\lambda}) = \begin{pmatrix}
+								-\lambda_1\mb{I}_m & \mb{B}             \\
+								\mb{B}^\top        & -\lambda_2\mb{I}_n
+							\end{pmatrix} = \mb{A} -\sigma\mb{I}$.
+						Clearly, every eigenvalue of $\mb{A}$ is also a singular value of $\mb{B}$, and $\sigma_{\max}(\mb{B})$ is the largest eigenvalue of $\mb{A}$.
+						So $\nabla^2_\mb{zz} L(\mb{z},\bm{\lambda})$ is negative semidefinite if and only if $\sigma = \sigma_{\max}(\mb{B})$, and hence the maximum of $R_\mb{B} = \mb{x}^\top\mb{B}\mb{y}=\mb{x}^\top\sigma\mb{x} = \sigma_{\max}(\mb{B})$. '
+						In other words, $\sigma_{\max}(\mb{B}) = \sup_{\mb{x}\in\mathbb{R}^m, \mb{y}\in\mathbb{R}^n, \mb{x},\mb{y}\not=0}\frac{\mb{x}^\top \mb{B}\mb{y}}{\|\mb{x}\|_2\|\mb{y}\|_2}$.
+						\vspace{2ex}
+					\item ~\\\vspace{-8ex}
+						\begin{flalign*}
+							\frac{\|\mb{Bx}\|_1}{\|\mb{x}\|_1} = & \frac{\sum\limits_{i=1}^m|\sum\limits_{j=1}^n b_{ij}x_j|}{\sum\limits_{j=1}^n|x_j|}  \leq  \frac{\sum\limits_{i=1}^m \sum\limits_{j=1}^n |b_{ij}||x_j|}{\sum\limits_{j=1}^n|x_j|} =  \frac{\sum\limits_{j=1}^n (\sum\limits_{i=1}^m |b_{ij}|) |x_j| }{\sum\limits_{j=1}^n|x_j|} & \\  \leq &  \frac{\sum\limits_{j=1}^n|x_j| }{\sum\limits_{j=1}^n|x_j|} \max_{1\le j\le n}\sum\limits_{i=1}^m|b_{ij}| =  \max_{1\le j\le n}\sum\limits_{i=1}^m|b_{ij}|.
+						\end{flalign*}
+						\vspace{-2ex}~\\
+						The equality holds if $x_j = \begin{cases}
+								1, & \text{if  } j = \argmax\limits_{1\le j\le n}\sum\limits_{i=1}^m|b_{ij}| \\
+								0, & \text{otherwise}
+							\end{cases}$, so $\|\mb{B}\|_1=\max\limits_{1\le j\le n}\sum\limits_{i=1}^m|b_{ij}|$.
+						\vspace{2ex}
+					\item ~\\\vspace{-8ex}
+						\begin{flalign*}
+							\frac{\|\mb{Bx}\|_\infty}{\|\mb{x}\|_\infty} = & \frac{\max\limits_{1\le i\le m}|\sum\limits_{j=1}^n b_{ij}x_j|}{\max\limits_{1\le j\le n}|x_j|}  \leq  \frac{\max\limits_{1\le i\le m} \sum\limits_{j=1}^n |b_{ij}||x_j|}{\max\limits_{1\le j\le n}|x_j|} & \\  \leq &  \frac{\max\limits_{1\le j\le n}|x_j| }{\max\limits_{1\le j\le n}|x_j|} \max_{1\le i\le m}\sum\limits_{j=1}^n|b_{ij}| =  \max_{1\le i\le m}\sum\limits_{j=1}^n|b_{ij}|.
+						\end{flalign*}
+						\vspace{-2ex}~\\
+						Let $k=\argmax\limits_{1\le i\le m}\sum\limits_{j=1}^n|b_{ij}|$. The equality holds if $x_j = \begin{cases}
+								1,  & \text{if  } b_{kj} \geq 0 \\
+								-1, & \text{if  } b_{kj} < 0
+							\end{cases}$, so $\|\mb{B}\|_\infty=\max\limits_{1\le i\le m}\sum\limits_{j=1}^n|b_{ij}|$.
+						\qedhere
+				\end{enumerate}
+			\end{solution}
+
+	\end{enumerate}
+\end{exercise}
+
+
+\newpage
+\begin{exercise}[Projection to a Linear Subspace]
+	\begin{enumerate}
+		\item Let $\mb{X}\in \mathbb{R}^{n\times d}$ with rank $d$ and $\mb{y}\in \mathbb{R}^n$. Consider the optimization problem
+			\begin{align*}
+				\min_{\mb{w}\in \mathbb{R}^d}\|\mb{y}-\mb{X w}\|_2^2,
+			\end{align*}
+			\begin{enumerate}
+				\item  We denote the column space of $\mb{X}$ by $\mathcal{C}(\mb{X})$. Please show that $\hat{\mb{y}}:=\mb{X}(\mb{X}^{\top}\mb{X})^{-1}\mb{X}^\top\mb{y}$ is the projection of $\mb{y}$ on $\mathcal{C}(\mb{X})$, i.e. $\langle\mb{y}-\hat{\mb{y}}, \mb{x}\rangle=0$ for any $\mb{x}\in\mathcal{C}(\mb{X})$.
+
+				\item Please solve the above optimization problem by completing the square.
+
+				\item Please show that $\min_{\mb{w}\in \mathbb{R}^d}\|\mb{y}-\mb{X w}\|_2\le \|\mb{y}\|_2$. Then find  the necessary and sufficient condition where the equality holds and give it a geometric interpretation.
+			\end{enumerate}
+
+			\begin{solution}
+				\begin{enumerate}
+					\item []
+					\item
+						For any $\mb{x}=\mb{X}\mb{u}\in\mathcal{C}(\mb{X})$, $ \langle\mb{y}-\hat{\mb{y}}, \mb{x}\rangle =
+							(\mb{y}-\hat{\mb{y}})^\top \mb{x} =
+							\mb{y}^{\top}(\mb{I}-\mb{X}(\mb{X}^{\top}\mb{X})^{-1}\mb{X}^\top) \mb{x} =
+							\mb{y}^{\top}(\mb{Xu}-\mb{X}(\mb{X}^{\top}\mb{X})^{-1}(\mb{X}^\top\mb{X})\mb{u}) =
+							\mb{y}^\top\mb{0} = 0 $.
+
+					\item
+						$\|\mb{y}-\mb{X w}\|_2^2 =
+							\|\mb{y}-\hat{\mb{y}}+\hat{\mb{y}}-\mb{X w}\|_2^2 =
+							\|\mb{y}-\hat{\mb{y}}\|_2^2 + 2\langle\mb{y}-\hat{\mb{y}}, \hat{\mb{y}}-\mb{X w}\rangle + \|\hat{\mb{y}}-\mb{X w}\|_2^2 $.
+						Since $\hat{\mb{y}}-\mb{X w}=\mb{X}(\mb{X}(\mb{X}^{\top}\mb{X})^{-1}\mb{X}^\top\mb{y}-\mb{w})\in\mathcal{C}(\mb{X})$, it follows that $\langle\mb{y}-\hat{\mb{y}}, \hat{\mb{y}}-\mb{X w}\rangle = 0$.
+						So $\|\mb{y}-\mb{X w}\|_2^2 = \|\mb{y}-\hat{\mb{y}}\|_2^2 + \|\hat{\mb{y}}-\mb{X w}\|_2^2 \geq \|\mb{y}-\hat{\mb{y}}\|_2^2$, where the equality holds if and only if $\hat{\mb{y}}=\mb{X w}$, i.e. $\mb{w}=(\mb{X}^{\top}\mb{X})^{-1}\mb{X}^\top\mb{y}$.
+						And hence $\min_{\mb{w}\in \mathbb{R}^d}\|\mb{y}-\mb{X w}\|_2^2 = \|\mb{y}-\hat{\mb{y}}\|_2^2$.
+					\item
+						$\min_{\mb{w}\in \mathbb{R}^d}\|\mb{y}-\mb{X w}\|_2^2 = \langle\mb{y}-\hat{\mb{y}} , \mb{y}+\hat{\mb{y}} - 2\hat{\mb{y}}\rangle = \|\mb{y}\|_2^2 - \|\hat{\mb{y}}\|_2^2  - 2\langle\mb{y}-\hat{\mb{y}} , \hat{\mb{y}}\rangle = \|\mb{y}\|_2^2 - \|\hat{\mb{y}}\|_2^2 \leq \|\mb{y}\|_2^2$ $\implies$ $\min_{\mb{w}\in \mathbb{R}^d}\|\mb{y}-\mb{X w}\|_2\le \|\mb{y}\|_2$. The equality holds if and only if $\|\hat{\mb{y}}\|_2=0$ $\iff$ $\hat{\mb{y}}=\mb{0}$ $\iff$ $\langle\mb{y}, \mb{x}\rangle=0$ for any $\mb{x}\in\mathcal{C}(\mb{X})$. In other words, the projection of $\mb{y}$ on $\mathcal{C}(\mb{X})$ is zero, and thus $\mb{y}$ is orthogonal to $\mathcal{C}(\mb{X})$, i.e. $\mb{y}\in\mathcal{N}(\mb{X}^\top)$.
+						\qedhere
+				\end{enumerate}
+			\end{solution}
+
+		\item Suppose $X$ and $Y$ are both random variables defined in the same sample space $\Omega$ with finite second-order moment, i.e. $\mathbb{E}[X^2], \mathbb{E}[Y^2]<\infty$.
+			\begin{enumerate}
+				\item Let $L^2(\Omega)=\{Z:\Omega\to\mathbb{R}\mid \mathbb{E}[Z^2]<\infty\}$ be the set of random variables with finite second-order moment. Please show that $L^2(\Omega)$ is a linear space, and $\langle X,Y \rangle:=\mathbb{E}[X Y]$ defines an inner product in $L^2(\Omega)$. Then find the projection of $Y$ on the subspace of $L^2(\Omega)$ consisting of all constant variables.
+				\item Please find a real constant $\hat{c}$, such that
+					\begin{align*}
+						\hat{c}=\argmin_{c\in \mathbb{R}}\mathbb{E}[(Y-c)^2].
+					\end{align*}
+					[Hint: you can solve it by completing the square.]
+				\item Please find the necessary and sufficient condition where $\min_{c\in \mathbb{R}}\mathbb{E}[(Y-c)^2]=\mathbb{E}[Y^2]$. Then give it a geometric interpretation using inner product and projection.
+			\end{enumerate}
+
+			\begin{solution}
+				\begin{enumerate}
+					\item []
+					\item
+						Suppose $X,Y,Z\in L^2(\Omega)$ and $a,b\in\mathbb{R}$.
+						Then $\mathbb{E}[(X+Y)^2] = \mathbb{E}[X^2] + \mathbb{E}[Y^2] + 2\mathbb{E}[XY] \leq \mathbb{E}[X^2] + \mathbb{E}[Y^2] + 2\sqrt{\mathbb{E}[X^2]\mathbb{E}[Y^2]} < \infty$ and $\mathbb{E}[aX^2] = a\mathbb{E}[X^2] < \infty$, implying that $X+Y, aX\in L^2(\Omega)$.
+						Therefore, we can define vector addition in $L^2(\Omega)$ as the usual addition of random variables, and scalar multiplication as the usual multiplication of a random variable by a real constant.
+						Clearly, the addition is associative and commutative, with 0 as the identity element, i.e. $X + (Y + Z) = (X + Y) + Z$, $X + Y = Y + X$ and $X + 0 = X$.
+						The scalar multiplication, with 1 as the identity element, is compatible with field multiplication and distributive with respect to both vector addition and field addition, i.e. $1X = X$, $a(bX) = (ab)X$, $a(X + Y) = aX + aY$ and $(a + b)X = aX + bX$.
+						To conclude, $L^2(\Omega)$ is a linear space. \\
+						Morever, the given definition of inner product satisfies symmetry, linearity and positive definiteness, i.e. $\mathbb{E}[XY] = \mathbb{E}[YX]$, $\mathbb{E}[(aX + bY) Z] = a\mathbb{E}[XZ] + b\mathbb{E}[YZ]$ and $\mathbb{E}[X^2] \geq 0$, where the equality holds if and only if $X\equiv 0$. \\
+						For any real constant variable $C$ in the subspace, $\langle Y-\mathbb{E}[Y], C \rangle = \mathbb{E}[C](\mathbb{E}[Y]-\mathbb{E}[\mathbb{E}[Y]]) = C(\mathbb{E}[Y]-\mathbb{E}[Y] = 0$.
+						Hence the projection of $Y$ on the subspace is $\mathbb{E}[Y]$.
+					\item
+						$\mathbb{E}[(Y-c)^2] = \mathbb{E}[(Y-\mathbb{E}[Y]+\mathbb{E}[Y]-c)^2] = \mathbb{E}[(Y-\mathbb{E}[Y])^2] + 2\langle Y-\mathbb{E}[Y], \mathbb{E}[Y]-c \rangle + \mathbb{E}[(\mathbb{E}[Y]-c)^2]  = \Var Y + (\mathbb{E}[Y]-c)^2 \geq \Var Y$, where the equality holds if and only if $\mathbb{E}[Y]-c=0$.
+						Hence $\hat{c}=\mathbb{E}[Y]$.
+					\item
+						$\min_{c\in \mathbb{R}}\mathbb{E}[(Y-c)^2] = \Var Y = \mathbb{E}[Y^2] - \mathbb{E}[Y]^2 \leq \mathbb{E}[Y^2]$. The equality holds if and only if $\mathbb{E}[Y]=0$ $\iff$ $\langle Y, C\rangle=0$ for any $C$ in the subspace consisting of constant variables. In other words, the projection of $Y$ on the subspace is zero, and thus $Y$ is orthogonal to the subspace.
+						\qedhere
+
+				\end{enumerate}
+			\end{solution}
+
+		\item Suppose $X$ and $Y$ are both random variables defined in the same sample space $\Omega$ and all the expectations exist in this problem. Consider the problem
+			\begin{align*}
+				\min_{f:\mathbb{R}\to\mathbb{R}}\mathbb{E}[(f(X)-Y)^2].
+			\end{align*}
+			\begin{enumerate}
+				\item Please solve the above problem by completing the square.
+				\item We let $\mathcal{C}(X)$ denote the subspace $\{f(X)\mid f(\cdot):\mathbb{R}\to\mathbb{R}, \mathbb{E}[f(X)^2]<\infty \}$ of $L^2(\Omega)$. Please show that the solution of the above problem is the projection of $Y$ on $\mathcal{C}(X)$.
+				\item Please show that question 2 is a special case of question 3.
+			\end{enumerate}
+
+			\begin{solution}
+				\begin{enumerate}
+					\item []
+					\item ~\\\vspace{-8ex}
+						\begin{flalign*}
+							\mathbb{E}[(f(X)-Y)^2] = \  & \mathbb{E}[(f(X)-\mathbb{E}[Y|X]+\mathbb{E}[Y|X]-Y)^2] & \\ = \ & \mathbb{E}[(f(X)-\mathbb{E}[Y|X])^2] + \mathbb{E}[(\mathbb{E}[Y|X]-Y)^2] & \\ + \ & 2\,\mathbb{E}[ (f(X)-\mathbb{E}[Y|X]) (\mathbb{E}[Y|X]-Y) ].  &
+						\end{flalign*}
+						\vspace{-6ex}
+						\begin{flalign*}
+							\mathbb{E}[ (f(X)-\mathbb{E}[Y|X]) (\mathbb{E}[Y|X]-Y) ] = \  & \mathbb{E}\{ (f(X)-\mathbb{E}[Y|X]) \, \mathbb{E}[ \mathbb{E}[Y|X]-Y | X ] \} & \\ = \ & \mathbb{E}\{ (f(X)-\mathbb{E}[Y|X]) \, (\mathbb{E}[Y|X]-\mathbb{E}[Y|X])\} & \\ = \ & \mathbb{E}\{ (f(X)-\mathbb{E}[Y|X]) \cdot 0 \} = 0.  &
+						\end{flalign*}
+						\vspace{-6ex}
+						\begin{flalign*}
+							\therefore \mathbb{E}[(f(X)-Y)^2] = \  & \mathbb{E}[(f(X)-\mathbb{E}[Y|X])^2] + \mathbb{E}[(\mathbb{E}[Y|X]-Y)^2] \geq \mathbb{E}[(\mathbb{E}[Y|X]-Y)^2]. &
+						\end{flalign*}
+						\vspace{-4ex}\\
+						The equality holds if and only if $f(X)=\mathbb{E}[Y|X]$. Hence $\min\limits_{f:\mathbb{R}\to\mathbb{R}}\mathbb{E}[(f(X)-Y)^2] = \mathbb{E}[(\mathbb{E}[Y|X]-Y)^2] = \Var {Y|X}$.
+					\item
+						For any $f(X)\in \mathcal{C}(X)$, $\langle Y-\mathbb{E}[Y|X], f(X) \rangle = \mathbb{E}[f(X)(Y-\mathbb{E}[Y|X])] = \mathbb{E}\{ f(X)\, \mathbb{E}[Y-\mathbb{E}[Y|X]|X] \} = \mathbb{E}\{ f(X) \cdot 0 \} = 0$. Hence the projection of $Y$ on $\mathcal{C}(X)$ is $\mathbb{E}[Y|X]$.
+					\item
+						If $X,Y$ are independent, then $\mathbb{E}[Y|X] = \mathbb{E}[Y]$ and $\min\limits_{f:\mathbb{R}\to\mathbb{R}}\mathbb{E}[(f(X)-Y)^2] = \min\limits_{c\in \mathbb{R}}\mathbb{E}[(Y-c)^2] = \Var Y$. More specifically, if $X$ is a constant variable, then $\mathcal{C}(X)$ consists of all constant variables, and hence question 3 becomes question 2.
+						\qedhere
+				\end{enumerate}
+			\end{solution}
+
+	\end{enumerate}
+\end{exercise}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\bibliography{refs.bib}
+\bibliographystyle{abbrv}
+\end{document}

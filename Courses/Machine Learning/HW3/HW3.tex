@@ -1,0 +1,646 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Course info
+\newcommand{\school}{\text{University of Science and Technology of China}}
+\newcommand{\course}{\text{Introduction to Machine Learning}}
+\newcommand{\semester}{\text{Fall 2022}}
+\newcommand{\lecturer}{\text{Jie Wang}}
+% Homework info
+\newcommand{\posted}{\text{Oct. 25, 2022}}
+\newcommand{\due}{\text{Nov. 8, 2022}}
+\newcommand{\hwno}{\text{3}}
+% Student info
+\newcommand{\name}{\text{Yunqin Zhu}}
+\newcommand{\id}{\text{PB20061372}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{../common/HW.tex}
+\begin{document}
+\maketitle
+
+
+\begin{exercise}[Convex Sets]
+  Let $C \subset \mathbb{R}^n$ be a nonempty convex set. Please show the following statements.
+  \begin{enumerate}
+    \item Please find the interior and relative interior of the following convex sets (you don't need to prove them).
+      \begin{enumerate}
+        \item $\{\mb{x}\in\mathbb{R}^3: x_1^2+x_2^2<1,x_3=0\}\subset\mathbb{R}^3$.
+        \item $\{\mb{A}\in S_{++}^n: \tr(\mb{A})=1\}\subset \mathbb{R}^{n\times n}$.
+        \item $\{\mb{A}\in S_{++}^n: \tr(\mb{A})=1\}\subset S^ n$.
+        \item (Optional) $\{\mb{A}\in S_{++}^n: \tr(\mb{A})\le1\}\subset \mathbb{R}^{n\times n}$.
+        \item $\conv (\{x, x^2, x^3\})\subset C[0,1]$ with $L^\infty$ norm, i.e., $\|f\|_\infty = \max_{x\in [0,1]}|f(x)|$ for any $f\in C[0,1]$.
+      \end{enumerate}
+
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item $\intp C = \emptyset$. $\aff C = \{\mb{x}\in\mathbb{R}^3: x_3=0\}$ $\implies$ $\relint C = C$.
+          \item $\intp C = \emptyset$. $\relint C = (\relint S_{++}^n)\,\cap \,(\relint \{\mb{A}\in S^n : \tr(\mb{A}) = 1 \}) = C$.
+          \item $\intp C = \emptyset$. $\relint C = C$
+          \item $\intp C = \emptyset$. $\relint C = (\relint S_{++}^n)\,\cap \,(\relint \{\mb{A}\in S^n : \tr(\mb{A}) \le 1 \}) = \{\mb{A}\in S_{++}^n: \tr(\mb{A})<1\}$.
+          \item $\intp C = \emptyset$. $\relint C = \{\alpha_1x + \alpha_2x^2 + \alpha_3x^3 : \alpha_1 + \alpha_2 + \alpha_3 = 1, \alpha_1, \alpha_2, \alpha_3 > 0 \}$
+            \qedhere
+        \end{enumerate}
+      \end{solution}
+
+    \item  Some operations that preserve convexity.
+      \begin{enumerate}
+        \item
+          Both $\cl C $ and $\intp C $ are convex.
+        \item
+          The set $\relint{C}$ is convex.
+        \item
+          The intersection $\bigcap_{i \in I}C_i$ of any collection $\{ C_i:i\in \mathcal{I} \}$ of convex sets is convex.
+        \item
+          If $C_1$ and $C_2$ are convex sets in $\mathbb{R}^n$, then the set
+          $$
+            C_1-C_2=\{ \mb{x}\in\mathbb{R}^n:\mb{x}=\mb{x}_1-\mb{x}_2, \mb{x}_1\in C_1,\mb{x}_2\in C_2\}
+          $$
+          is convex.
+        \item
+          The set $\{ \mb{y}\in\mathbb{R}^m:\mb{y}=\mb{Ax}+\mb{a},\mb{x}\in C \}$ is convex, where $\mb{A} \in \mathbb{R}^{m \times n}$ and $\mb{a} \in \mathbb{R}^m$.
+        \item
+          The set $\{ \mb{y}\in\mathbb{R}^m:\mb{x}=\mb{By}+\mb{b},\mb{x}\in C \}$ is convex, where $\mb{B} \in \mathbb{R}^{n \times m}$ and $\mb{b} \in \mathbb{R}^n$.
+      \end{enumerate}
+
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item 
+            Let $\mb{x}, \mb{y} \in \cl C$. There exist $\{\mb{x}_n\}, \{\mb{y}_n\} \subset C$ such that $\mb{\mb{x}}_n \to \mb{\mb{x}}$ and $\mb{y}_n \to \mb{y}$. The convexity of $C$ implies that $\{\theta \mb{x}_n + (1-\theta) \mb{y}_n\}\subset C$ and $\theta \mb{x}_n + (1-\theta) \mb{y}_n \to \theta \mb{x} + (1-\theta) \mb{y}$ for any $\theta \in [0,1]$; that is, $\theta \mb{x} + (1-\theta) \mb{y} \in \cl C$. Hence $\cl C$ is convex.
+
+            Let $\mb{x}, \mb{y} \in \intp C$. There exists $\epsilon>0$ such that $N_\epsilon(\mb{x}), N_\epsilon(\mb{y}) \subset C$. The convexity of $C$ implies that $N_\epsilon(\theta \mb{x} + (1-\theta) \mb{y}) \subset \{\theta \tilde{\mb{x}} + (1-\theta) \tilde{\mb{y}} : \tilde{\mb{x}} \in N_\epsilon(\mb{x}), \tilde{\mb{y}} \in N_\epsilon(\mb{y}) \} \subset C$ for any $\theta \in [0,1]$; that is, $\theta \mb{x} + (1-\theta) \mb{y} \in \intp C$. Hence $\intp C$ is convex.
+          \item Let $\mb{x}, \mb{y} \in \relint C$. There exists $\epsilon>0$ such that $N_\epsilon(\mb{x})\,\cap\,\aff C \subset C$ and $N_\epsilon(\mb{y})\,\cap\,\aff C \subset C$. The convexity of $C$ implies that $N_\epsilon(\theta \mb{x} + (1-\theta) \mb{y})\,\cap\,\aff C \subset \{\theta \tilde{\mb{x}} + (1-\theta) \tilde{\mb{y}} : \tilde{\mb{x}} \in N_\epsilon(\mb{x})\,\cap\,\aff C, \tilde{\mb{y}} \in N_\epsilon(\mb{y})\,\cap\,\aff C \} \subset C$ for any $\theta \in [0,1]$; that is, $\theta \mb{x} + (1-\theta) \mb{y} \in \relint C$. Hence $\relint C$ is convex.
+          \item Let $\mb{x}, \mb{y} \in \bigcap_{i \in I}C_i$. The convexity of $C_i, \forall i\in I$ implies that $\theta \mb{x} + (1-\theta) \mb{y}\in C_i$ for any $\theta \in [0,1]$; that is, $\theta \mb{x} + (1-\theta) \mb{y} \in \bigcap_{i \in I}C_i$. Hence $\bigcap_{i \in I}C_i$ is convex.
+          \item Let $\mb{x}, \mb{y} \in C_1 - C_2$. There exist $\mb{x}_1, \mb{y}_1 \in C_1$ and $\mb{x}_2, \mb{y}_2 \in C_2$ such that $\mb{x} = \mb{x}_1 - \mb{x}_2$ and $\mb{y} = \mb{y}_1 - \mb{y}_2$. The convexity of $C_1$ and $C_2$ implies that $\theta \mb{x} + (1-\theta) \mb{y} = \theta \mb{x}_1 + (1-\theta) \mb{y}_1 - \theta \mb{x}_2 - (1-\theta) \mb{y}_2 \in C_1 - C_2$ for any $\theta \in [0,1]$. Hence $C_1 - C_2$ is convex.
+          \item Let $\mb{y}_1, \mb{y}_2 \in \{ \mb{y}\in\mathbb{R}^m:\mb{y}=\mb{Ax}+\mb{a},\mb{x}\in C \}$. There exist $\mb{x}_1, \mb{x}_2 \in C$ such that $\mb{y}_1=\mb{Ax}_1+\mb{a}$ and $\mb{y}_2=\mb{Ax}_2+\mb{a}$. The convexity of $C$ implies that $\theta \mb{y}_1 + (1-\theta) \mb{y}_2 = \mb{A}(\theta \mb{x}_1 + (1-\theta) \mb{x}_2) + \mb{a} \in \{ \mb{y}\in\mathbb{R}^m:\mb{y}=\mb{Ax}+\mb{a},\mb{x}\in C \}$ for any $\theta \in [0,1]$. Hence $\{ \mb{y}\in\mathbb{R}^m:\mb{y}=\mb{Ax}+\mb{a},\mb{x}\in C \}$ is convex.
+          \item Let $\mb{y}_1, \mb{y}_2 \in \{ \mb{y}\in\mathbb{R}^m:\mb{x}=\mb{By}+\mb{b},\mb{x}\in C \}$. There exist $\mb{x}_1, \mb{x}_2 \in C$ such that $\mb{x}_1=\mb{By}_1+\mb{b}$ and $\mb{x}_2=\mb{By}_2+\mb{b}$. The convexity of $C$ implies that $\theta \mb{x}_1 + (1-\theta) \mb{x}_2 = \mb{B}(\theta \mb{y}_1 + (1-\theta) \mb{y}_2) + \mb{b} \in C$ for any $\theta \in [0,1]$; that is, $\theta \mb{y}_1 + (1-\theta) \mb{y}_2 \in \{ \mb{y}\in\mathbb{R}^m:\mb{x}=\mb{By}+\mb{b},\mb{x}\in C \}$. Hence $\{ \mb{y}\in\mathbb{R}^m:\mb{x}=\mb{By}+\mb{b},\mb{x}\in C \}$ is convex.
+            \qedhere
+        \end{enumerate}
+      \end{solution}
+
+  \end{enumerate}
+
+\end{exercise}
+\newpage
+
+
+
+\begin{exercise}[Affine Sets]
+  Please show the following statements about affine sets.
+  \begin{enumerate}
+    \item
+      If $U\subset\mathbb{R}^n$ and $\mb{0}\in U$, then $U$ is an affine set if and only if it is a subspace.
+
+      \begin{solution}
+        \begin{itemize}
+          \item []
+          \item [($\Rightarrow$)]
+            Since $U$ is an affine set, for any $\mb{x}, \mb{y}\in U$ and $\alpha,\beta \in \mathbb{R}$, we have $\alpha \mb{x} + \beta \mb{y} = \alpha \mb{x} + \beta \mb{y} + (1- \alpha - \beta)\mb{0}\in U$. Thus, $U$ is a subspace.
+          \item [($\Leftarrow$)]
+            Since $U$ is a subspace, for any $\mb{x}, \mb{y}\in U$ and $\theta \in \mathbb{R}$, we have $\theta \mb{x} + (1-\theta) \mb{y} \in U$. Thus, $U$ is an affine set.
+            \qedhere
+        \end{itemize}
+      \end{solution}
+    \item
+      If $U\subset\mathbb{R}^n$ is an affine set, there is a unique subspace $V\subset\mathbb{R}^n$ such that $U=\mb{u}+V$ for any $\mb{u} \in U$.
+
+      \begin{solution}
+        Let $\mb{u}\in U$ be arbitrary. Then, for any $\mb{x}, \mb{y}\in U - \mb{u}$ and $\alpha,\beta \in \mathbb{R}$, we have $\alpha \mb{x} + \beta \mb{y} = \left[\alpha (\mb{u}+\mb{x}) + \beta (\mb{u}+\mb{y}) + (1- \alpha - \beta)\mb{u}\right] - \mb{u}\in U - \mb{u}$. Thus, $V = U-\mb{u}$ is a subspace. For any $\tilde{\mb{u}} \in U$, it is clear that $\tilde{\mb{u}} - \mb{u} \in V$, and hence $U - \tilde{\mb{u}} = V - (\tilde{\mb{u}} - \mb{u}) = V$, from which we conclude that $V$ must be unique.
+      \end{solution}
+    \item 
+      Let $U=\textbf{aff}(\{(1,0,0)^\top, (0,1,0)^\top,(0,0,1)^\top\})$. Please find two vectors $\mb{v}_1$ and $\mb{v}_2$ such that we can represent any vectors $\mb{v}\in U$ in the form of $\mb{v}=(1,0,0)^\top+\alpha_1 \mb{v}_1+\alpha_2 \mb{v}_2$ uniquely, where $\alpha_1$ and $\alpha_2$ are two real numbers depending on $\mb{v}$. Furthermore, given a point $\mb{x}_0\in U$, find two vectors $\mb{w}_1$ and $\mb{w}_2$ such that we can represent any vectors $\mb{w}\in U$ in the form of $\mb{w}=\mb{x}_0+\alpha_1 \mb{w}_1+\alpha_2 \mb{w}_2$ uniquely.
+
+      \begin{solution}
+        For any $\mb{v} \in U$, there exist $\alpha_1, \alpha_2 \in \mathbb{R}$ depending on $\mb{v}$ such that $\mb{v} = (1- \alpha_1- \alpha_2) (1,0,0)^\top + \alpha_1 (0,1,0)^\top + \alpha_2 (0,0,1)^\top = (1,0,0)^\top + \alpha_1 (-1,1,0)^\top + \alpha_2 (-1,0,1)^\top$. Equivalently, $\mb{v}_1 = (-1,1,0)^\top$ and $\mb{v}_2 = (-1,0,1)^\top$ span the subspace $V = U - (1,0,0)^\top$. By Question 2, $V = U - \mb{x}_0$ for any $\mb{x}_0 \in U$. So $\mb{w} \in U$ can also be represented in the form of $\mb{w} = \mb{x}_0 + \alpha_1 \mb{w}_1 + \alpha_2 \mb{w}_2$, where $\mb{w}_1 = \mb{v}_1 = (-1,1,0)^\top$ and $\mb{w}_2 = \mb{v}_2 = (-1,0,1)^\top$. Since $(\alpha_1, \alpha_2)$ serves as the coordinate of $\mb{w}-\mb{x}_0$ in the basis $\{\mb{w}_1, \mb{w}_2\}$, we know it must be unique.
+      \end{solution}
+  \end{enumerate}
+\end{exercise}
+\newpage
+
+
+
+\begin{exercise}[Convex Hull and Affine Hull (Optional)]
+  Let $A$ be a subset of $\mathbb{R}^n$.
+  \begin{enumerate}
+    \item \begin{enumerate}
+        \item Please show that the convex hull of $A$ is the smallest convex set containing $A$, i.e., all the convex sets containing $A$ also contain $\conv A$.
+        \item Please find the convex hull of the following sets.
+          \begin{enumerate}
+            \item $\{\mb{A}\in S_{++}^n: \tr(\mb{A})=1\}\cup \{\mb{A}\in S_{++}^n: \tr(\mb{A})\ge2\}\subset\mathbb{R}^{n\times n}$.
+            \item $\{f\in C[0,1]:\|f\|_\infty=1 \}\cup \{f\in C[0,1]:\|f\|_\infty=2 \}\subset C[0,1]$.
+          \end{enumerate}
+      \end{enumerate}
+
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item First, it is clear that $A \subset \conv A$. Second, let $C$ be an arbitrary convex set containing $A$. We prove by induction on $k$ that any $\mb{x} = \sum_{i=1}^k \theta_i \mb{x}_i \in \conv A$ also belongs to $C$, where $\mb{x}_i \in A$, $\theta_i \ge 0$, and $\sum_{i=1}^k \theta_i = 1$. If $k=1$, we have $\mb{x} = \mb{x}_1 \in C$ by definition. Now, assume that the statement holds for $k-1$ and consider $\mb{x} = \sum_{i=1}^k \theta_i \mb{x}_i$, where $\sum_{i=1}^{k-1} \theta_i\neq 0$. Let $\alpha_i = \theta_i / \sum_{i=1}^{k-1} \theta_i$. Then, $$\sum_{i=1}^{k-1} \alpha_i \mb{x}_i\in C,\ \mb{x}_k\in C \implies \mb{x} = \left(\sum_{i=1}^{k-1} \theta_i\right) \left(\sum_{i=1}^{k-1} \alpha_i \mb{x}_i\right) + \theta_k \mb{x}_k\in C,$$ which completes the proof, i.e., $\conv A \subset C$.
+          \item 
+            \begin{enumerate}
+              \item $\conv A = \{ \mb{A} \in S^n_{++}: \tr(\mb{A}) \ge 1 \}$, which is a convex set containing $A$ and any $\mb{A}$ belongs to this set can be written as the convex combination $$\mb{A} = \theta \frac{\mb{A}}{\tr (\mb{A})} + (1-\theta)\left(\frac{\mb{A}}{\tr (\mb{A})} + \mb{A}\right),\ \text{where}\ \theta = \frac{1}{\tr(\mb{A})}.$$
+              \item $\conv A = \{f\in C[0,1]: \|f\|_\infty \le 2\}$, which is a convex set containing $A$ and any $f$ belongs to this set can be written as the convex combination ...
+              % $$f = \theta \frac{f}{\|f\|_\infty} + (1-\theta)\frac{2f}{\|f\|_\infty}, \ \text{where}\ \theta = 2 - \|f\|_\infty.$$
+              \qedhere
+            \end{enumerate}
+        \end{enumerate}
+      \end{solution}
+    \item \begin{enumerate}
+        \item Please show that the affine hull of $A$ is the smallest affine set containing $A$, i.e., all the affine sets containing $A$ also contain $\textbf{aff} A$.
+        \item Please find the affine hull of the following sets.
+          \begin{enumerate}
+            \item $\{\mb{A}\in S_{++}^n: \tr(\mb{A})=1\}\subset\mathbb{R}^{n\times n}$.
+            \item $\{\mb{A}\in S_{++}^n: \tr(\mb{A})=1\}\cup \{\mb{A}\in S_{++}^n: \tr(\mb{A})\ge2\}\subset\mathbb{R}^{n\times n}$.
+          \end{enumerate}
+      \end{enumerate}
+
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item First, it is clear that $A \subset \aff A$. Second, let $C$ be an arbitrary affine set containing $A$. We prove by induction on $k$ that any $\mb{x} = \sum_{i=1}^k \theta_i \mb{x}_i \in \aff A$ also belongs to $C$, where $\mb{x}_i \in A$ and $\sum_{i=1}^k \theta_i = 1$. If $k=1$, we have $\mb{x} = \mb{x}_1 \in C$ by definition. Now, assume that the statement holds for $k-1$ and consider $\mb{x} = \sum_{i=1}^k \theta_i \mb{x}_i$. Without loss of generality, we can assume that $\sum_{i=1}^{k-1} \theta_i\neq 0$. Let $\alpha_i = \theta_i / \sum_{i=1}^{k-1} \theta_i$. Then,
+            $$\sum_{i=1}^{k-1} \alpha_i \mb{x}_i\in C,\ \mb{x}_k\in C \implies \mb{x} = \left(\sum_{i=1}^{k-1} \theta_i\right) \left(\sum_{i=1}^{k-1} \alpha_i \mb{x}_i\right) + \theta_k \mb{x}_k\in C,$$ which completes the proof, i.e., $\aff A \subset C$.
+          \item 
+            \begin{enumerate}
+              \item $\aff A = \{ \mb{A} \in S^n: \tr(\mb{A}) = 1 \}$, which is an affine set containing $A$ and any $\mb{A}$ belongs to this set can be written as the affine combination $$\mb{A} = \theta \frac{\mb{A} - \lambda\mb{I}}{1-\lambda n} + (1-\theta) \frac{\mb{I}}{n},$$ where $\lambda < \lambda_{\min}(\mb{A})\ \text{and}\ \theta = 1-\lambda n$.
+              \item $\aff A = S^n$, which is an affine set containing $A$ and any $\mb{A}$ belongs to this set can be written as the affine combination $$\mb{A} = \theta (\mb{A} + \alpha \mb{I}) + (1-\theta) (\mb{A} + 2\alpha \mb{I}), $$ where $\alpha > \max\, \{-\lambda_{\min} (\mb{A}),\, \frac{2-\tr(\mb{A})}{n} \}$ and $\theta = 2$.\qedhere
+            \end{enumerate}
+        \end{enumerate}
+      \end{solution}
+  \end{enumerate}
+
+\end{exercise}
+\newpage
+
+
+
+\begin{exercise}[Relative Interior and Interior]
+  Let $C\subset\mathbb{R}^n$ be a nonempty convex set.
+  \begin{enumerate}
+    \item Let $\mb{x}_0\in C$. Please show the following statements.
+      \begin{enumerate}
+
+        \item
+          The point $\mb{x}_0\in \relint C$ if and only if there exists $r>0$ such that $\mb{x}_0 +r\mb{v}\in C$ for any $\mb{v}\in\aff C-\mb{x}_0 $ and $\|\mb{v}\|_2\le 1$.
+        \item
+          Let $\{\mb{v}_i\}_{i=1}^m$ be a basis of $\aff  C-\mb{x}_0$. Then $\mb{x}_0\in\relint C$ if and only if there exists $r>0$ such that $\mb{x}_0+r\sum_{i}\alpha_i \mb{v}_i\in C$ for any $\{\alpha_i\}_{i=1}^m$ with $\sum_i \alpha_i^2\le 1$.
+
+      \end{enumerate}
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item By definition, $\mb{x}_0\in\relint C$ if and only if there exists $r>0$ such that $B(\mb{x}_0, r)\,\cap\,\aff C \subset C$. Since $B(\mb{x}_0, r) = \{\mb{x} : \|\mb{x}-\mb{x}_0\|_2\le r\} = \{\mb{x}_0 + r\mb{v} : \|\mb{v}\|_2\le 1\}$, we have $B(\mb{x}_0, r)\,\cap\,\aff C = \{\mb{x}_0 + r\mb{v} : r\mb{v}\in\aff C-\mb{x}_0\ \text{and}\ \|\mb{v}\|_2\le 1\}$. Moreover, the fact that $\aff C-\mb{x}_0$ is a subspace implies that $r\mb{v}\in\aff C-\mb{x}_0$ if and only if $\mb{v}\in\aff C-\mb{x}_0$. So $B(\mb{x}_0, r)\,\cap\,\aff C = \{\mb{x}_0 + r\mb{v} : \mb{v}\in\aff C-\mb{x}_0\ \text{and}\ \|\mb{v}\|_2\le 1\}$. This completes the proof.
+          \item Let $\mb{V} = (\mb{v}_1, \ldots, \mb{v}_m)$ and $\bm{\alpha} = (\alpha_1, \ldots, \alpha_m)$. Then any $\mb{v} = \sum_{i=1}^m \alpha_i \mb{v}_i \in \aff C -\mb{x}_0$ can be written as $\mb{v} = \mb{V}\bm{\alpha}$. So $\|\bm{\alpha}\|_2\le 1 \implies \|\mb{v}\|_2 \le \|\mb{V}\|_2\|\bm{\alpha}\|_2 \le \|\mb{V}\|_2$. On the other hand, $\|\mb{v}\|_2\le \|\mb{V}\|_2 \implies \|\mb{\alpha}\|_2 \le \|\mb{V}^{-1}\|_2\|\mb{v}\|_2 \le 1$. Therefore, $\mb{x}_0\in\relint C$ if and only if there exists $\rho = r\|\mb{V}\|_2 > 0$ such that $C \supset B(\mb{x}_0, \rho)\,\cap\,\aff C = \{\mb{x}_0 + r\mb{v} : \mb{v}\in\aff C-\mb{x}_0\ \text{and}\ \|\mb{v}\|_2\le \|\mb{V}\|_2\} = \{\mb{x}_0 + r\mb{V}\bm{\alpha} : \|\bm{\alpha}\|_2\le 1\}$, which is equivalent to the statement. \qedhere
+            \qedhere
+        \end{enumerate}
+      \end{solution}
+    \item
+      \begin{enumerate}
+        \item  We let $\mb{x}_0\in \intp C$, $\mb{x}_1\in\bd C$ and $\mb{x}_2=\lambda (\mb{x}_1-\mb{x}_0)+\mb{x}_0$.
+          \begin{enumerate}
+            \item Please show that if $\lambda>1$, then $\mb{x}_2\notin C$.
+            \item Please show that if $\lambda\in(0,1)$, then $\mb{x}_2\in\intp C$.
+          \end{enumerate}
+        \item
+          \begin{enumerate}
+            \item Please show that $\mb{x} \in \relint C$ if and only if for any $\mb{y}\in C$, there exists $\gamma>0$ such that $\mb{x}+\gamma(\mb{x}-\mb{y}) \in C$.
+
+            \item Please show that if $\mb{x} \in \relint C$, $\mb{y} \in \cl C$, then  $\lambda \mb{x}+(1-\lambda) \mb{y} \in \relint C$ for $\lambda \in(0,1]$.
+          \end{enumerate}
+
+      \end{enumerate}
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item 
+            \begin{enumerate}
+              \item Assume that $\mb{x}_2 \in C$. Since $\mb{x}_0 \in \intp C$, there exists $r>0$ such that $B(\mb{x}_0,r) \in C$. By convexity of $C$, we have $(1 - \frac{1}{\lambda}) B(\mb{x}_0,r) + \frac{1}{\lambda} \mb{x}_2 = B(\mb{x}_1,\frac{(\lambda-1)r}{\lambda}) \subset C$, which contradicts $\mb{x}_1 \in \bd C$. So $\mb{x}_2 \notin C$.
+              \item Since $\mb{x}_0 \in \intp C$, there exists $r>0$ such that $B(\mb{x}_0,r) \in C$. Since $\mb{x}_1 \in \bd C$, there exists $0< \epsilon < \frac{1-\lambda}{\lambda}r$ such that $\mb{x}_1 \in C + B(0,\epsilon)$. Then
+                \begin{align*}
+                            & B(\mb{x}_2,(1-\lambda) r - \lambda\epsilon)                                                \\  
+                  =\        & B((1-\lambda)\mb{x}_0,(1-\lambda) r - \lambda\epsilon) +\lambda \mb{x}_1                   \\  
+                  \subset\  & B((1-\lambda)\mb{x}_0,(1-\lambda) r - \lambda\epsilon) + \lambda C + \lambda B(0,\epsilon) \\
+                  =\        & (1-\lambda) B(\mb{x}_0, r) + \lambda C                                                     \\
+                  \subset\  & (1 - \lambda) C + \lambda C = C,
+                \end{align*}implying that $\mb{x}_2 \in \intp C$.
+            \end{enumerate}
+          \item 
+            \begin{enumerate}
+              \item 
+                \begin{itemize}
+                  \item [($\Rightarrow$)]
+                    Clearly, $\mb{x} - \mb{y}\in \aff C - \mb{x}$. According to Question 1(a), there exists $r = \gamma\|\mb{x}-\mb{y}\|_2>0$ such that $\mb{x}+r\frac{(\mb{x}-\mb{y})}{\|\mb{x}-\mb{y}\|_2} = \mb{x}+\gamma(\mb{x}-\mb{y}) \in C$.
+                  \item [($\Leftarrow$)]
+                    Let $\mb{y}\in \relint C$ and $\mb{x}+\gamma(\mb{x}-\mb{y})\in \cl C$. Then $\mb{x}= \frac{1}{\gamma+1}(\mb{x}+\gamma(\mb{x}-\mb{y})) + \frac{\gamma}{\gamma+1}\mb{y}$ implies that $\mb{x} \in \relint C$, according to (b)ii.
+                \end{itemize}
+              \item If $\lambda = 1$, it is clear that $\mb{x}\in \relint C$. Consider $0 < \lambda < 1$. Since $\mb{x}\in \relint C$, there exists $r > 0$ such that $B(\mb{x}, r)\,\cap\,\aff C \subset C$. Since $\mb{y}\in \cl C$, there exists $0< \epsilon < \frac{\lambda }{1-\lambda }r$ such that $\mb{y}\in C + B(0, \epsilon)\,\cap\,\aff C $. Then
+                \begin{align*}
+                            & B(\lambda \mb{x}+(1-\lambda) \mb{y}, \lambda r - (1-\lambda)\epsilon)\,\cap\,\aff C                                           \\
+                  =\        & B(\lambda \mb{x}, \lambda r - (1-\lambda)\epsilon)\, \cap\, \aff C + (1-\lambda) \mb{y}                                       \\
+                  \subset\  & B(\lambda \mb{x}, \lambda r - (1-\lambda)\epsilon)\, \cap\, \aff C + (1-\lambda) C + (1-\lambda)B(0,\epsilon)\, \cap\, \aff C \\
+                  =\        & \lambda B(\mb{x}, r)\,\cap\,\aff C + (1-\lambda) C                                                                            \\
+                  \subset\  & \lambda C + (1-\lambda) C = C,
+                \end{align*} implying that $\lambda \mb{x}+(1-\lambda) \mb{y}\in \relint C$.
+                \qedhere
+            \end{enumerate}
+        \end{enumerate}
+        \qedhere
+      \end{solution}
+    \item
+
+      \begin{enumerate}
+
+        \item Please show the following statements.
+          \begin{enumerate}
+            \item Suppose $\intp C$ is nonempty, then $\intp C=\intp(\cl C)$ (in fact, the result still holds when $C=\emptyset$).
+            \item $\cl (\relint C)=\cl C$.
+            \item $\relint (\cl C)=\relint C$.
+          \end{enumerate}
+          [Hint: if $C$ contains more than one point, then $\relint C$ is nonempty. You may also use the results in Question 2.]
+
+        \item Using the results in Question 3(a), please prove the following statement.
+
+          For a convex set $C\subset\mathbb{R}^n$ and $\mb{x}_0\in\bd C$, we can find a sequence $\{\mb{x}_k\}\subset\mathbb{R}^n\setminus\cl C$ such that $\mb{x}_k\to\mb{x}_0$ as $k\to\infty$.
+      \end{enumerate}
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item 
+            \begin{enumerate}
+              \item It is clear that $\intp C\subset\intp(\cl C)$ as $C\subset\cl C$. Consider $\mb{x} \in \intp (\cl C)$ and $\mb{y} \in \intp C$, where $\mb{x} \neq \mb{y}$. There exist $r = \gamma\|\mb{x}-\mb{y}\|_2>0$ such that $\mb{z}=\mb{x}+\gamma(\mb{x}-\mb{y}) \in B(\mb{x},r)\subset \cl C$. Then, by Question 2(a)ii, $\mb{x} \in \relint C$ follows from $\mb{x} = \frac{1}{\gamma+1}\mb{z} + \frac{\gamma}{\gamma+1}\mb{y}$.
+              \item It is clear that $\cl (\relint C)\subset\cl C$ as $\relint C\subset C$. Consider $\mb{x} \in \cl C$ and $\mb{y}\in \relint C$, where $\mb{x} \neq \mb{y}$. According to Question 2(b)ii, we have $\mb{x}_k = (1-\frac{1}{k})\mb{x} + \frac{1}{k}\mb{y} \in \relint C$ for any $k \in \mathbb{N}^+$. Since $\mb{x}_k \to \mb{x}$, we have $\mb{x} \in \cl (\relint C)$. Hence $\cl C\subset\cl (\relint C)$.
+              \item It is clear that $\relint (\cl C)\supset\relint C$ as $\cl C\supset C$ and $\aff (\cl C) = \aff C$. Consider $\mb{x} \in \relint (\cl C)$ and $\mb{y} \in \relint C$, where $\mb{x} \neq \mb{y}$. By Question 2(b)i, there exists $\mb{z} = \mb{x} + \gamma (\mb{x} - \mb{y}) \in \cl C$ for some $\gamma > 0$. Then, by Question 2(b)ii, $\mb{x} \in \relint C$ follows from $\mb{x} = \frac{1}{\gamma+1}\mb{z} + \frac{\gamma}{\gamma+1}\mb{y}$.
+            \end{enumerate}
+          \item $\mb{x}_0 \in \bd C \implies \mb{x}_0 \notin \intp C \implies \mb{x}_0 \notin \intp (\cl C)$. That is, for any $r > 0$, there exists $\mb{x} \in B(\mb{x}_0,r)$ but $\mb{x} \notin \cl C$. Let $r=\frac{1}{k}$ and pick $\mb{x}_k \in B(\mb{x}_0,r)$ such that $\mb{x}_k \notin \cl C$. Then $\{\mb{x}_k\}$ is the desired sequence.
+            \qedhere
+        \end{enumerate}
+      \end{solution}
+  \end{enumerate}
+
+\end{exercise}
+\newpage
+
+
+
+\begin{exercise}[Relative Boundary]
+  The relative boundary of a set $S\subset\mathbb{R}^n$ is defined as
+  $\relbd S = \cl S \setminus  \relint S$.
+  Please show the following statements {\bf or give counter-examples}.
+  \begin{enumerate}
+    \item
+      For a set $S\subset\mathbb{R}^n$, $\relbd S\subset \bd S$.
+
+      \begin{solution}
+        By definition, we know that $\relint S \supset \intp S$. Hence, $\relbd S \subset \cl S \setminus \intp S = \bd S$.
+      \end{solution}
+    \item
+      For a set $S\subset\mathbb{R}^n$, $\relbd S= \bd S$.
+
+      \begin{solution}
+        Counter-example: $S = [0,1]\times \{0\}\subset \mathbb{R}^2$. \\ $\relbd S = \{(0,0),(1,0)\}$, $\bd S = S$, $\relbd S\neq \bd S$.
+      \end{solution}
+    \item
+      For a set $S \subset \mathbb{R}^n$, $\relbd S=\relbd \cl S$.
+
+      \begin{solution}
+        Counter-example: $S = \mathbb{R} \setminus \{0\} \subset \mathbb{R}$.\\ $\relbd S = \{0\}$, $\relbd (\cl S) = \emptyset$, $\relbd S\neq \relbd (\cl S)$.
+      \end{solution}
+    \item (Optional)
+      For a convex set  $C \subset \mathbb{R}^n$, $\relbd C=\relbd \cl C$.
+
+      \begin{solution}
+        If $S$ is empty, then the statement is clear. If $S$ is nonempty, by Exercise 4 Question 3(a)iii, we have $\relint S = \relint (\cl S)$. So $\relbd S = \cl S \setminus \relint S = \cl (\cl S) \setminus \relint (\cl S) = \relbd (\cl S)$.
+      \end{solution}
+    \item
+      For a set $S\subset\mathbb{R}^n$ and $\mb{x}_0\in \cl S$, we can find a sequence $\{\mb{x}_k\}\subset\mathbb{R}^n\setminus\cl S$ such that $\mb{x}_k\to\mb{x}_0$ as $k\to\infty$.
+
+      \begin{solution}
+        If $\mb{x}_0 \in \intp S$, then the statement is clearly false. If $\mb{x}_0 \in \bd S$, consider $S = \mathbb{R} \setminus \{0\} \subset \mathbb{R}$ for counter-example. It is impossible to find the desired sequence $\{\mb{x}_k\} \subset \mathbb{R} \setminus \cl S = \emptyset$.
+      \end{solution}
+  \end{enumerate}
+\end{exercise}
+\newpage
+
+
+\begin{exercise}[Minkowski Summation of Sets (Optional)]
+  The Minkowski sum of two sets $S_1$ and $S_2$ is defined by
+  $$
+    S_1+S_2=\{\mb{x}+\mb{y}:\mb{x}\in S_1,\mb{y}\in S_2\}.
+  $$
+  \begin{enumerate}
+    \item
+      Let $S_1=\{\mb{x}\in\mathbb{R}^2:\|\mb{x}\|_2\le1\}$ and $S_2=\{\mb{x}\in\mathbb{R}^2:\|\mb{x}\|_\infty\le 1\}$.
+      \begin{enumerate}
+        \item
+          Please draw the set $S_1+S_2$.
+        \item
+          How do you tell if a point $\mb{x}$ is in the set $S_1+S_2$?
+      \end{enumerate}
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item The plot of $S_1+S_2$ is shown below.
+            \begin{figure}[H]
+              \centering
+              \includegraphics{Ex6.pdf}
+              \caption{Plot of $S_1+S_2$}
+            \end{figure}
+          \item $S_1 + S_2 = \{\mb{x}\in \mathbb{R}^n : S_1 \cap (\mb{x}-S_2) \neq \emptyset\} = \{\mb{x}\in \mathbb{R}^n : S_2 \cap (\mb{x}-S_1) \neq \emptyset\}$.
+            \qedhere
+        \end{enumerate}
+      \end{solution}
+    \item
+      Recall that $\mathbb{R}^n$ can be decomposed as $\mathbb{R}^n=S\oplus S^\perp$, i.e., $\mathbb{R}^n = S+S^\perp$ and $S\cap S^\perp=\emptyset$, where $S\subset\mathbb{R}^n$ is a subspace and $S^\perp = \{\mb{x}\in\mathbb{R}^n: \mb{x}\perp S\}$. Let $C\subset\mathbb{R}^n$ be a convex set. Define $\hat{C}=C+(\aff C-\mb{x}_0)^\perp$. Please show that:
+      \begin{enumerate}
+        \item
+          $\dim (\aff \hat{C})=n$;
+        \item
+          $\relint C + (\aff C-\mb{x}_0)^\perp = \relint \hat{C}$;
+        \item
+          $\relbd C + (\aff C-\mb{x}_0)^\perp = \relbd\hat{C}$.
+      \end{enumerate}
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item 
+            We assert that $\aff \hat{C} = \aff C + \aff (\aff C-\mb{x}_0)^\perp$. Since $(\aff C-\mb{x}_0)^\perp$ is a subspace, we have $\aff (\aff C-\mb{x}_0)^\perp = (\aff C-\mb{x}_0)^\perp$. So $\aff \hat{C} = \mb{x}_0 + (\aff C-\mb{x}_0) + (\aff C-\mb{x}_0)^\perp= \mb{x}_0 + \mathbb{R}^n = \mathbb{R}^n$. Hence $\dim (\aff \hat{C}) = n$. 
+
+            To complete the proof, we show that $\aff(C_1 + C_2)=\aff(C_1)+\aff(C_2)$ for any sets $C_1$ and $C_2$. Let $\mb{z} = \sum_i \theta_i(\mb{x}_i + \mb{y}_i)\in\aff(C_1+C_2)$, where $\mb{x}_i\in C_1$, $\mb{y}_i\in C_2$ and $\sum_i \theta_i = 1$. Then $\mb{z} = \sum_i \theta_i\mb{x}_i + \sum_i \theta_i\mb{y}_i\in \aff(C_1) + \aff(C_2)$, and hence $\aff(C_1+C_2)\subset\aff(C_1)+\aff(C_2)$. 
+
+            To show the reverse inclusion, let $\mb{x} = \sum_i \alpha_i\mb{x}_i \in \aff C_1$ and $\mb{y} = \sum_j \beta_j\mb{y}_j \in \aff C_2$, where $\mb{x}_i\in C_1$, $\mb{y}_j\in C_2$ and $\sum_i \alpha_i = \sum_j \beta_j = 1$. Then $\mb{x} + \mb{y} = \sum_{i,j} \alpha_i\beta_i(\mb{x}_i + \mb{y}_j) \in \aff(C_1+C_2)$, and hence $\aff(C_1)+\aff(C_2)\subset\aff(C_1+C_2)$. 
+          \item We assert that $\relint \hat{C} = \relint C + \relint (\aff C-\mb{x}_0)^\perp$. Since $(\aff C-\mb{x}_0)^\perp$ is a subspace, we have $\relint (\aff C-\mb{x}_0)^\perp = (\aff C-\mb{x}_0)^\perp$. So $\relint C + (\aff C-\mb{x}_0)^\perp = \relint \hat{C}$.
+
+            To complete the proof, we show that $\relint(C_1 + C_2)=\relint(C_1)+\relint(C_2)$ for any convex sets $C_1$ and $C_2$. First, we note that by Exercise 4.2(b), a point $\mb{x}$ belongs to the relative interior of a convex set $C$ if and only if $\mb{x} = \theta\mb{x}_1 + (1-\theta)\mb{x}_2$, where $\mb{x}_1, \mb{x}_2\in C$ and $0<\theta<1$. For any $\mb{z} = \theta\mb{z}_1 + (1-\theta)\mb{z}_2\in\relint(C_1+C_2)$, where $\mb{z}_1, \mb{z}_2\in C_1+C_2$ and $0<\theta<1$, there exists $\mb{x}_1, \mb{x}_2\in C_1$ and $\mb{y}_1, \mb{y}_2\in C_2$ such that $\mb{z}_1 = \mb{x}_1 + \mb{y}_1$ and $\mb{z}_2 = \mb{x}_2 + \mb{y}_2$. Therefore, $\mb{z} = \theta\mb{x}_1 + (1-\theta)\mb{x}_2 + \theta\mb{y}_1 + (1-\theta)\mb{y}_2 \in \relint C_1 + \relint C_2$, and hence $\relint(C_1+C_2)\subset\relint(C_1)+\relint(C_2)$.
+
+            To show the reverse inclusion, let $\mb{x} = \alpha\mb{x}_1 + (1-\alpha)\mb{x}_2\in\relint C_1$ and $\mb{y} = \beta\mb{y}_1 + (1-\beta)\mb{y}_2\in\relint C_2$, where $\mb{x}_1, \mb{x}_2\in C_1$ and $\mb{y}_1, \mb{y}_2\in C_2$ and $0<\alpha,\beta<1$. Actually, by Exercise 4.2(b)ii, we can always find $\mb{x}_1, \mb{x}_2,\mb{y}_1, \mb{y}_2$ such that $\alpha=\beta$. Then $\mb{x} + \mb{y} = \alpha(\mb{x}_1 + \mb{y}_1) + (1-\alpha)(\mb{x}_2 + \mb{y}_2) \in \relint(C_1+C_2)$, and hence $\relint(C_1)+\relint(C_2)\subset\relint(C_1+C_2)$.
+          \item We assert that $\relbd\hat{C} = \cl \hat{C} \setminus \relint\hat{C} = (\cl C + (\aff C-\mb{x}_0)^\perp) \setminus (\relint C + (\aff C-\mb{x}_0)^\perp) = (\cl C \setminus \relint C) + (\aff C-\mb{x}_0)^\perp = \relbd C + (\aff C-\mb{x}_0)^\perp $.
+
+            To complete the proof, we need to show:
+            \begin{enumerate}
+              \item $\cl(C_1 + C_2)=\cl(C_1)+\cl(C_2)$ for any sets $C_1$ and $C_2$ satisfying $\aff(C_1)\perp\aff(C_2)$.
+              \item $(C_1+C)\setminus(C_2+C) = (C_1\setminus C_2)+C$ for any sets satisfying $C_1\supset C_2$ and $C_1\cap C = \{\mb{0}\}$.
+            \end{enumerate}
+            For the first statement, let $\mb{x + y} \in \cl(C_1+C_2)$ and $\{\mb{x}_k + \mb{y}_k\}\subset C_1+C_2$ converges to $\mb{x+y}$, where $\mb{x}, \mb{x}_k \in C_1$ and $\mb{y}, \mb{y}_k \in C_2$. Since $\langle\mb{x}_k + \mb{y}_k, \mb{x}_k\rangle = \langle\mb{x}_k, \mb{x}_k\rangle \to \langle\mb{x}, \mb{x}_k\rangle$, it follows that $\mb{x}_k \to \mb{x}$. Analogously, $\mb{y}_k \to \mb{y}$. Therefore, $\mb{x}\in \cl C_1$ and $\mb{y}\in \cl C_2$, and hence $\mb{x+y}\in \cl(C_1) + \cl(C_2)$, i.e. $\cl(C_1+C_2)\subset\cl(C_1)+\cl(C_2)$. The reverse inclusion is obvious.
+
+            For the second statement, let $\mb{x}\in C_1, \mb{y}\in C_2$. If $\forall\,\mb{z}_1\in C$, $\lnot\exists\,\mb{z}_2\in C$, s.t. $\mb{x} + \mb{z}_1 = \mb{y} + \mb{z}_2$, then it is clear that $\mb{x} \neq \mb{y}$. This implies that $(C_1+C)\setminus(C_2+C) \subset (C_1\setminus C_2)+C$. Conversely, if $\exists\,\mb{x}\in C_1, \mb{y}\in C_2$ and $ \mb{z}_1, \mb{z}_2\in C$, s.t. $\mb{x} + \mb{z}_1 = \mb{y} + \mb{z}_2$, then $\mb{x} - \mb{y} = \mb{z}_2 - \mb{z}_1 = \mb{0}\in C_1\cap C$. Therefore, $\mb{z}_1 = \mb{z}_2$, $\mb{x} = \mb{y}$. This implies $(C_1+C)\cap(C_2+C)\, \cap\, ((C_1\setminus C_2)+C) = \emptyset$.
+        \end{enumerate}
+        \qedhere
+      \end{solution}
+  \end{enumerate}
+\end{exercise}
+\newpage
+
+
+\begin{exercise}[Convex Sets and Linear Functions]
+  Let $C\subset\mathbb{R}^n$ be a convex set and $l(\mb{x})=\langle \mb{a},\mb{x}\rangle$ be a linear function on $\mathbb{R}^n$. The linear function is nontrivial if $\mb{a}\neq\mb{0}$. Suppose $\mb{x}_0\in C$ and denote $$
+    B_C(\mb{x}_0,r)=B(\mb{x}_0,r)\cap\aff C.$$
+  Please show the following statements.
+  \begin{enumerate}
+    \item
+      If $l(\mb{x})=\alpha, \forall\,\mb{x}\in B_C(\mb{x}_0,r)$, then  $l(\mb{x})=\alpha, \forall\,\mb{x}\in C$.
+      \begin{solution}
+        Let $m=\dim(\aff C-\mb{x}_0)$ and $\mb{V} = (\mb{v}_1,\dots,\mb{v}_m)\in \mathbb{R}^{n\times m}$ be a matrix whose columns form an orthonormal basis of $\aff C-\mb{x}_0$. Then any $\mb{x}\in B_C(\mb{x}_0,r)$ can be written as $\mb{x}_0 + \mb{V}\mb{y}$, where $\mb{y}\in \mathbb{R}^m$ satisfies $\|\mb{y}\|_2\le r$. If we let $\mb{y}=\pm r\mb{e}_i$, $i=1,\dots,m$, then $l(\mb{x})=\langle\mb{a},\mb{x}_0\rangle \pm r\langle\mb{a},\mb{v}_i\rangle=\alpha$ $\implies$ $\langle\mb{a},\mb{x}_0\rangle = \alpha$ and $\langle\mb{a},\mb{v}_i\rangle = 0$. Therefore, for any $\mb{x}' = \mb{x}_0 + \mb{V}\mb{y}' \in C$, we have $l(\mb{x}')=\langle\mb{a},\mb{x}_0\rangle + \langle\mb{a},\mb{V}\mb{y}'\rangle=\alpha + 0 = \alpha$.
+        \qedhere
+      \end{solution}
+    \item
+      The linear function
+      $l(\mb{x})=\alpha,\forall\, \mb{x}\in B_C(\mb{x}_0,r)$ for some constant $\alpha$ if and only if $\mb{a}\perp (\aff C-\mb{x}_0)$.
+      \begin{solution}
+        \begin{itemize}
+          \item []
+          \item [($\Rightarrow$)]
+            According to Question 1, $\langle\mb{a},\mb{v}_i\rangle = 0$ $\implies$ $\mb{a}\perp \mb{v}_i$, $i=1,\dots,m$. Since $\mathcal{C}(\mb{V})=\aff C-\mb{x}_0$, we have $\mb{a}\perp (\aff C-\mb{x}_0)$.   
+          \item [($\Leftarrow$)]
+            The fact $\mb{a}\perp \mathcal{C}(\mb{V})$ implies that for any $\mb{x} = \mb{x}_0 + \mb{V}\mb{y}\in B_C(\mb{x}_0,r)$, we have $l(\mb{x})=\langle\mb{a},\mb{x}_0\rangle + \langle\mb{a},\mb{V}\mb{y}\rangle=\langle\mb{a},\mb{x}_0\rangle + 0 = \alpha$, where $\alpha = \langle\mb{a},\mb{x}_0\rangle$ is a constant.
+            \qedhere
+        \end{itemize}
+      \end{solution}
+    \item
+      The linear function $l(\mb{x})=\langle \mb{a},\mb{x}\rangle$ is not constant if and only if $\Pi_{(\aff C-\mb{x}_0)}(\mb{a})\neq \mb{0}$, where $\Pi$ means the projection.
+      \begin{solution}
+        On the basis of Question 2, we only need to prove that $\Pi_{(\aff C-\mb{x}_0)}(\mb{a}) = \mb{0}$ if and only if $\mb{a}\perp (\aff C-\mb{x}_0)$. 
+        \begin{itemize}
+          \item [($\Rightarrow$)]
+            $\mb{V}^\top\Pi_{(\aff C-\mb{x}_0)}(\mb{a}) = \mb{V}^\top\mb{V}(\mb{V}^\top\mb{V})^{-1}\mb{V}^\top\mb{a} = \mb{V}^\top\mb{a} = \mb{0}$. So $\mb{a}\perp (\aff C-\mb{x}_0)$.
+          \item [($\Leftarrow$)]
+            $\mb{V}^\top\mb{a} = \mb{0}$. So $\Pi_{(\aff C-\mb{x}_0)}(\mb{a}) = \mb{V}(\mb{V}^\top\mb{V})^{-1}\mb{V}^\top\mb{a} = \mb{V}(\mb{V}^\top\mb{V})^{-1}\mb{0} = \mb{0}$.
+            \qedhere
+        \end{itemize}
+      \end{solution}
+    \item
+      If $\relbd C\neq\emptyset$, then there exists a nontrivial linear function $l$, and a constant $\alpha$ such that $l(\mb{x})\le \alpha$ for $\forall\,\mb{x}\in C$.
+      \begin{solution}
+        If $m=\dim(\aff C-\mb{x}_0)<n$, then by Question 2, we can find $\mb{a} \in (\aff C-\mb{x}_0)^\perp$ such that $\mb{a}\neq \mb{0}$ and $l(\mb{x}) = l(\mb{x}_0) = \alpha$.
+        
+        If $m=n$, then $\aff C= \mathbb{R}^n$, $\relbd C = \bd C$. Suppose $\mb{x_1} \in \bd C$. By the Supporting Hyperplane Theorem, there exists a hyperplane $H_{(\mb{a},\alpha)}$ supporting $C$ at $\mb{x_1}$ such that $l(\mb{x})\le l(\mb{x}_1) = \alpha$ for $\forall\,\mb{x}\in C$.
+        \qedhere
+      \end{solution}
+  \end{enumerate}
+\end{exercise}
+\newpage
+
+
+\begin{exercise}[Separation Theorems]
+  Let $C_1, C_2,C\subset\mathbb{R}^n$ be convex sets. Please show the following statements.
+  \begin{enumerate}
+    \item
+      If $C_1$ is compact, $C_2$ is closed and $C_1\cap C_2=\emptyset$, then $C_1$ and $C_2$ can be strongly separated.
+      \begin{solution}
+        Let $C=C_1-C_2$, which is a nonempty convex closed set because both $C_1, C_2$ are nonempty, convex and closed. Since $C_1\cap C_2=\emptyset$, we know that $\mb{0} \notin C$. By Theorem 3 in Lecture 5, $C$ and $\mb{0}$ can strongly separated, i.e. there exists $\mb{a}\in \mathbb{R}^n$ and $\alpha>\beta$ such that $C \subset H^+_{(\mb{a},\alpha)}$ and $\mb{0} \in H^{--}_{(\mb{a},\beta)} \implies \beta > 0$. So $\mb{a}^\top (\mb{x}_1 - \mb{x}_2) > \beta \implies \mb{a}^\top \mb{x}_1 > \beta + \mb{a}^\top \mb{x}_2$ for any $\mb{x}_1 \in C_1$ and $\mb{x}_2 \in C_2$. Note that $C_1$ is bounded, which implies that there exists $\alpha' = \inf\, \mb{a}^\top \mb{x}_1$ and hence exists $\beta' = \sup\, \mb{a}^\top \mb{x}_2$. Then we have $\mb{a}^\top \mb{x}_1 \ge \alpha' \ge \beta + \beta' > \beta' \ge \mb{a}^\top\mb{x}_2$, i.e. $C_1 \subset H^+_{(\mb{a},\alpha')}$ and $C_2 \in H^-_{(\mb{a},\beta')}$. Therefore, $C_1$ and $C_2$ can be strongly separated.
+        \qedhere
+      \end{solution}
+    \item (Optional)
+      The sets $C_1$ and $C_2$ can be properly separated if and only if $\relint C_1\,\cap\,\relint C_2=\emptyset$.
+      \begin{solution}
+        Let $C=C_1-C_2$, which is a nonempty convex set. Since $\relint C = \relint C_1 - \relint C_2$, we have $\relint C_1\,\cap\,\relint C_2=\emptyset$ if and only if $\mb{0} \notin \relint C$, and hence if and only if $C$ and $\mb{0}$ can be properly separated, which follows from the Proper Separation Theorem in Lecture 5. That is, there exists $H_{(\mb{a},\alpha)}$ such that 
+        \begin{center}
+          $C \subset H^+_{(\mb{a},\alpha)}$, $\mb{0} \in H^-_{(\mb{a},\alpha)}$;\par
+          $\exists\, \mb{x} \in C \cup \{\mb{0}\}$, $\mb{x} \notin H_{(\mb{a},\alpha)}$. 
+        \end{center}
+        This is equivalent to the conditions that $H_{(\mb{a},\alpha)}$ properly separates $C_1, C_2$:
+        \begin{center}
+          $\forall\, \mb{x}_1\in C_1, \mb{x}_2\in C_2$, $\mb{a}^\top \mb{x}_1 \ge \mb{a}^\top \mb{x}_2$;\par
+          $\exists\, \mb{x}_1\in C_1, \mb{x}_2\in C_2$, $ \mb{a}^\top \mb{x}_1 > \mb{a}^\top \mb{x}_2$.
+        \end{center}
+        To sum up, $C_1$ and $C_2$ is properly separated if and only if $\relint C_1\,\cap\,\relint C_2=\emptyset$.
+        \qedhere
+      \end{solution}
+    \item
+      If $\dim (\aff C)=n$ and $\mb{x}\in\mathbb{R}^n\setminus C$, then $\mb{x}$ and $C$ can be properly separated.
+      \begin{solution}
+        If $\mb{x}\notin \cl C$, by the Strict Separation Theorem, there exists a hyperplane which strictly separates $\mb{x}$ and $\cl C$ and thus also properly separates $\mb{x}$ and $C$. 
+
+        If $\mb{x}\in \bd C=\relbd C $, by the Supporting Hyperplane Theorem, there exists a hyperplane $H_{(\mb{a},\alpha)}$ such that $C\subset H^-_{(\mb{a},\alpha)}$. Note that $\intp C  = \relint C \neq \emptyset$. For any $\mb{y}\in \intp C$ and $r>0$ such that $B(\mb{y},r)\subset C$, we have $\mb{a}^\top(\mb{y}+r\mb{a}) \le \alpha \implies \mb{a}^\top\mb{y} < \alpha$, so $y\notin H_{(\mb{a},\alpha)}$ and thus $C \not\subset H_{(\mb{a},\alpha)}$. Therefore, $\mb{x}$ and $C$ can be properly separated by $H_{(\mb{a},\alpha)}$.
+        \qedhere
+      \end{solution}
+  \end{enumerate}
+\end{exercise}
+\newpage
+
+
+\begin{exercise}[Farkas' Lemma]
+  Let $\mb{A}=(\mb{a}_1,\dots,\mb{a}_n)\in \mathbb{R}^{m\times n}$ and $\mb{b}\in\mathbb{R}^m$. Consider a set $A=\{ \mb{a}_1,\cdots ,\mb{a}_n\}$. Its conic hull $\cone A$ is defined as
+  $$
+    \cone A=\{ \sum_{i=1}^n\alpha_i\mb{a}_i:\alpha_i\ge 0,\mb{a}_i\in A\}.
+  $$
+  \begin{enumerate}
+    \item
+      Please show that $\cone A$ is closed and convex.
+      \begin{solution}
+        Without loss of generality, we assume that $\mb{a}_1, \dots, \mb{a}_n$ are linearly independent. Let $\{\mb{x}_k\} \subset \cone A$ be an arbitrary sequence that converges to some $\mb{x} = \sum_{i=1}^n\alpha_i\mb{a}_i\in \lspan A$, where $\mb{x}_k=\sum_{i=1}^n\alpha_{ki}\mb{a}_i$ for some $\alpha_{ki}\ge 0$. Since $A$ is a basis of $\lspan A$, it follows that $\alpha_{ki}\to \alpha_i$ as $k\to\infty$, and hence $\alpha_i \ge 0$ for all $i$. Therefore, $\mb{x} \in \cone A$ and $\cone A$ is closed.
+
+        If $\mb{a}_1, \dots, \mb{a}_n$ are linearly dependent, TBD.
+        
+        Second, for any $\mb{y} = \sum_{i=1}^n\beta_i\mb{a}_i\in \cone A$ and any $0\le\theta\le1$, we have $\theta \mb{x} + (1-\theta)\mb{y} = \sum_{i=1}^n\left(\theta\alpha_i + (1-\theta)\beta_i\right)\mb{a}_i\in \cone A$, implying that $\cone A$ is convex.
+      \end{solution}
+    \item
+      If $\mb{b}\in\cone A$, please show that there exists $\mb{x}\in\mathbb{R}^n$ such that $\mb{Ax}=\mb{b}$ and $\mb{x}\ge \mb{0}$.
+      \begin{solution}
+        If $\mb{b}\in\cone A$, then there exists $x_i\ge 0$ such that $\mb{b}=\sum_{i=1}^n x_i\mb{a}_i$. Let $\mb{x}=(x_1,\cdots, x_n)^\top$. Then $\mb{Ax}=\mb{b}$ and $\mb{x}\ge \mb{0}$.
+      \end{solution}
+    \item
+      If $\mb{b}\notin\cone A$, use separation theorems to show that there exists $\mb{y}\in\mathbb{R}^m$, such that $\mb{A}^\top \mb{y}\ge \mb{0}$ and $\mb{b}^\top\mb{y}<0$.
+      \begin{solution}
+        $\cone A$ is a nonempty closed convex set. If $\mb{b} \notin \cone A$, then $\cone A$ and $\mb{b}$ can be strongly separated; that is, there exists $\mb{y}\in \mathbb{R}^n$ and $\alpha>\beta$ such that $\cone A \subset H^+_{(\mb{y},\alpha)}$ and $\mb{b} \in H^-_{(\mb{y},\beta)}$. Since $\mb{0}\in \cone \mb{A}$, we have $\alpha \le 0 \implies \beta < 0$. Thus $\mb{b}^\top \mb{y} \le \beta < 0$. Note that $\lambda\mb{a}_i \in \cone \mb{A}$ for any $\lambda >0$. Hence $\mb{a}_i^\top \mb{y}\ge \lim_{\lambda\to\infty} \frac{\alpha}{\lambda} = 0 \implies \mb{A}^\top \mb{y}\ge \mb{0}$.
+      \end{solution}
+    \item
+      Now you can prove Farkas' Lemma: for given $\mb{A}\in\mathbb{R}^{m\times n}$ and $\mb{b}\in\mathbb{R}^m$, one and only one of the two statements hold:
+      \begin{itemize}
+        \item
+          $\exists \mb{x}\in\mathbb{R}^n$, $\mb{Ax}=\mb{b}$ and $\mb{x}\ge \mb{0}$.
+        \item
+          $\exists \mb{y}\in\mathbb{R}^m$, $\mb{A}^\top\mb{y}\ge\mb{0}$ and $\mb{b}^\top\mb{y}<0$.
+      \end{itemize}
+      \begin{solution}
+        If $\mb{b}\in\cone A$, then by Question 2, the first statement holds. If $\mb{b}\notin\cone A$, then by Question 3, the second statement holds.
+
+        Suppose that both the statements hold. Then there exists $\mb{x}\in\mathbb{R}^n$, $\mb{Ax}=\mb{b}$ and $\mb{x}\ge \mb{0}$, and there exists $\mb{y}\in\mathbb{R}^m$, $\mb{A}^\top\mb{y}\ge\mb{0}$ and $\mb{b}^\top\mb{y}<0$. It follows that $\mb{b}^\top \mb{y} = \mb{x}^\top \mb{A}^\top \mb{y} = \langle \mb{x}, \mb{A}^\top \mb{y} \rangle \ge 0$, which is a contradiction.
+      \end{solution}
+  \end{enumerate}
+\end{exercise}
+\newpage
+
+
+\begin{exercise}[Projection to a Polytope]
+  \newcommand{\Id}{ \operatorname{Id} }
+  \textbf{Hint}: you may want to read \cite{hastie2015statistical,wang15a}.
+  \begin{enumerate}
+    \item Let $C$ be a nonempty closed convex subset of $\mathbb{R}^n$. Please show the following statements.
+      \begin{enumerate}
+        \item  The projection operator on $C$, i.e., $\Pi_C$, is continuous and firmly nonexpansive. In other words, for any $\mb{w}_{1}, \mb{w}_{2} \in \mathbb{R}^n$, we have
+          \begin{align*}
+            \left\|\Pi_C\left(\mb{w}_{1}\right)-\Pi_C\left(\mb{w}_{2}\right)\right\|_{2}^{2}+\left\|\left(\Id-\Pi_C\right)\left(\mb{w}_{1}\right)-\left(\Id-\Pi_C\right)\left(\mb{w}_{2}\right)\right\|_{2}^{2} \leq\left\|\mb{w}_{1}-\mb{w}_{2}\right\|_{2}^{2},
+          \end{align*}
+          where $\Id$ is the identity operator.
+          
+        \item For a point $\mb{w} \in \mathbb{R}^n$, let $\mb{w}(t)=\Pi_C(\mb{w})+t\left(\mb{w}-\Pi_C(\mb{w})\right) $. Then, the projection of the point $\mb{w}(t)$ is $\Pi_C(\mb{w})$ for all $t \geq 0$, i.e.,
+          \begin{align*}
+            \Pi_C(\mb{w}(t))=\Pi_C(\mb{w}), \forall t \geq 0.
+          \end{align*}
+          
+          
+      \end{enumerate}
+      
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item 
+            Since $\mb{w}_{1,2}= \Pi_C(\mb{w}_{1,2})+(\mb{w}_{1,2}-\Pi_C(\mb{w}_{1,2})) = \Pi_C(\mb{w}_{1,2})+(\Id-\Pi_C)\mb{w}_{1,2} $, we have
+            \begin{align*}
+              \|\mb{w}_1-\mb{w}_2\|_2^2 & = \|\Pi_C(\mb{w}_1)-\Pi_C(\mb{w}_2)\|_2^2 + \|(\Id-\Pi_C)(\mb{w}_1)-(\Id-\Pi_C)(\mb{w}_2)\|_2^2  \\ 
+                                        & + 2\langle\Pi_C(\mb{w}_1)-\Pi_C(\mb{w}_2), (\Id-\Pi_C)(\mb{w}_1)-(\Id-\Pi_C)(\mb{w}_2) \rangle.
+            \end{align*}
+            We need to show the last term is non-negative, i.e
+            \begin{align}
+              \langle\Pi_C(\mb{w}_1)-\Pi_C(\mb{w}_2), \mb{w}_1-\mb{w}_2 - \Pi_C(\mb{w}_1) + \Pi_C(\mb{w}_2) \rangle \ge 0 
+            \end{align}
+            Since $\Pi_C(\mb{w}_1),\Pi_C(\mb{w}_2)\in C$, by variational inequality, we have
+            \begin{align}
+              \langle\Pi_C(\mb{w}_1)-\Pi_C(\mb{w}_2), \mb{w}_2 - \Pi_C(\mb{w}_2) \rangle \le 0 \\
+              \langle\Pi_C(\mb{w}_2)-\Pi_C(\mb{w}_1), \mb{w}_1 - \Pi_C(\mb{w}_1) \rangle \le 0
+            \end{align}
+            (3) $-$ (2) yields (1). The nonexpansiveness implies $\lim_{\mb{w}_2\to \mb{w}_1} \|\Pi_C(\mb{w}_2)-\Pi_C(\mb{w}_1)\|_2 = 0$ and hence $\lim_{\mb{w}_2\to \mb{w}_1} \Pi_C(\mb{w}_2) = \Pi_C(\mb{w}_1)$, i.e. $\Pi_C$ is continuous.
+          \item By variational inequality,
+            \begin{align*}
+              0 \ge\, & \langle\Pi_C(\mb{w})-\Pi_C(\mb{w}(t)), \mb{w}(t) - \Pi_C(\mb{w}(t))\rangle                                     \\
+              =    \, & \|\Pi_C(\mb{w})-\Pi_C(\mb{w}(t))\|^2_2 - t\langle\Pi_C(\mb{w}(t))-\Pi_C(\mb{w}), \mb{w} - \Pi_C(\mb{w})\rangle \\
+              \ge \,  & \|\Pi_C(\mb{w})-\Pi_C(\mb{w}(t))\|^2_2
+            \end{align*}
+            Thus $\|\Pi_C(\mb{w})-\Pi_C(\mb{w}(t))\|_2 = 0$, i.e. $\Pi_C(\mb{w}(t)) = \Pi_C(\mb{w})$ for all $t \geq 0$.
+            \qedhere
+        \end{enumerate}
+      \end{solution}
+      
+      
+    \item Let $\mb{y}$ be an $N$-dimensional vector ,$\{\mb{x}_1,\cdots,\mb{x}_p\}$ be $N$-dimension non-zero vectors and $\lambda\ge 0$ is a regularization parameter. Consider the following optimization problem:
+      \begin{align}\label{dual}
+        \min_{\theta}\left\{\left\|\theta-\frac{\mb{y}}{\lambda}\right\|_{2}^{2}:\left|\mb{x}_{i}^\top \theta\right| \leq 1, i=1,2, \ldots, p\right\}.
+      \end{align}
+      For notational convenience, we denote the optimal solution of (\ref{dual}) by $\theta^*(\lambda)$.
+      \begin{enumerate}
+        \item We let the feasible set of (\ref{dual}) be $F$. Please give an interpretation of the geometry of $F$ (you don't need to prove it). Then give a close form of the optimal solution $\theta^*(\lambda)$ in the form of projection.
+        \item Let $\lambda, \lambda_{0}>0$ be two regularization parameters. Please show that
+          \begin{align*}
+            \theta^{*}(\lambda) \in B\left(\theta^{*}\left(\lambda_{0}\right), \left|\frac{1}{\lambda}-\frac{1}{\lambda_{0}}\right|\|\mb{y}\|_{2}\right).
+          \end{align*}
+          
+        \item  Let $\lambda, \lambda_{0}>0$ be two regularization parameters. Please show that
+          \begin{align*}
+            \theta^{*}(\lambda) \in B\left(\theta^{*}\left(\lambda_{0}\right)+\frac{1}{2}\left(\frac{1}{\lambda}-\frac{1}{\lambda_{0}}\right) \mb{y}, \frac{1}{2}\left|\frac{1}{\lambda}-\frac{1}{\lambda_{0}}\right|\|\mb{y}\|_{2}\right).
+          \end{align*}
+          (You may use the result in Question 1(a).)
+          
+        \item Suppose that $\proj{\frac{\mb{y}}{\lambda_{0}}}{F}\not=\theta^{*}\left(\lambda_{0}\right)$. For any $\lambda \in\left(0, \lambda_{0}\right]$, let us define
+          \begin{align*}
+             & \mb{v}_{1}\left(\lambda_{0}\right)=
+            \frac{\mb{y}}{\lambda_{0}}-\theta^{*}\left(\lambda_{0}\right),                                                                                                                                                                                                                                                      \\
+             & \mb{v}_{2}\left(\lambda, \lambda_{0}\right)=\frac{\mb{y}}{\lambda}-\theta^{*}\left(\lambda_{0}\right),                                                                                                                                                                                                           \\
+             & \mb{v}_{2}^{\perp}\left(\lambda, \lambda_{0}\right)=\mb{v}_{2}\left(\lambda, \lambda_{0}\right)-\frac{\left\langle\mb{v}_{1}\left(\lambda_{0}\right), \mb{v}_{2}\left(\lambda, \lambda_{0}\right)\right\rangle}{\left\|\mb{v}_{1}\left(\lambda_{0}\right)\right\|_{2}^{2}} \mb{v}_{1}\left(\lambda_{0}\right) .
+          \end{align*}
+          Then, the dual optimal solution $\theta^{*}(\lambda)$ can be estimated as follows:
+          \begin{align*}
+            \theta^{*}(\lambda) \in B\left(\theta^{*}\left(\lambda_{0}\right),\left\|\mb{v}_{2}^{\perp}\left(\lambda, \lambda_{0}\right)\right\|_{2}\right) \subseteq B\left(\theta^{*}\left(\lambda_{0}\right),\left|\frac{1}{\lambda}-\frac{1}{\lambda_{0}}\right|\|\mb{y}\|_{2}\right)
+          \end{align*}
+          (You may use the result in Question 1(b).)
+          
+      \end{enumerate}
+      
+      \begin{solution}
+        \begin{enumerate}
+          \item []
+          \item Define $\mb{X} = (\mb{x}_1, \cdots, \mb{x}_n)$. Then $\mb{X}^\top\theta$ is a point in the unit $\infty$-norm ball; that is, each dimension of $\mb{X}^\top\theta$ is bounded within $[-1,1]$. As $F$ is a nonempty closed convex set, the optimal solution $\theta^*(\lambda) = \Pi_F(\frac{\mb{y}}{\lambda})$.
+          \item By nonexpansiveness of $\Pi_F$, we have $$\left\|\theta^*(\lambda) - \theta^*(\lambda_0)\right\|_2 = \left\|\Pi_F(\frac{\mb{y}}{\lambda}) - \Pi_F(\frac{\mb{y}}{\lambda_0})\right\|_2 \le \left\|\frac{\mb{y}}{\lambda} - \frac{\mb{y}}{\lambda_0}\right\|_2 = \left|\frac{1}{\lambda} - \frac{1}{\lambda_0}\right| \left\|\mb{y}\right\|_2.$$
+          \item By Question 1(a), we have
+            \begin{align*}
+                    & \left\|\theta^*(\lambda) - \theta^*(\lambda_0) - \frac{1}{2} \left(\frac{1}{\lambda} - \frac{1}{\lambda_0}\right)\mb{y}\right\|_2                                                                     \\
+              = \,  & \left\|\Pi_F(\frac{\mb{y}}{\lambda}) - \Pi_F(\frac{\mb{y}}{\lambda_0}) - \frac{1}{2} \left(\frac{1}{\lambda} - \frac{1}{\lambda_0}\right)\mb{y}\right\|_2                                             \\
+              =\,   & \frac{1}{2}\left\|\Pi_F(\frac{\mb{y}}{\lambda}) - \Pi_F(\frac{\mb{y}}{\lambda_0}) - (\Id-\Pi_F)(\frac{\mb{y}}{\lambda}) + (\Id-\Pi_F)(\frac{\mb{y}}{\lambda_0})\right\|_2                             \\
+              \le\, & \frac{1}{2}\sqrt{\left\|\Pi_F(\frac{\mb{y}}{\lambda}) - \Pi_F(\frac{\mb{y}}{\lambda_0})\right\|_2^2 + \left\|(\Id-\Pi_F)(\frac{\mb{y}}{\lambda}) - (\Id-\Pi_F)(\frac{\mb{y}}{\lambda_0})\right\|^2_2} \\
+              \le\, & \frac{1}{2}\sqrt{\left\|\frac{\mb{y}}{\lambda} - \frac{\mb{y}}{\lambda_0}\right\|^2_2} = \frac{1}{2}\left|\frac{1}{\lambda} - \frac{1}{\lambda_0}\right|\left\|\mb{y}\right\|_2,
+            \end{align*}
+            where the first inequality holds as $\left\langle\Pi_F(\frac{\mb{y}}{\lambda}) - \Pi_F(\frac{\mb{y}}{\lambda_0}), (\Id-\Pi_F)(\frac{\mb{y}}{\lambda}) - (\Id-\Pi_F)(\frac{\mb{y}}{\lambda_0}) \right\rangle \ge 0 $.
+          \item Note that $\langle\mb{v}^\perp_2(\lambda,\lambda_0),\mb{v}_1(\lambda_0)\rangle = 0$, so
+            \begin{align*}
+              \|\mb{v}^\perp_2(\lambda,\lambda_0)\|_2 =\  & \left\|\frac{\mb{y}}{\lambda} - \frac{\mb{y}}{\lambda_0} + \left(1- \frac{\langle\mb{v}_1(\lambda_0), \mb{v}_2(\lambda,\lambda_0)\rangle}{\|\mb{v}_1(\lambda_0)\|^2_2}\right)\mb{v}_1(\lambda_0)\right\| \\
+              \le\                                        & \left\|\frac{\mb{y}}{\lambda} - \frac{\mb{y}}{\lambda_0}\right\|_2 = \left|\frac{1}{\lambda} - \frac{1}{\lambda_0}\right|\|\mb{y}\|_2.
+            \end{align*}
+            By Question 1(b), we know that $\Pi_F\left(\theta^*(\lambda_0) + \frac{\langle\mb{v}_1(\lambda_0), \mb{v}_2(\lambda,\lambda_0)\rangle}{\|\mb{v}_1(\lambda_0)\|^2_2}\mb{v}_1(\lambda_0)\right) = \theta^*(\lambda_0)$. Then by nonexpansiveness, we have 
+            \begin{align*}
+              \|\theta^*(\lambda) - \theta^*(\lambda_0)\| = \  & \left\|\Pi_F(\frac{\mb{y}}{\lambda}) - \Pi_F\left(\theta^*(\lambda_0) + \frac{\langle\mb{v}_1(\lambda_0), \mb{v}_2(\lambda,\lambda_0)\rangle}{\|\mb{v}_1(\lambda_0)\|^2_2}\mb{v}_1(\lambda_0)\right)\right\| \\
+              \le\                                             & \left\|\frac{\mb{y}}{\lambda} - \theta^*(\lambda_0) - \frac{\langle\mb{v}_1(\lambda_0), \mb{v}_2(\lambda,\lambda_0)\rangle}{\|\mb{v}_1(\lambda_0)\|^2_2}\mb{v}_1(\lambda_0)\right\|                          \\
+              =\                                               & \| \mb{v}^\perp_2(\lambda,\lambda_0)\|_2
+            \end{align*}
+            \qedhere
+        \end{enumerate}
+      \end{solution}
+      
+  \end{enumerate}
+  
+\end{exercise}
+\newpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliography{refs}
+\bibliographystyle{abbrv}
+
+
+\end{document}
