@@ -1,6 +1,6 @@
 # Computer Networks
 
-This directory contains my project solutions for the course of Computer Networks in my Fall 2022 semester.
+This directory contains my lab solutions for the course of Computer Networks in my Fall 2022 semester.
 
 ## Change Log
 

@@ -4,12 +4,12 @@ Confess love to your crush with this online love letter.
 
 The original version was created in my sophomore year of college.
 
-> :warning: Warning: This is a front-end project.
+> :warning: Warning: This is a front-end project without any encryption.
 
 
 ## Live Demo
 
-Use `zyq` as your identity to see the following demo.
+Type `zyq` as your identity to see the following demo.
 
 [ned-kokuhaku.netlify.app/](https://ned-kokuhaku.netlify.app/)
 

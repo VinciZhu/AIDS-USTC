@@ -4,8 +4,8 @@
 
 This repository includes:
 
-1.   Lab reports, homework solutions and other documents I wrote for my undergraduate courses at Univ. of Sci. and Tech. of China.
-2.   Tools, scripts, apps and other tiny stuffs I coded for my own use during this period of time.
+1.   Lab reports, homework solutions and review notes for my undergraduate courses at Univ. of Sci. & Tech. of China.
+2.   Tools, apps and other tiny stuffs I coded for my own use during this period of time.
 
 ## Table of Contents
 
@@ -40,6 +40,6 @@ This repository includes:
 -   [A front-end love letter](./Misc/vue3%20kokuhaku/)
 -   [An incomplete 3D engine](./Misc/opengl%20learning/)
 
-## Notes
+## Disclaimer
 
 This repository is for learning purposes only. I do not encourage any form of plagiarism. If you find any mistakes, please feel free to open an issue and let me know. Thanks!

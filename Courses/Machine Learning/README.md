@@ -1,7 +1,7 @@
 # Introduction to Machine Learning
 
 This directory contains my homework solutions for [Introduction to Machine Learning](https://miralab.ai/course/ml_2022fall/) in my Fall 2022 semester.
-See modified latex template [here](../../Misc/LaTeX%20Templates/ML%20Homework/).
+See modified latex template [here](../../Misc/latex%20templates/ML%20Homework/).
 
 ## Change Log
 
