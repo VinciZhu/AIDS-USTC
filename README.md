@@ -4,8 +4,8 @@
 
 This repository includes:
 
-1.   Lab reports, homework solutions and review notes for my undergraduate courses at Univ. of Sci. & Tech. of China.
-2.   Tools, apps and other tiny stuffs I coded for my own use during this period of time.
+1.   Lab reports, homework solutions and review notes of my undergraduate courses at Univ. of Sci. & Tech. of China.
+2.   Tools, apps and other tiny stuffs I made for my own use during my undergraduate study.
 
 ## Table of Contents
 
@@ -24,7 +24,7 @@ This repository includes:
 #### Spring 2022
 
 -   [Computational Methods](./Courses/Computational%20Methods/)
--   [Computer Systems](./Courses/Computer%20Systems/)
+-   [Computer Systems APP](./Courses/Computer%20Systems/)
 
 #### Fall 2022
 
@@ -42,4 +42,6 @@ This repository includes:
 
 ## Disclaimer
 
-This repository is for learning purposes only. I do not encourage any form of plagiarism. If you find any mistakes, please feel free to open an issue and let me know. Thanks!
+This repository is for learning purposes only. Plagiarism is not encouraged.
+
+Please feel free to contact me if you find any mistakes or have any suggestions.
