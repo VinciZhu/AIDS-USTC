@@ -1,11 +1,12 @@
 # 🎓 My USTC
+
 [![github](https://img.shields.io/github/stars/HasiNed/my-ustc?style=social)](https://github.com/HasiNed/my-ustc)
 [![gitlab](https://img.shields.io/gitlab/stars/hasined/my-ustc?gitlab_url=https%3A%2F%2Fgit.lug.ustc.edu.cn%2F&style=social)](https://git.lug.ustc.edu.cn/hasined/my-ustc)
 
 This repository includes:
 
-1.   Lab reports, homework solutions and review notes of my undergraduate courses at Univ. of Sci. & Tech. of China.
-2.   Tools, apps and other tiny stuffs I made for my own use during my undergraduate study.
+1.  Lab reports, homework solutions and review notes of my undergraduate courses at Univ. of Sci. & Tech. of China.
+2.  Tools, apps and other tiny stuffs I made for my own use during my undergraduate study.
 
 ## Table of Contents
 
@@ -29,13 +30,12 @@ This repository includes:
 #### Fall 2022
 
 -   [Computer Networks](./Courses/Computer%20Networks/)
--   Computer Control
+-   [Computer Control](./Courses/Computer%20Control/)
+-   [Intro to AI](./Courses/Intro%20to%20Artificial%20Intelligence/)
 -   [Machine Learning](./Courses/Machine%20Learning/)
 
 ### 🔨 Miscellaneous
 
--   [Latex templates](./Misc/lateX%20templates/)
--   [Docker templates](./Misc/docker%20templates)
 -   [A HTML / Markdown to PDF converter](https://github.com/HasiNed/htmlolo)
 -   [A front-end love letter](./Misc/vue3%20kokuhaku/)
 -   [An incomplete 3D engine](./Misc/opengl%20learning/)
