@@ -14,25 +14,25 @@ This repository includes:
 
 #### Spring 2021
 
--   [Physics Experiments](./Courses/Physics%20Experiments/)
+-   [Physics Experiment ~ 大学物理基础实验](./Courses/Physics%20Experiments/)
 
 #### Fall 2021
 
--   [Circuit Experiments](./Courses/Circuit%20Experiments/)
--   [Data Structure](./Courses/Data%20Structure/)
--   [Intro to Computer Systems](./Courses/Intro%20to%20Computer%20Systems/)
+-   [Circuit Experiments ~ 电子技术实验](./Courses/Circuit%20Experiments/)
+-   [Data Structure ~ 数据结构及其算法](./Courses/Data%20Structure/)
+-   [Intro to Computer Systems ~ 计算系统概论](./Courses/Intro%20to%20Computer%20Systems/)
 
 #### Spring 2022
 
--   [Computational Methods](./Courses/Computational%20Methods/)
--   [Computer Systems APP](./Courses/Computer%20Systems/)
+-   [Computational Methods ~ 计算方法B](./Courses/Computational%20Methods/)
+-   [Computer Systems APP ~ 计算机系统详解](./Courses/Computer%20Systems/)
 
 #### Fall 2022
 
--   [Computer Networks](./Courses/Computer%20Networks/)
--   [Computer Control](./Courses/Computer%20Control/)
--   [Intro to AI](./Courses/Intro%20to%20Artificial%20Intelligence/)
--   [Machine Learning](./Courses/Machine%20Learning/)
+-   [Computer Networks ~ 计算机网络B](./Courses/Computer%20Networks/)
+-   [Computer Control ~ 计算机控制基础](./Courses/Computer%20Control/)
+-   [Intro to AI ~ 人工智能导论](./Courses/Intro%20to%20Artificial%20Intelligence/)
+-   [Machine Learning ~ 机器学习](./Courses/Machine%20Learning/)
 
 ### 🔨 Miscellaneous
 
