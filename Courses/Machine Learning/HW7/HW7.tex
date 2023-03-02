@@ -1,0 +1,913 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Course info
+\newcommand{\school}{\text{University of Science and Technology of China}}
+\newcommand{\course}{\text{Introduction to Machine Learning}}
+\newcommand{\semester}{\text{Fall 2022}}
+\newcommand{\lecturer}{\text{Jie Wang}}
+% Homework info
+\newcommand{\posted}{\text{Dec. 23, 2022}}
+\newcommand{\due}{\text{Jan. 3, 2022}}
+\newcommand{\hwno}{\text{7}}
+% Student info
+\newcommand{\name}{\text{Yunqin Zhu}}
+\newcommand{\id}{\text{PB20061372}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{../common/HW.tex}
+\begin{document}
+\maketitle
+
+
+
+
+\begin{exercise}[Singular Value Decomposition]
+    Let $\mb{A}\in\R^{m\times n}$, $\rank{\mb{A}}=r$. The SVD of $\mb{A}$ is $\mb{A}=\mb{U\Sigma V}^{\top}$, where $\mb{U}\in \R^{m\times m},\mb{\Sigma}\in\R^{m\times n}, \mb{V}\in\R^{n\times n}$, and we sort the diagonal entries of $\mb{\Sigma}$ in the descending order $\sigma_1\geq\sigma_2\geq\ldots\geq\sigma_r>0$. Denote
+    \begin{align*}
+         & \mb{U_1}=(\mb{u}_{1},\mb{u}_{2},\ldots,\mb{u}_{r}),\  \mb{U_2}=(\mb{u}_{r+1},\ldots,\mb{u}_{m}), \\
+         & \mb{V_1}=(\mb{v}_{1},\mb{v}_{2},\ldots,\mb{v}_{r}),\  \mb{V_2}=(\mb{v}_{r+1},\ldots,\mb{v}_{n}).
+    \end{align*}
+    The column space of $\mb{A}$ is the set
+    \begin{align*}
+        \mc{C}(\mb{A}) = \{\mb{y}\in\R^m: \mb{y}=\mb{A}\mb{x}, \mb{x}\in\R^n\}.
+    \end{align*}
+    The null space of $\mb{A}$ is the set
+    \begin{align*}
+        \mc{N}(\mb{A})=\{\mb{y}\in\R^n: \mb{A}\mb{y}=\mb{0}\}.
+    \end{align*}
+
+    \begin{enumerate}
+        \item Show that
+            \begin{enumerate}
+                \item $P_{\mc{C}(\mb{A})}(\mb{x})=\mb{U_1U_1}^{\top}\mb{x}$;
+                \item $P_{\mc{N}(\mb{A})}(\mb{x})=\mb{V_2V_2}^{\top}\mb{x}$;
+                \item $P_{\mc{C}(\mb{A}^{\top})}(\mb{x})=\mb{V_1V_1}^{\top}\mb{x}$;
+                \item $P_{\mc{N}(\mb{A}^{\top})}(\mb{x})=\mb{U_2U_2}^{\top}\mb{x}$.
+            \end{enumerate}
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item $P_{\mc{C}(\mb{A})}(\mb{x}) = P_{\mc{C}(\mb{U_1})}(\mb{x}) = \mb{U_1}\left(\mb{U_1}^\top\mb{U_1}\right)^{-1}\mb{U_1}^\top\mb{x} = \mb{U_1}\mb{I_r}^{-1}\mb{U_1}^\top\mb{x} = \mb{U_1}\mb{U_1}^\top\mb{x}$.
+                    \item $P_{\mc{N}(\mb{A})}(\mb{x}) = P_{\mc{C}(\mb{A}^\top)^\perp}(\mb{x}) = P_{\mc{C}(\mb{V_2})}(\mb{x}) = \mb{V_2}\left(\mb{V_2}^\top\mb{V_2}\right)^{-1}\mb{V_2}^\top\mb{x} = \mb{V_2}\mb{V_2}^\top\mb{x}$.
+                    \item $P_{\mc{C}(\mb{A}^\top)}(\mb{x}) = P_{\mc{C}(\mb{V_1})}(\mb{x}) = \mb{V_1}\left(\mb{V_1}^\top\mb{V_1}\right)^{-1}\mb{V_1}^\top\mb{x} = \mb{V_1}\mb{I_r}^{-1}\mb{V_1}^\top\mb{x} = \mb{V_1}\mb{V_1}^\top\mb{x}$.
+                    \item $P_{\mc{N}(\mb{A}^\top)}(\mb{x}) = P_{\mc{C}(\mb{A})^\perp}(\mb{x}) = P_{\mc{C}(\mb{U_2})}(\mb{x}) = \mb{U_2}\left(\mb{U_2}^\top\mb{U_2}\right)^{-1}\mb{U_2}^\top\mb{x} = \mb{U_2}\mb{U_2}^\top\mb{x}$.
+                        \qedhere
+                \end{enumerate}
+            \end{solution}
+
+        \item The Frobenius norm of $\mb{A}$ is
+            \begin{align*}
+                \|\mb{A}\|_F=\sqrt{\sum_{i=1}^m\sum_{j=1}^na_{i,j}^2}.
+            \end{align*}
+            \begin{enumerate}
+                \item Show that $\|\mb{A}\|_F^2=\tr \left(\mb{A}^{\top}\mb{A}\right)$.
+
+                \item Let $\mb{B}\in\R^{m\times n}$. Suppose that $\mc{C}(\mb{A})\bot\mc{C}(\mb{B})$, that is,
+                    \begin{align*}
+                        \langle\mb{a},\mb{b}\rangle=0,\,\forall\,\mb{a}\in\mc{C}(\mb{A}),\,\mb{b}\in\mc{C}(\mb{B}).
+                    \end{align*}
+                    Show that
+                    \begin{align*}
+                        \|\mb{A}+\mb{B}\|_F^2=\|\mb{A}\|_F^2+\|\mb{B}\|_F^2.
+                    \end{align*}
+            \end{enumerate}
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item ~\vspace{-2em}
+                        \begin{align*}
+                            \tr \left(\mb{A}^{\top}\mb{A}\right) & =
+                            \tr \begin{pmatrix}
+                                    \sum_{i=1}^m a_{i,1}^2      & \sum_{i=1}^m a_{i,1}a_{i,2} & \cdots & \sum_{i=1}^m a_{i,1}a_{i,n} \\
+                                    \sum_{i=1}^m a_{i,1}a_{i,2} & \sum_{i=1}^m a_{i,2}^2      & \cdots & \sum_{i=1}^m a_{i,2}a_{i,n} \\
+                                    \vdots                      & \vdots                      & \ddots & \vdots                      \\
+                                    \sum_{i=1}^m a_{i,1}a_{i,n} & \sum_{i=1}^m a_{i,2}a_{i,n} & \cdots & \sum_{i=1}^m a_{i,n}^2
+                                \end{pmatrix}
+                            \\ & = \sum_{i=1}^m\sum_{j=1}^na_{i,j}^2 = \|\mb{A}\|^2_F.
+                        \end{align*}
+                    \item ~\vspace{-2em}
+                        \begin{align*}
+                            \|\mb{A}+\mb{B}\|_F^2 & = \sum_{i=1}^n \|\mb{a_i}+\mb{b_i}\|^2                                                         \\
+                                                  & = \sum_{i=1}^n \left(\|\mb{a}_i\|^2 +  \langle\mb{a_i},\mb{b_i}\rangle + \|\mb{b}_i\|^2\right) \\
+                                                  & = \sum_{i=1}^n \|\mb{a}_i\|^2 + \sum_{i=1}^n \|\mb{b}_i\|^2                                    \\
+                                                  & = \|\mb{A}\|_F^2 + \|\mb{B}\|_F^2. \tag*{\qedhere}
+                        \end{align*}
+                \end{enumerate}
+            \end{solution}
+
+        \item
+            Given $K<r$, $K\in \mathbb{N}$, please solve the problem as follows
+            \begin{align*}
+                \min_{\mb{X}\in\R^{m\times n}}\{\|\mb{A}-\mb{X}\|_F:\rank{\mb{X}}\leq K\}.
+            \end{align*}
+            For simplicity, you can assume that all singular values of $\mb{A}$ are different.
+
+            \begin{solution}
+                Any $\mb{X} \in \R^{m\times n}$ with $\rank{\mb{X}}\leq K$ can be decomposed as $\mb{X}=\mb{Q}\mb{R}$, where $\mb{Q}\in\R^{m\times K}$ has orthonormal columns and $\mb{R}\in\R^{K\times n}$. Then, the optimization problem can be rewritten as
+                \begin{align*}
+                    \min_{\mb{Q}\in\R^{m\times K},\mb{R}\in\R^{K\times n}}\{\|\mb{A}-\mb{Q}\mb{R}\|^2_F:\mb{Q}^\top\mb{Q}=\mb{I}\}.
+                \end{align*}
+                Taking the derivative of $\|\mb{A}-\mb{Q}\mb{R}\|^2_F$ with respect to $\mb{R}$, we obtain a necessary optimality condition
+                \begin{align*}
+                    \mb{Q}^\top\mb{A} - \mb{Q}^\top\mb{Q}\mb{R} = 0 \implies \mb{R} = \mb{Q}^\top\mb{A}.
+                \end{align*}
+                Plugging it into the objective function, we have
+                \begin{align*}
+                    \|\mb{A}-\mb{Q}\mb{R}\|^2_F = \|\mb{A}-\mb{Q}\mb{Q}^\top\mb{A}\|^2_F = \|\mb{A}\|^2_F - \|\mb{Q}^\top\mb{A}\|^2_F,
+                \end{align*}
+                where the first term is a constant and the second term is
+                \begin{align*}
+                    - \|\mb{Q}^\top\mb{A}\|^2_F = - \tr \left(\mb{Q}^\top\mb{A}\mb{A}^\top\mb{Q}\right) = - \tr \left(\mb{Q}^\top \mb{U} \mb{\Sigma}^2 \mb{U}^\top \mb{Q}\right).
+                \end{align*}
+                Denote $\mb{P} = \mb{U}^\top \mb{Q}$, and hence the optimization problem becomes
+                \begin{align*}
+                    \max_{\mb{P}\in\R^{m\times K}}\left\{\tr \left(\mb{P}^\top \mb{\Sigma}^2 \mb{P}\right):\mb{P}^\top\mb{P}=\mb{I}\right\},
+                \end{align*}
+                which has been solved in Lecture 16. The optimal solution $\mb{P}^*$ has the form
+                \begin{align*}
+                    \mb{P}^* = \begin{pmatrix}
+                                   \tilde{\mb{P}}^* \\
+                                   \mb{O}
+                               \end{pmatrix},\ \forall\, \tilde{\mb{P}}^*\in \R^{K\times K},\ \tilde{\mb{P}}^{*\top} \tilde{\mb{P}}^* = \mb{I}.
+                \end{align*}
+                Therefore, the optimal solution to the original problem is
+                \begin{align*}
+                    \mb{X}^* & = \mb{Q}\mb{Q}^\top\mb{A} = \mb{U}\mb{P}^{*\top}\mb{P}^*\mb{U}^\top\mb{U\Sigma V^\top}         \\
+                             & = \mb{U} \begin{pmatrix}
+                                            \mb{I}_K &        \\
+                                                     & \mb{O}
+                                        \end{pmatrix} \mb{\Sigma} \mb{V}^\top = \sum_{i=1}^K \sigma_i \mb{u}_i \mb{v}_i^\top.
+                \end{align*}
+                The optimal value is
+                \begin{align*}
+                    \|\mb{A}-\mb{X}^*\|_F = \sqrt{\left\|\sum_{i=K+1}^r \sigma_i \mb{u}_i \mb{v}_i^\top\right\|^2_F} = \sqrt{\sum_{i=K+1}^r \sigma_i^2 \tr \left(\mb{u}_i \mb{v}_i^\top\mb{v}_i \mb{u}_i^\top\right)} = \sqrt{\sum_{i=K+1}^r \sigma_i^2}. \tag*{\qedhere}
+                \end{align*}
+            \end{solution}
+
+        \item \textbf{Programming Exercise.} We provide you with a color image (``Hinton.jpg''). Suppose that $\mb{A}=(\mb{A}_i)_{i=1}^3$ is the data tensor of the image, where $\mb{A}_i,i=1,2,3$, represents different channels.
+            We have each $\mb{A}_i\in\R^{500\times 500}$ and $r=\rank{\mb{A}_i}=500$. In this exercise, you are expected to implement an image compression algorithm following the steps below. You can use your favorite programming language.
+            \begin{enumerate}
+                \item Compute the SVD $\mb{A}_i=\mb{U}_i\mb{\Sigma}_i\mb{ V}_i^\top=\sum_{j=1}^r\sigma_{i,j}\mb{u}_{i,j}\mb{v}_{i,j}^\top$, where $i=1,2,3$, $\sigma_{i,1}\ge \sigma_{i,2}\ge \dots\ge \sigma_{i,r}>0$ are the diagonal entries of $\mb{\Sigma}_i$, $\mb{u}_{i,j}$ is the $j$th column of $\mb{U}_i$, and $\mb{v}_{i,j}$ is the $j$th column of $\mb{V}_i$.
+                \item
+                    Use the first $k$ $(k< r)$ terms of SVD to approximate the original image $\mb{A}$. Then, we get the compressed images, the data tensors of which are $\mb{A}_{k}=(\mb{A}_{i,k})_{i=1}^3 = (\sum_{j=1}^k\sigma_{i,j}\mb{u}_{i,j} \\ \mb{v}_{i,j}^\top)_{i=1}^3$. Compute $||\mb{A}-\mb{A}_k||_F$, i.e., $\sum_{i=1}^3||\mb{A}_i-\mb{A}_{i,k}||_F$, for $k=2,4,8,16,32,64,128,256$.
+                \item Plot $\mb{A}_k$ as images for all the $k$s in (b).
+            \end{enumerate}
+
+            \begin{solution}
+                A Python implementation is given in "HW7.ipynb". The computed singular values are shown in Figure~\ref{fig:singular-values} in descending order. The compressed images and the corresponding $\|\mb{A}-\mb{A}_k\|_F$ are shown in Figure~\ref{fig:compressed}. Note that we normalize all RGB values to be in the range $[0,1]$.
+                \qedhere
+            \end{solution}
+    \end{enumerate}
+\end{exercise}
+\newpage
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figs/hinton_rgb.pdf}
+    \caption{Hinton with RGB channels.}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figs/singular-values.pdf}
+    \caption{Singular values of the three channels.}
+    \label{fig:singular-values}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figs/compressed.pdf}
+    \caption{Compressed images and the corresponding truncation errors $\epsilon=\|\mb{A}-\mb{A}_k\|_F$.}
+    \label{fig:compressed}
+\end{figure}
+\clearpage
+
+
+
+
+\begin{exercise}[Principle Component Analysis]
+    Suppose that we have a set of data instances $\{\mb{x}_i\}_{i=1}^n\subset\R^d$. Let $\widetilde{\mb{X}}\in\R^{d\times n}$ be the matrix whose $i^{th}$ column is $\mb{x}_i-\Bar{\mb{x}}$, where $\Bar{\mb{x}}$ is the sample mean, and $\mb{S}$ be the sample variance matrix.
+
+    \begin{enumerate}
+        \item For $\mb{G}\in\R^{d\times K}$, let us define
+            \begin{align}\label{eqn:obj-PCA}
+                f(\mb{G}) = \tr \left(\mb{G}^{\top}\mb{SG}\right).
+            \end{align}
+            Show that $f(\mb{GQ})=f(\mb{G})$ for any orthogonal matrix $\mb{Q}\in\R^{K\times K}$.
+
+            \begin{solution}
+                $f(\mb{GQ}) = \tr \left(\mb{Q}^\top\mb{G}^{\top}\mb{SG}\mb{Q}\right) = \tr \left(\mb{Q}\mb{Q}^\top\mb{G}^{\top}\mb{SG}\right) = \tr \left(\mb{G}^{\top}\mb{SG}\right) = f(\mb{G})$, where we use the fact that $\mb{Q}\mb{Q}^\top=\mb{I}$.
+                \qedhere
+            \end{solution}
+
+        \item Please find $\mb{g}_1$ defined as follows by the Lagrange multiplier method.
+            \begin{align}\label{eqn:PC1}
+                \mb{g}_1:=\argmax_{\mb{g}\in\R^d}\{f(\mb{g}):\|\mb{g}\|_2=1\},
+            \end{align}
+            where $f$ is defined by (\ref{eqn:obj-PCA}). Notice that, the vector $\mb{g}_1$ is the first principal component vector of the data.
+
+            \begin{solution}
+                The Lagrangian of (\ref{eqn:PC1}) is
+                \begin{align*}
+                    L(\mb{g},\lambda) = \mb{g^\top Sg} - \lambda\left(\mb{g^\top g}-1\right).
+                \end{align*}
+                Taking the derivative with respect to $\mb{g}$, we have
+                \begin{align*}
+                    \nabla_{\mb{g}}L(\mb{g},\lambda) = 2\mb{Sg} - 2\lambda\mb{g} = 0,
+                \end{align*}
+                which gives $\mb{Sg}=\lambda\mb{g}$, a necessary condition for Lagrangian optimality. Plugging it into $L(\mb{g},\lambda)$, we obtain the dual function
+                \begin{gather*}
+                    q(\lambda) = \max_{\mb{g}\in\R^d}\left\{\mb{g^\top Sg} - \lambda\left(\mb{g^\top g}-1\right)\right\} = \max_{\mb{g}\in\R^d} \lambda = \lambda, \\ \dom q \subset \{\lambda\in\R:\text{$\lambda$ is an eigenvalue of $\mb{S}$}\}.
+                \end{gather*}
+                Note that, to maximize $L(\mb{g},\lambda)$ with respect to $\mb{g}$, we must have
+                \begin{align*}
+                    \nabla^2_{\mb{g}}L(\mb{g},\lambda) = 2(\mb{S}-\lambda\mb{I}) \le 0.
+                \end{align*}
+                So $\lambda \ge \lambda_1(\mb{S})$. That is, $\dom q = \{\lambda_1(\mb{S})\}$, and hence the dual optimal value $\min_\lambda q(\lambda) = \lambda_1(\mb{S})$. Moreover, when $\mb{g}$ is a unit eigenvector corresponding to $\lambda_1(\mb{S})$, the primal objective $f(\mb{g}) = \lambda_1(\mb{S}) \mb{g^\top g} = \lambda_1(\mb{S}) = \min_\lambda q(\lambda)$, from which we conclude that the primal optimum is also achieved and there is no duality gap.
+
+                To sum up, $\mb{g}_1$ is a unit eigenvector corresponding to $\lambda_1(\mb{S})$, or equivalently, a left singular vector of $\widetilde{\mb{X}}$ corresponding to $\sigma_1(\widetilde{\mb{X}})$.
+                \qedhere
+            \end{solution}
+
+        \item Please find $\mb{g}_2$ defined as follows by the Lagrange multiplier method.
+            \begin{align}\label{eqn:PC2}
+                \mb{g}_2:=\argmax_{\mb{g}\in\R^d}\{f(\mb{g}):\|\mb{g}\|_2=1,\langle\mb{g},\mb{g}_1\rangle=0\},
+            \end{align}
+            where $\mb{g}_1$ is given by (\ref{eqn:PC1}). Similar to $\mb{g}_1$, the vector $\mb{g}_2$ is the second principal component vector of the data.
+            \begin{solution}
+                % To maximize the same Lagrangian as in (\ref{eqn:PC1}) over the subspace $\lspan\{\mb{g}_1\}^\perp = \{\mb{g}: \langle\mb{g},\mb{g}_1\rangle=0\}$, we again have $\nabla_\mb{g} L(\mb{g},\lambda) = 0$, implying that $\mb{g}$ and $\lambda$ must be a pair of eigenvector and eigenvalue of $\mb{S}$. The second order condition becomes that, for any $\mb{d}\in\lspan\{\mb{g}_1\}^\perp$, we have $\mb{d}^\top \nabla^2_{\mb{g}}L(\mb{g},\lambda) \mb{d} = $
+                Consider the spectral decomposition $\mb{S} = \sum_{i=1}^d \lambda_i \mb{g}_i \mb{g}_i^\top$, where $\mb{g}_i$ is the $i$-th largest eigenvector of $\mb{S}$ and $\lambda_i$ is the corresponding eigenvalue. Hence, the objective of (\ref{eqn:PC2}) becomes
+                \begin{align*}
+                    f(\mb{g}) = \sum_{i=1}^d \lambda_i \langle\mb{g}, \mb{g}_i \rangle^2 = \sum_{i=2}^d \lambda_i \langle\mb{g}, \mb{g}_i \rangle^2 = \mb{g}^\top (\mb{S} - \mb{S}_1) \mb{g}.
+                \end{align*}
+                By the same approach as used in (\ref{eqn:PC1}), we can solve the following problem
+                \begin{align*}
+                    \max_{\mb{g}\in\R^d} \{\mb{g}^\top (\mb{S} - \mb{S}_1) \mb{g}: \|\mb{g}\|_2 = 1\},
+                \end{align*}
+                whose optimal solution $\mb{g}_2$ is a unit eigenvector corresponding to the largest eigenvalue of $\mb{S} - \mb{S}_1$, i.e. $\lambda_2(\mb{S})$, or equivalently, a left singular vector of $\widetilde{\mb{X}}$ corresponding to $\sigma_2(\widetilde{\mb{X}})$. Since $\mb{g}_2$ is in the feasible set of (\ref{eqn:PC2}), it is also the optimal solution of (\ref{eqn:PC2}).
+                \qedhere
+            \end{solution}
+
+        \item Please derive the first $K$ principal component vectors by repeating the above process.
+            \begin{solution}
+                Given the following optimization problem
+                \begin{align}\label{eqn:PC3}
+                    \mb{g}_k = \argmax_{\mb{g}\in\R^d}\{f(\mb{g}):\|\mb{g}\|_2=1,\langle\mb{g},\mb{g}_1\rangle=\cdots=\langle\mb{g},\mb{g}_{k-1}\rangle=0\},
+                \end{align}
+                where $\mb{g}_1,\ldots,\mb{g}_{k-1}$ are the first $k-1$ principal component vectors, we reduce the objective to
+                \begin{align*}
+                    f(\mb{g}) = \sum_{i=k}^d \lambda_i \langle\mb{g}, \mb{g}_i \rangle^2 = \mb{g}^\top (\mb{S} - \mb{S}_{k-1}) \mb{g}.
+                \end{align*}
+                We then relax the constraint and solve the following problem using the approach in (\ref{eqn:PC1})
+                \begin{align*}
+                    \max_{\mb{g}\in\R^d} \{\mb{g}^\top (\mb{S} - \mb{S}_{k-1}) \mb{g}: \|\mb{g}\|_2 = 1\},
+                \end{align*}
+                whose optimal solution $\mb{g}_k$ is a unit eigenvector corresponding to the largest eigenvalue of $\mb{S} - \mb{S}_{k-1}$, i.e. $\lambda_k(\mb{S})$, or equivalently, a left singular vector of $\widetilde{\mb{X}}$ corresponding to $\sigma_k(\widetilde{\mb{X}})$. Since $\mb{g}_k$ is in the feasible set of (\ref{eqn:PC3}), it is also the optimal solution of (\ref{eqn:PC3}). By induction on $k = 2,\dots,K$, we find the first $K$ principal component vectors.
+                \qedhere
+            \end{solution}
+
+
+        \item What is $f(\mb{g}_k)$, $k=1,\ldots,K$? What about their meaning?
+            \begin{solution}
+                $f(\mb{g}_k) = \mb{g}^\top \mb{S} \mb{g} = \lambda_k \mb{g}^\top \mb{g} = \lambda_k$, which is the $k$-th largest eigenvalue of $\mb{S}$, or equivalently, the square of the $k$-th largest singular value of $\frac{1}{\sqrt{n-1}}\widetilde{\mb{X}}$.
+                \qedhere
+            \end{solution}
+
+        \item When are the first $K$ principal component vectors unique?
+            \begin{solution}
+                The first $K$ principal component vectors, i.e. the unit eigenvectors of $\mb{S}$ corresponding to the $K$ largest eigenvalues, are unique up to multiplication by $-1$, if and only if the $K$ largest eigenvalues of $\mb{S}$ are distinct, and different from the remaining eigenvalues.
+
+                Equivalently, the $K$ largest singular values of $\widetilde{\mb{X}}$ are distinct and different from the remaining singular values.
+
+                In such cases, the eigenspace corresponding to each of these eigenvalues is one-dimensional and has a unique basis up to multiplication by $-1$.
+
+                Otherwise, there are at least two eigenvectors corresponding to the same eigenvalue, and any linear combination of these eigenvectors is also a principal component vector.
+                \qedhere
+            \end{solution}
+
+        \item {\bf Programming Exercise.} We provide you with $130$ handwritten $3$s, each a digitized $28 \times 28$ grayscale image(``imgs$\_3$''). Please finish the following steps. You can use your favorite programming language.
+            \begin{enumerate}
+                \item
+                    Consider these images as points $\mb{x}_i\in\R^{784}, i=1,\cdots,130$.  Let $\bar{\mb{x}}$ be the mean of all $\mb{x}_i$. Let $\mb{X}\in\R^{130\times 784}$ with $\mb{x}_i-\bar{\mb{x}}$ as its $i^{\text{th}}$ row.
+
+                \item
+                    Calculate the SVD, $\mb{X}=\mb{U\Sigma V^\top}$. Let $\mb{v}_1, \mb{v}_2$ be the columns of $\mb{V}$ corresponding to the $2$ largest singular values, respectively. Please show $\bar{\mb{x}}, \mb{v}_1$ and $\mb{v}_2$, considering them as $28\times 28$ grayscale images.
+
+                \item
+                    What do the three images illustrate?
+
+                    \begin{solution}
+                        A Python implementation is given in "HW7.ipynb". The computed singular values are shown in Figure~\ref{fig:svd-3} in descending order. The image of $\bar{\mb{x}}, \mb{v}_1$ and $\mb{v}_2$ are shown in Figure~\ref{fig:mean-pc}. Note that we normalize all grayscale values to be in the range $[0,1]$ and show 1 as black and 0 as white.
+
+                        The image of $\bar{\mb{x}}$, the mean of data vectors, illustrates the average of all $130$ images.
+
+                        The image of $\mb{v}_1$, the first pricipal component vector, illustrates the direction of the largest variation of the $130$ images.
+
+                        The image of $\mb{v}_2$, the second pricipal component vector, illustrates the direction of the second largest variation of the $130$ images, which is orthogonal to that of $\mb{v}_1$.
+                        \qedhere
+                    \end{solution}
+            \end{enumerate}
+    \end{enumerate}
+\end{exercise}
+\newpage
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figs/sample-3.pdf}
+    \caption{Some samples of the images.}
+    \label{fig:sample-3}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figs/svd-3.pdf}
+    \caption{Singular values of $\mb{X}$.}
+    \label{fig:svd-3}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figs/mean-pc.pdf}
+    \caption{Mean and the first 2 principal components of $\mb{X}$.}
+    \label{fig:mean-pc}
+\end{figure}
+\clearpage
+
+
+
+
+\begin{exercise}[Properties of Transition Matrix]
+    A transition matrix (also called a stochastic matrix, probability matrix) is a square matrix used to describe the transitions of a Markov chain.
+    Each of its entries is a non-negative real number representing a probability.
+    A right (left) transition matrix is a square matrix with each row (column) summing to one.
+    Without loss of generality, we study the right transition matrix in this exercise.
+    Suppose that $\textbf{T} \in \R^{n \times n}$ is a right transition matrix.
+    \begin{enumerate}
+        \item
+            Show that $1$ is an eigenvalue of $\mb{T}$.
+
+            \begin{solution}
+                Since the sum of each row equals to 1, we have $\mb{T1}=\mb{1}$, i.e. 1 is an eigenvalue of $\mb{T}$ with the corresponding eigenvector being $\mb{1}$.
+                \qedhere
+            \end{solution}
+        \item
+            Let $\lambda$ be an eigenvalue of $\mb{T}$. Show that $|\lambda|\le 1$.
+
+            \begin{solution}
+                Let $\lambda$ and $\mb{x}$ be a pair of eigenvalue and eigenvector of $\mb{T}$. Then $\mb{T}\mb{x}=\lambda\mb{x}$. Taking the infinity norm of both sides, we have
+                \begin{align*}
+                    |\lambda|\|\mb{x}\|_\infty = \|\mb{T}\mb{x}\|_\infty \le \|\mb{T}\|_\infty\|\mb{x}\|_\infty = \|\mb{x}\|_\infty,
+                \end{align*}
+                where $\|\mb{T}\|_\infty = 1$ as each row of $\mb{T}$ sums to 1. Therefore, $|\lambda|\le 1$.
+                \qedhere
+            \end{solution}
+        \item
+            Show that $\mb{I}-\gamma \mb{T}$ is invertible, where $\mb{I}\in \R^{n\times n}$ is the identity matrix and $\gamma\in(0,1)$.
+
+            \begin{solution}
+                Suppose that $\lambda$ is an eigenvalue of $\mb{T}$ and $\mb{x}$ is the corresponding eigenvector. Since $\mb{T}\mb{x}=\lambda\mb{x}$ is equivalent to $(\mb{I}-\gamma \mb{T})\mb{x}= (1-\gamma\lambda)\mb{x}$, we conclude that the eigenvalue of $\mb{I}-\gamma \mb{T}$ must has the form of $1-\gamma\lambda$. Note that $|1-\gamma\lambda| \ge 1-\gamma|\lambda| \in (0,1)$. That is, any eigenvalue $1-\gamma\lambda$ is non-zero. Therefore, $\mb{I}-\gamma \mb{T}$ is invertible.
+                \qedhere
+            \end{solution}
+        \item
+            We will show that $(\mb{I}-\gamma \mb{T})^{-1}=\sum_{i=0}^\infty(\gamma \textbf{T})^i$.
+            \begin{enumerate}
+                \item For $\mb{x}\in\R^n$, the infinity norm is defined by
+                    \begin{align*}
+                        \|\mb{x}\|_{\infty}=\max_{i}|x_i|.
+                    \end{align*}
+                    The induced norm of a matrix $\mb{M}\in\R^{m\times n}$ is
+                    \begin{align*}
+                        \|\mb{M}\|_{\infty}=\max_{\|\mb{x}\|_{\infty}\leq 1}\|\mb{M}\mb{x}\|_{\infty}.
+                    \end{align*}
+                    \begin{enumerate}
+                        \item
+                            Show that $\|\mb{M}\|_{\infty}=\max_{i}\sum_{j=1}^n|m_{i,j}|$.
+                        \item
+                            Show that $\|\textbf{AB}\|_{\infty}\leq\|\textbf{A}\|_{\infty}\|\textbf{B}\|_{\infty}$ holds for any $\textbf{A}\in\R^{m\times n}$ and $\textbf{B}\in\R^{n\times p}$.
+                    \end{enumerate}
+                \item
+                    Show that the sequence $\left\{\sum_{i=0}^k (\gamma \mb{T})^i\right\}_{k=0}^\infty$ converges.
+                \item
+                    Let $\left\{\sum_{i=0}^k (\gamma \mb{T})^i\right\}_{k=0}^\infty$ converges to a matrix $L$.
+                    Show that $(\mb{I}-\gamma \mb{T})^{-1}=L$.
+            \end{enumerate}
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item
+                        \begin{enumerate}
+                            \item Under the assumption that $\|\mb{x}\|_{\infty}\leq 1$, we have
+                                \begin{align*}
+                                    \|\mb{Mx}\|_\infty & = \max_i\left|\sum_{j=1}^n m_{i,j}x_j\right| \leq \max_i \sum_{j=1}^n |m_{i,j}||x_j| \\
+                                                       & \leq \max_i \sum_{j=1}^n |m_{i,j}|\|x\|_\infty \le \max_i\sum_{j=1}^n|m_{i,j}|.
+                                \end{align*}
+                                Let $i^*\in\argmax_i\sum\limits_{j=1}^n|m_{i,j}|$. The equality holds if $x_j = \sgn (m_{i^*,j})$ for $j=1,\dots,n$. Therefore $\|\mb{M}\|_\infty = \max_{\|\mb{x}\|_{\infty}\leq 1}\|\mb{Mx}\|_\infty = \max_i\sum_{j=1}^n|m_{i,j}|$.
+                            \item Using the result in the previous part, we have
+                                \begin{align*}
+                                    \|\mb{AB}\|_\infty & = \max_i \sum_{j=1}^p \sum_{k=1}^n |a_{i,k} b_{k,j}| \le \max_i  \sum_{k=1}^n \left(|a_{i,k}| \sum_{j=1}^p |b_{k,j}| \right) \\
+                                                       & \le \max_i \sum_{k=1}^n |a_{i,k}| \|\mb{B}\|_\infty = \|\mb{A}\|_\infty \|\mb{B}\|_\infty.
+                                \end{align*}
+                        \end{enumerate}
+                    \item For any $\epsilon > 0$, there exists $N \in \mathbb{N}$ such that,
+                        \begin{align*}
+                            \forall\, m>n>N,\quad \left\|\sum_{i=n+1}^m (\gamma \mb{T})^i\right\|_\infty \le \sum_{i=n+1}^m \left\|(\gamma \mb{T})^i\right\|_\infty \le \sum_{i=n}^m \gamma^i\|\mb{T}\|_\infty^i = \sum_{i=n+1}^m \gamma^i < \epsilon,
+                        \end{align*}
+                        where we use the fact that $\sum_{i=0}^k \gamma^i$ is a Cauchy sequence. We see that $\left\|\sum_{i=0}^k (\gamma \mb{T})^i\right\|_\infty$ is bounded, because
+                        \begin{align*}
+                            \left\|\sum_{i=0}^k (\gamma \mb{T})^i\right\|_\infty \le \left\|\sum_{i=0}^{N} (\gamma \mb{T})^i\right\|_\infty + \left\|\sum_{i=N+1}^\infty (\gamma \mb{T})^i\right\|_\infty \le \left\|\sum_{i=0}^{N} (\gamma \mb{T})^i\right\|_\infty + \epsilon,
+                        \end{align*}
+                        By the Bolzano-Weierstrass theorem, there exists a subsequence of $\left\{\sum_{i=0}^k (\gamma \mb{T})^i\right\}_{k=0}^\infty$ that converges to a matrix $L$. Then, we can find some $K > N$ such that
+                        \begin{align*}
+                            \left\|\sum_{i=0}^K (\gamma \mb{T})^i - L\right\| < \epsilon,
+                        \end{align*}
+                        and thus, for $k>K$, we have
+                        \begin{align*}
+                            \left\|\sum_{i=0}^k (\gamma \mb{T})^i - L\right\|_\infty \le \left\|\sum_{i=K+1}^k (\gamma \mb{T})^i\right\|_\infty + \left\|\sum_{i=0}^K (\gamma \mb{T})^i - L\right\|_\infty < \epsilon+\epsilon = 2\epsilon.
+                        \end{align*}
+                        Letting $\epsilon \to 0$, we obtain $\lim_{k\to\infty}\sum_{i=0}^k (\gamma \mb{T})^i = L$.
+                    \item $(\mb{I} - \gamma \mb{T}) \sum_{i=0}^\infty (\gamma \mb{T})^i = \sum_{i=0}^\infty (\gamma \mb{T})^i - \sum_{i=1}^\infty (\gamma \mb{T})^i = (\gamma \mb{T})^0 = \mb{I}$. So $(\mb{I} - \gamma \mb{T})^{-1} = L$.
+                        \qedhere
+                \end{enumerate}
+            \end{solution}
+    \end{enumerate}
+\end{exercise}
+
+
+
+
+\begin{exercise}[Grid World with a Given Policy ]\label{exercise:GridWorld}
+
+    Consider the grid world shown in Figure \ref{fig:gridworld}. The finite state space is $\mc{S} = \{s_i:i=1,2,\dots, 11\}$ and the finite action space is $\mc{A} = \{\mbox{up, down, left, right}\}$.
+
+    \vspace{0.5em}\noindent\textbf{State transition probabilities:} After the agent picks and performs a certain action, there are four possibilities for the next state: the destination state, the current state, the states to the right and left of the current state. If the states are reachable, the corresponding probabilities are $0.7$, $0.1$, $0.05$, and $0.15$, respectively; otherwise, the agent stays where it is. The game will terminate if the agent arrives at $s_{10}$ (loss) or $s_{11}$ (win).
+
+    \vspace{0.5em}\noindent\textbf{Reward:} After the agent picks and performs a certain action at its current state, it receives rewards of $100$, $-100$, and $0$, if it arrives at states $s_{11}$, $s_{10}$, and all the other states, respectively.
+
+    \vspace{0.5em}\noindent\textbf{Policy:} In Figure~\ref{fig:gridworld}, the arrows show the policy $\pi:\mc{S}\rightarrow\mc{A}$ for the agent. The random variable $S_t$ is the state at time $t$ under the policy $\pi$.
+
+    \begin{enumerate}
+        \item Find the matrix $\mb{M}\in\R^{11\times 11}$ with $m_{i,j}=\mb{P}(S_{t+1}=s_j|S_t=s_i)$, i.e., the conditional probability of the agent moving from $s_i$ to $s_j$.
+
+            \begin{solution}
+                \begin{align*}
+                    \mb{M} = \left(
+                    \begin{array}{ccccccccccc}
+                            0.25 & 0.7  & 0    & 0.05 & 0   & 0   & 0    & 0    & 0    & 0    & 0   \\
+                            0.05 & 0.8  & 0.15 & 0    & 0   & 0   & 0    & 0    & 0    & 0    & 0   \\
+                            0    & 0.05 & 0.25 & 0    & 0.7 & 0   & 0    & 0    & 0    & 0    & 0   \\
+                            0    & 0    & 0    & 0.3  & 0   & 0.7 & 0    & 0    & 0    & 0    & 0   \\
+                            0    & 0    & 0    & 0    & 0.3 & 0   & 0    & 0.7  & 0    & 0    & 0   \\
+                            0    & 0    & 0    & 0.15 & 0   & 0.1 & 0.7  & 0    & 0.05 & 0    & 0   \\
+                            0    & 0    & 0    & 0    & 0   & 0   & 0.25 & 0.7  & 0    & 0.05 & 0   \\
+                            0    & 0    & 0    & 0    & 0   & 0   & 0.05 & 0.25 & 0    & 0    & 0.7 \\
+                            0    & 0    & 0    & 0    & 0   & 0.7 & 0    & 0    & 0.25 & 0.05 & 0   \\
+                            0    & 0    & 0    & 0    & 0   & 0   & 0    & 0    & 0    & 1    & 0   \\
+                            0    & 0    & 0    & 0    & 0   & 0   & 0    & 0    & 0    & 0    & 1
+                        \end{array}
+                    \right).
+                \end{align*}
+                \qedhere
+            \end{solution}
+
+        \item Suppose that the initial state distribution is uniform distribution, that is $\mb{P}(S_0=s_i)=1/11$, $i=1,\ldots,11$.
+            \begin{enumerate}
+                \item
+                    Find the distributions $\mb{P}(S_1)$ and $\mb{P}(S_2)$ by following the policy $\pi$.
+                \item \label{exercise:gw-ap}
+                    Show that the agent would finally arrive at either $s_{10}$ or $s_{11}$, i.e., $$\lim_{t\rightarrow\infty}\mb{P}(S_t=s_i)=0,\,i=1,\ldots,9.$$
+                \item
+                    Find $\lim_{t\rightarrow\infty}\mb{P}(S_t=s_{10})$ and $\lim_{t\rightarrow\infty}\mb{P}(S_t=s_{11})$.
+            \end{enumerate}
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item
+                        $
+                            \mb{P}(S_1) = \mb{P}(S_0)\mb{M} = \left(\frac{3}{110}, \frac{31}{220}, \frac{2}{55}, \frac{1}{22}, \frac{1}{11}, \frac{3}{22}, \frac{1}{11}, \frac{3}{20}, \frac{3}{110}, \frac{1}{10}, \frac{17}{110}\right),
+                        $
+
+                        $
+                            \mb{P}(S_2) = \mb{P}(S_1)\mb{M} = \left(\frac{61}{4400}, \frac{147}{1100}, \frac{133}{4400}, \frac{39}{1100}, \frac{29}{550}, \frac{71}{1100}, \frac{553}{4400}, \frac{29}{176}, \frac{3}{220}, \frac{233}{2200}, \frac{571}{2200}\right).
+                        $
+                    \item
+                        % Consider the eigendecomposition $M = \mb{U}\mb{\Lambda}\mb{U}^*$, where $\mb{U}$ is Hermitian and $\mb{\Lambda}$ is the diagonal matrix formed by the eigenvalues of $\mb{M}$. Then, 
+                        % \begin{align*}
+                        %     \mb{P}(S_t) = \mb{P}(S_0)\left(\mb{U}\mb{\Lambda}\mb{U}^*\right)^t = \mb{P}(S_0)\mb{U}\mb{\Lambda}^t\mb{U}^*.
+                        % \end{align*}
+                        The transition probability matrix $\mb{M}$ can be written as
+                        \begin{align*}
+                            \mb{M} = \begin{pmatrix}
+                                         \mb{M}_{0,0} & \mb{M}_{0,1} \\
+                                         \mb{O}       & \mb{I}_2
+                                     \end{pmatrix}.
+                        \end{align*}
+                        Then, the $t$-step transition probability matrix becomes
+                        \begin{align*}
+                            \mb{M}^t = \begin{pmatrix}
+                                           \mb{M}_{0,0}^t & \sum_{k=0}^{t-1}\mb{M}_{0,0}^k\mb{M}_{0,1} \\
+                                           \mb{O}         & \mb{I}_2
+                                       \end{pmatrix}.
+                        \end{align*}
+                        We note that the sum of each row of $\mb{M}_{0,0}^4$ is less than 1 (by calculation, or by the observation that either $s_{10}$ or $s_{11}$ can be reached from any state within 4 steps), which implies that $\left\|\mb{M}_{0,0}^4\right\|_\infty < 1$, and hence $\lim_{t\to\infty}\mb{M}_{0,0}^t = \mb{O}$. Moreover, we have $\sum_{k=0}^{\infty} \mb{M}_{0,0}^t = \left(\mb{I}_9 - \mb{M}_{0,0}\right)^{-1}$. Therefore,
+                        \begin{align*}
+                            \lim_{t\to\infty}\mb{M}^t =
+                            \begin{pmatrix}
+                                \mb{O} & \left(\mb{I}_9 - \mb{M}_{0,0}\right)^{-1}\mb{M}_{0,1} \\
+                                \mb{O} & \mb{I}_2
+                            \end{pmatrix}.
+                        \end{align*}
+                        And the limit of the distribution $\mb{P}(S_t)$ is
+                        \begin{align*}
+                            \lim_{t\to\infty}\mb{P}(S_t) & = \mb{P}(S_0)
+                            \begin{pmatrix}
+                                \mb{O} & \left(\mb{I}_9 - \mb{M}_{0,0}\right)^{-1}\mb{M}_{0,1} \\
+                                \mb{O} & \mb{I}_2
+                            \end{pmatrix}                                                                        \\
+                                                         & = \left(0, \ldots, 0, \lim_{t\to\infty}\mb{P}(S_t=s_{10}), \lim_{t\to\infty}\mb{P}(S_t=s_{11})\right).
+                        \end{align*}
+                    \item According to the previous part, we have
+                        \begin{align*}
+                            \left(\lim_{t\to\infty}\mb{P}(S_t=s_{10}), \lim_{t\to\infty}\mb{P}(S_t=s_{11})\right) & = \mb{P}(S_0)
+                            \begin{pmatrix}
+                                \left(\mb{I}_9 - \mb{M}_{0,0}\right)^{-1}\mb{M}_{0,1} \\
+                                \mb{I}_2
+                            \end{pmatrix}                                                                                \\
+                                                                                                                  & \approx (0.126446, 0.873554) \tag*{\qedhere}
+                        \end{align*}
+                \end{enumerate}
+            \end{solution}
+        \item
+            Find the value function corresponding to the policy $\pi$, where the discount factor $\gamma=0.9$.
+
+            \begin{solution}
+                The value function $V^\pi(s)$ is given by $V = (\mb{I} - \gamma \mb{M})^{-1} R$, where the $i$-th element of the vector $V$ is $V^\pi(s_i)$, and the $i$-th element of the vector $R$ is
+                \begin{align*}
+                    \mathbb{E}\left[r(s_i, \pi(s_i))\right] = \begin{cases}
+                        100 \times m_{i, 11} - 100 \times m_{i, 10}, & \text{if } s_i \notin \{s_{10}, s_{11}\}, \\
+                        0, & \text{if } s_i \in \{s_{10}, s_{11}\}.
+                    \end{cases}
+                \end{align*}
+                Substituting the data into the above equations, we obtain
+                \begin{align*}
+                                  & V = (\mb{I} - 0.9 \mb{M})^{-1} (0\ \ 0\ \ 0\ \ 0\ \ 0\ \ 0\ \ -5\ \ 70\ \ -5\ \ -100\ \ 100)^\top \\
+                    \implies\quad & V^\pi(s_1) = 34.216,\ \ V^\pi(s_2) = 38.509,\ \ V^\pi(s_3) = 68.465,\ \ V^\pi(s_4) = 50.159,      \\
+                                  & V^\pi(s_5) = 81.472,\ \ V^\pi(s_6) = 58.121,\ \ V^\pi(s_7) = 70.290,\ \ V^\pi(s_8) = 94.404,      \\
+                                  & V^\pi(s_9) = 40.795,\ \ V^\pi(s_{10}) = 0,\ \ V^\pi(s_{11}) =0.
+                    \tag*{\qedhere}
+                \end{align*}
+            \end{solution}
+
+        \item Show that the result in (\ref{exercise:gw-ap}) holds for any initial probabilities we choose for $\mb{P}(S_0=s_i)$, $i=1,\ldots,11$.
+
+            \begin{solution}
+                We have already shown (\ref{exercise:gw-ap}) without any assumption on the initial probabilities.
+                \qedhere
+            \end{solution}
+    \end{enumerate}
+
+\end{exercise}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.8\textwidth]{figs/2022_fall_Grid_World_New.png}
+    \caption{Illustration of a grid world with a policy.}\label{fig:gridworld}
+\end{figure}
+\clearpage
+
+
+
+
+\begin{exercise}[Optimal Policy]
+    Consider the grid world problem described in Exercise \ref{exercise:GridWorld}. Let $\pi^*$ be the optimal policy, $V^*$ the corresponding value function, $Q^*$ the corresponding Q function, and $\gamma=0.9$.
+
+    \begin{enumerate}
+        \item
+            Please derive the Bellman optimality equation in terms of the value function $V^*$ and the Q function $Q^*$, respectively.
+            \begin{solution}
+                For a given policy $\pi(s)$, we have
+                \begin{align*}
+                    V^\pi(s)
+                     & = \mathbb{E}\left[\sum_{k=0}^{\infty} \gamma^k R_{t+k} \mid S_t = s\right]                                                                                                               \\
+                     & = \mathbb{E}\left[R_t \mid S_t = s\right] +  \gamma \sum_{s'}\mb{P}\left(S_{t+1} = s' \mid S_t = s\right)\mathbb{E}\left[\sum_{k=0}^{\infty} \gamma^k R_{t+k+1} \mid S_{t+1} = s'\right] \\
+                     & = \mathbb{E}\left[r(s, \pi(s))\right] + \gamma \sum_{s'}\mb{P}\left(s' \mid s, \pi(s)\right)V^\pi(s').
+                \end{align*}
+                The optimal value function $V^*$ is the the solution to the following Bellman optimality equation
+                \begin{align*}
+                    V^*(s) = \max_{\pi} V^\pi(s)
+                     & = \max_{\pi} \left\{\mathbb{E}\left[r(s, \pi(s))\right] + \gamma \sum_{s'}\mb{P}\left(s' \mid s, \pi(s)\right)V^\pi(s')\right\} \\
+                     & = \max_{a} \left\{\mathbb{E}\left[r(s, a)\right] + \gamma \sum_{s'}\mb{P}\left(s' \mid s, a\right)V^*(s')\right\}.
+                \end{align*}
+                The Q function for the given policy $\pi(s)$ is defined as
+                \begin{align*}
+                    Q^\pi(s, a)
+                     & =  \mathbb{E}\left[\sum_{k=0}^{\infty} \gamma^k R_{t+k} \mid S_t = s, S_{t+1} = \delta(s, a)\right]                                                                                                     \\
+                     & = \mathbb{E}\left[R_t \mid S_t = s\right] +  \gamma \sum_{s'}\mb{P}\left(S_{t+1} = s' \mid S_{t+1} = \delta(s, a)\right)\mathbb{E}\left[\sum_{k=0}^{\infty} \gamma^k R_{t+k+1} \mid S_{t+1} = s'\right] \\
+                     & = \mathbb{E}\left[r(s, a)\right] + \gamma \sum_{s'}\mb{P}\left(s' \mid s, a\right) V^\pi(s')                                                                                                            \\
+                     & = \mathbb{E}\left[r(s, a)\right] + \gamma \sum_{s'}\mb{P}\left(s' \mid s, a\right) Q^\pi(s',\pi(s')).
+                \end{align*}
+                The optimal Q function $Q^*$ is the the solution to the following Bellman optimality equation
+                \begin{align*}
+                    Q^*(s, a) = \max_{\pi} Q^\pi(s, a)
+                     & = \mathbb{E}\left[r(s, a)\right] + \gamma \sum_{s'}\mb{P}\left(s' \mid s, a\right) \max_{\pi} V^\pi(s')   \\
+                     & = \mathbb{E}\left[r(s, a)\right] + \gamma \sum_{s'}\mb{P}\left(s' \mid s, a\right) V^*(s')                \\
+                     & = \mathbb{E}\left[r(s, a)\right] + \gamma \sum_{s'}\mb{P}\left(s' \mid s, a\right) \max_{a'} Q^*(s', a').
+                    \tag*{\qedhere}
+                \end{align*}
+            \end{solution}
+        \item
+            Please choose one of the algorithms we introduced in class to find $\pi^*$ and $V^*$ respectively and write their pseudocode (hand in your code if you have one).
+            \begin{solution}
+                For consistency with the lecture notes, we denote the transition matrix as $\mb{T}$ instead of $\mb{M}$. The pseudocode for the value iteration algorithm is as follows
+                \begin{center}
+                    \begin{minipage}{.8\linewidth}
+                        \centering
+                        \begin{algorithm}[H]
+                            \caption{Value Iteration}
+                            \label{alg:vi}
+                            \begin{algorithmic}[1]
+                                \STATE \textbf{Input:} The transition probabilities $\mb{P}\left(s' \mid s,a\right)$, the reward function $r(s, a)$, the discount rate $\gamma$, the initial value $V^0$ and the tolerance $\epsilon > 0$.
+                                \STATE \textbf{Output:} The optimal value function $V^*$ and the optimal policy $\pi^*$.
+                                \STATE $k \gets 0$
+                                \LOOP
+                                \STATE $V^{k+1} \gets V^k$, $k \gets k+1$
+                                \FOR{$s \in \mc{S}$}
+                                \FOR{$a \in \mc{A}$}
+                                \STATE $Q(s, a) \gets \mathbb{E}\left[r(s, a)\right] + \gamma \sum_{s'}\mb{P}\left(s' \mid s, a\right) V^k(s')$
+                                \ENDFOR
+                                \STATE $V^k(s) \gets \max_{a} Q(s,a)$, $\pi(s) \gets \amax_{a} Q(s,a)$
+                                \ENDFOR
+                                \IF{$\max_{s} |V^k(s) - V^{k-1}(s)| < \epsilon$}
+                                \STATE $V^* \gets V^k$, $\pi^* \gets \pi$
+                                \STATE \textbf{break}
+                                \ENDIF
+                                \ENDLOOP
+                            \end{algorithmic}
+                        \end{algorithm}
+                    \end{minipage}
+                \end{center}
+                The pseudocode for the policy iteration algorithm is as follows
+                \begin{center}
+                    \begin{minipage}{.8\linewidth}
+                        \begin{algorithm}[H]
+                            \caption{Policy Iteration}
+                            \label{alg:pi}
+                            \begin{algorithmic}[1]
+                                \STATE \textbf{Input:} The transition probabilities $\mb{P}\left(s' \mid s,a\right)$, the reward function $r(s,a)$, the discount rate $\gamma$, the initial policy $\pi^0$ and the tolerance $\epsilon$.
+                                \STATE \textbf{Output:} The optimal value function $V^*$ and the optimal policy $\pi^*$.
+                                \STATE $\pi \gets \pi^0$
+                                \LOOP
+                                \STATE $\pi' \gets \pi$
+                                \FOR{$s \in \mc{S}$}
+                                \STATE $R^\pi(s) = \mathbb{E}\left[r(s, \pi(s))\right]$
+                                \FOR{$s' \in \mc{S}$}
+                                \STATE $\mb{T}^\pi(s, s') \gets \mathbb{E}\left[\mb{P}\left(s' \mid s, \pi(s)\right)\right]$
+                                \ENDFOR
+                                \ENDFOR
+                                \STATE $V^\pi \gets (\mb{I} - \gamma \mb{T}^\pi)^{-1} R^\pi$
+                                \FOR{$s \in \mc{S}$}
+                                \FOR{$a \in \mc{A}$}
+                                \STATE $Q^\pi(s, a) \gets \mathbb{E}\left[r(s, a)\right] + \gamma \sum_{s'}\mb{P}\left(s' \mid s, a\right) V^\pi(s')$
+                                \ENDFOR
+                                \STATE $\pi(s) \gets \amax_{a} Q^\pi(s,a)$
+                                \ENDFOR
+                                \IF{$\pi = \pi'$}
+                                \STATE $V^* \gets V$, $\pi^* \gets \pi$
+                                \STATE \textbf{break}
+                                \ENDIF
+                                \ENDLOOP
+                            \end{algorithmic}
+                        \end{algorithm}
+                    \end{minipage}
+                \end{center}
+                The pseudocode for the Q-learning algorithm is as follows
+                \begin{center}
+                    \begin{minipage}{.8\linewidth}
+                        \begin{algorithm}[H]
+                            \caption{Q-Learning}
+                            \label{alg:ql}
+                            \begin{algorithmic}[1]
+                                \STATE \textbf{Input:} The discount rate $\gamma$, the initial Q function $Q^0$ and the number of episodes $N$.
+                                \STATE \textbf{Output:} The optimal value function $V^*$ and the optimal policy $\pi^*$.
+                                \STATE $\hat{Q} \gets Q^0$, $n \gets 0$
+                                \FOR{$i = 1$ to $N$}
+                                \STATE Start a new episode at the state $s$
+                                \WHILE{$s \neq \text{terminal state}$}
+                                \STATE $a \gets \epsilon$-greedy($\hat{Q}(s, \cdot)$)
+                                \STATE Take the action $a$, observe the reward $r$ and the state $s'$
+                                \STATE $\alpha = \frac{1}{n(s,a) + 1}$
+                                \STATE $\hat{Q}(s, a) \gets \hat{Q}(s, a) + \alpha \left[r + \gamma \max_{a'} \hat{Q}(s', a') - \hat{Q}(s, a)\right]$
+                                \STATE $n(s,a) \gets n(s,a) + 1$, $s \gets s'$
+                                \ENDWHILE
+                                \ENDFOR
+                                \STATE $V^* \gets \max_{a} \hat{Q}(\cdot,a)$, $\pi^* \gets \amax_{a} \hat{Q}(\cdot,a)$
+                            \end{algorithmic}
+                        \end{algorithm}
+                    \end{minipage}
+                \end{center}
+                A Python implementation of the Q-learning algorithm is given in "HW7.ipynb".
+                \qedhere
+            \end{solution}
+        \item
+            Please design a reward scheme such that following the resulting optimal policy will never lose. Specifically, you need to derive the resulting optimal policy (the proof is not required) and show  $$\lim_{t\rightarrow\infty}\mb{P}(S_t=s_i)=0,\,i=1,\ldots,10,$$
+            whenever $\mb{P}(S_0=s_{10})=\mb{P}(S_0=s_{11})=0$.
+            \begin{solution}
+                In order not to lose, we set $r(s,a)=-\infty$ if and only if $\delta(s,a)=s_{10}$. Futhermore, to ensure that the agent will finally reach $s_{11}$ under the optimal policy, we let $r(s,a)>0$ if $\delta(s,a)=s_{11}$. Otherwise, $r(s,a)=0$. To sum up, the reward function can be formulated as
+                \begin{align*}
+                    r(s,a) = \begin{cases}
+                                 -\infty, & \text{if } \delta(s,a) = s_{10}, \\
+                                 1,       & \text{if } \delta(s,a) = s_{11}, \\
+                                 0,       & \text{otherwise}.
+                             \end{cases}
+                \end{align*}
+                As a result, we have
+                \begin{itemize}
+                    \item A policy under which $s_{10}$ is reachable from the state $s$ has a value $V^\pi(s)=-\infty$.
+                    \item A policy under which both $s_{10}, s_{11}$ are unreachable from $s$ has a value $V^\pi(s)=0$.
+                    \item A policy under which $s_{10}$ is unreachable and $s_{11}$ is reachable from $s$ has a value $V^\pi(s)>0$.
+                \end{itemize}
+                The optimal policy is the one that maximizes the value function and hence satisfies the last statement above. Note that such policy is not unique, so we use the Q-learning algorithm implemented in "HW7.ipynb" to find the exact optimal policy, which is given by
+                \begin{align*}
+                     & \pi^*(s_1) = \text{up}, \quad \pi^*(s_2) = \text{up}, \quad \pi^*(s_3) = \text{right}, \quad \pi^*(s_4) = \text{left}, \quad \pi^*(s_5) = \text{right}, \\
+                     & \pi^*(s_6) = \text{left}, \quad \pi^*(s_7) = \text{left}, \quad \pi^*(s_8) = \text{right}, \quad \pi^*(s_9) = \text{down}.
+                \end{align*}
+                The transition matrix is then
+                \begin{align*}
+                    \mb{M} = \left(\begin{array}{ccccccccccc}0.25 & 0.7 & 0 & 0.05 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0.3 & 0.7 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0.05 & 0.25 & 0 & 0.7 & 0 & 0 & 0 & 0 & 0 & 0\\0.7 & 0 & 0 & 0.3 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0.3 & 0 & 0 & 0.7 & 0 & 0 & 0\\0 & 0 & 0 & 0.7 & 0 & 0.25 & 0.05 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0.15 & 0.8 & 0.05 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0.05 & 0.25 & 0 & 0 & 0.7\\0 & 0 & 0 & 0 & 0 & 0.05 & 0 & 0 & 0.95 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1\end{array}\right).
+                \end{align*}
+                Following the the same framework of proof as in Exercise 4.2(b), we write the transition matrix as
+                \begin{align*}
+                    \mb{M} = \begin{pmatrix}
+                                 \mb{M}_1 & \mb{0} & \mb{M}_2 \\
+                                 \mb{0}   & 1      & 0        \\
+                                 \mb{0}   & 0      & 1
+                             \end{pmatrix}, \quad
+                    \mb{M}^t = \begin{pmatrix}
+                                   \mb{M}_1^t & \mb{0} & \sum_{k}^{t-1}\mb{M}_1^k\mb{M}_2 \\
+                                   \mb{0}     & 1      & 0                                \\
+                                   \mb{0}     & 0      & 1
+                               \end{pmatrix}.
+                \end{align*}
+                By noting that $\|\mb{M}_1^6\|_\infty < 1$, we conclude that
+                \begin{align*}
+                    \lim_{t\to\infty}\mb{M}^t =
+                    \begin{pmatrix}
+                        \mb{O} & \mb{0} & (\mb{I}-\mb{M}_1)^{-1}\mb{M}_2 \\
+                        \mb{0} & 1      & 0                              \\
+                        \mb{0} & 0      & 1
+                    \end{pmatrix},
+                \end{align*}
+                which implies that
+                \begin{align*}
+                    \lim_{t\to\infty}\mb{P}(S_t=s_i) =
+                    \begin{cases}
+                        0,                                        & \text{if } i=1,\ldots,9, \\
+                        \mb{P}(S_0 = s_{10}) = 0,                 & \text{if } i=10,         \\
+                        \mb{P}(S_0) \begin{pmatrix}
+                                        (\mb{I}-\mb{M}_1)^{-1}\mb{M}_2 \\ 0 \\  1
+                                    \end{pmatrix}, & \text{if } i=11,
+                    \end{cases}
+                \end{align*}
+                whenever $\mb{P}(S_0 = s_{10}) = 0$.
+                \qedhere
+            \end{solution}
+    \end{enumerate}
+\end{exercise}
+\clearpage
+
+
+
+
+\begin{exercise}[Value Iteration and Policy Iteration ]\label{exercise:ValueIteration}
+    Consider a Markov Decision Process with bounded rewards and finite state-action pairs. The transition probability is $\mb{P}(s'|s,a)$, the discounted factor is $\gamma\in (0,1)$, and the reward function is $r(s,a)$. Let $\pi:\mc{S}\rightarrow\mc{A}$ be a deterministic policy and $Q^\pi (s,a)$ be the accumulated reward by performing the action $a$ first and then following the policy $\pi$.
+
+
+    \begin{enumerate}
+        \item Let $V^k$ denote the value function after the $k$-th iteration of the value iteration algorithm. Please show that value iteration achieves linear convergence rate, that is
+            $$ \left\|V^* - V^{k+1}\right\|_\infty \leq \gamma \left\|V^* - V^k \right\|_\infty.$$
+            \begin{solution}
+                For simplicity, we consider the value iteration where the value function is updated by
+                \begin{align*}
+                    V^{k+1}(s) = \max_{a}\left\{\mathbb{E}\left[r(s,a)\right] + \gamma\sum_{s'}\mb{P}(s'|s,a)V^k(s')\right\},
+                \end{align*}
+                instead of the one in Algorithm \ref{alg:vi}.
+                By the Bellman Equation, we have
+                \begin{align*}
+                           & \left|V^*(s) - V^{k+1}(s)\right|                                                                                                                                                                               \\
+                    =\     & \left| \max_{a}\left\{ \mathbb{E}\left[r(s,a)\right] + \gamma \sum_{s'}\mb{P}(s'|s,a)V^*(s') \right\} - \max_{a}\left\{ \mathbb{E}\left[r(s,a)\right] + \gamma \sum_{s'}\mb{P}(s'|s,a)V^k(s') \right\} \right| \\
+                    \le \  & \max_{a}\left| \gamma \sum_{s'}\mb{P}(s'|s,a)V^*(s') - \gamma \sum_{s'}\mb{P}(s'|s,a)V^k(s') \right|                                                                                                           \\
+                    = \    & \gamma \max_{a} \sum_{s'} \mb{P}(s'|s,a) \left| V^*(s') - V^k(s') \right|                                                                                                                                      \\
+                    \le \  & \gamma \max_{a} \sum_{s'} \mb{P}(s'|s,a) \left\| V^* - V^k \right\|_\infty = \gamma \|V^* - V^k\|_\infty,
+                \end{align*}
+                for any $s\in\mc{S}$. Therefore, $\left\|V^* - V^{k+1}\right\|_\infty \leq \gamma \left\|V^* - V^k \right\|_\infty$.
+                \qedhere
+            \end{solution}
+
+        \item
+            \begin{enumerate}
+                \item Find the Bellman Equation for $Q^\pi$.
+                \item   Consider a new policy $\pi'$ given by
+                    \begin{align*}
+                        \pi'(s)=\argmax_{a\in\mc{A}} Q^\pi(s,a).
+                    \end{align*}
+                    Note that if $\argmax_{a\in\mc{A}} Q^\pi(s,a)$ is not unique, we can choose one action arbitrarily. Show that  $V^{\pi'}(s) \geq V^\pi(s)$ for all $s\in \mc{S}$.
+            \end{enumerate}
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item As is shown in Exercise 5.1, the Bellman Equation is
+                        \begin{align*}
+                            Q^\pi(s,a) = \mathbb{E}\left[r(s,a) \right] + \gamma \sum_{s'}\mb{P}(s'|s,a) Q^\pi(s',\pi(s')).
+                        \end{align*}
+                    \item By the definition of $\pi'(s)$, we have
+                        \begin{align*}
+                            V^{\pi'}(s) - V^\pi(s)
+                             & = Q^{\pi'} (s,\pi'(s)) - Q^\pi (s,\pi(s)) \ge Q^{\pi'} (s,\pi'(s)) - Q^\pi (s,\pi'(s))       \\
+                             & = \gamma \sum_{s'}\mb{P}(s'|s,\pi'(s)) \left[Q^{\pi'}(s',\pi(s')) - Q^\pi(s',\pi(s'))\right] \\
+                             & = \gamma \sum_{s'}\mb{P}(s'|s,\pi'(s)) \left[V^{\pi'}(s') - V^\pi(s')\right].
+                        \end{align*}
+                        Or equivalently, in the language of matrix,
+                        \begin{align*}
+                            \left(\mb{I} - \gamma \mb{T}^{\pi'}\right) \left(V^{\pi'} - V^\pi\right) \ge \mb{0}.
+                        \end{align*}
+                        Since $\left(\mb{I} - \gamma \mb{T}^{\pi'}\right)^{-1} = \sum_{k=0}^\infty \gamma \mb{T}^{\pi'}$ has non-negative entries, multiplying both sides of the inequality by it does not change the sign. Therefore, we obtain $V^{\pi'} - V^\pi \geq \mb{0}$, i.e. $V^{\pi'}(s) \geq V^\pi(s)$ for all $s\in \mc{S}$.
+                        \qedhere
+                \end{enumerate}
+            \end{solution}
+    \end{enumerate}
+
+\end{exercise}
+\clearpage
+
+
+
+
+\begin{exercise}[Q-learning algorithm (Optional)]
+
+    \begin{enumerate}
+        \item
+            Consider the $Q$-learning algorithm for any deterministic MDP with finite state-action pairs and non-negative rewards. Assume that we initialize all $\hat{Q}$ values to zero. Let $\hat{Q}_n(s,a)$ denote the learned $\hat{Q}(s,a)$  value after the $n$-th iteration of the training procedure in $Q$ learning algorithm.
+            \begin{enumerate}
+                \item Please show that $\hat{Q}$ values never decrease during training, that is $$\hat{Q}_{n+1}(s,a)=r(s,a)+\gamma \max_{a'}\hat{Q}_n(s', a') \geq \hat{Q}_n(s, a), \,\forall s,a,n,$$
+                    where $s'$ is the state the agent attains after taking action $a$ at state $s$.
+                \item Please show that throughout the training process, every $\hat{Q}$ value will remain in the interval between zero and the optimal $Q$ function $Q^*$, that is
+                    $$0\leq \hat{Q}_{n}(s,a) \leq Q^*(s,a),\, \forall s,a,n.$$
+            \end{enumerate}
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item Since $\hat{Q}_{0}(s,a) = 0$ and $r(s,a)\ge 0$, we have
+                        \begin{align*}
+                            \hat{Q}_{1}(s,a) - \hat{Q}_{0}(s,a) = r(s,a) > 0,\ \forall s,a.
+                        \end{align*}
+                        Assume that $\hat{Q}_{n}(s,a) \ge \hat{Q}_{n-1}(s,a)$, for all $s,a$ and some $n\ge 1$. Then, we have
+                        \begin{align*}
+                            \hat{Q}_{n+1}(s,a) - \hat{Q}_n(s,a)
+                             & = \gamma \left(\max_{a'}\hat{Q}_n(s', a') - \max_{a'}\hat{Q}_{n-1}(s', a')\right)        \\
+                             & = \gamma \left(\max_{a'}\hat{Q}_n(s', a') - \hat{Q}_{n-1}(s', a^*)\right)                \\
+                             & \ge \gamma \left(\hat{Q}_n(s', a^*) - \hat{Q}_{n-1}(s', a^*)\right) \ge 0,\ \forall s,a,
+                        \end{align*}
+                        where we let $a^* \in \argmax_{a'} \hat{Q}_{n-1}(s', a')$.
+                        By induction on $n$, $\hat{Q}_{n+1}(s,a) - \hat{Q}_n(s,a) \ge 0$ holds for all $n\ge 0$, i.e. $\hat{Q}_{n+1}(s,a) \ge \hat{Q}_n(s,a)$, $\forall s,a,n$.
+                    \item
+                        The first inequality holds immediately from the fact that $\hat{Q}_{n}(s,a) \ge \hat{Q}_0(s,a) = 0$. To see the second inequality, we again perform induction on $n$. The base case $n=0$ is trivial, as $r(s,a) \ge 0$. Assume that $Q^*(s,a) \ge \hat{Q}_{n-1}(s,a)$ for all $s,a$ and some $n\ge 1$. Then, we have
+                        \begin{align*}
+                            \hat{Q}^*(s,a) - \hat{Q}_n(s,a)
+                             & = \gamma \left(\max_{a'}\hat{Q}^*(s', a') - \max_{a'}\hat{Q}_{n-1}(s', a')\right)        \\
+                             & = \gamma \left(\max_{a'}\hat{Q}^*(s', a') - \hat{Q}_{n-1}(s', a^*)\right)                \\
+                             & \ge \gamma \left(\hat{Q}^*(s', a^*) - \hat{Q}_{n-1}(s', a^*)\right) \ge 0,\ \forall s,a,
+                        \end{align*}
+                        where we let $a^* \in \argmax_{a'} \hat{Q}_{n-1}(s', a')$. In conclusion, $\hat{Q}^*(s,a) \ge \hat{Q}_n(s,a)$, $\forall s,a,n$.
+                        \qedhere
+                \end{enumerate}
+            \end{solution}
+        \item
+            Consider the $Q$-learning algorithm for a stochastic MDP with finite state-action pairs. The transition probability is $\mb{P}(s'|s,a)$ and the reward function is deterministic, denoted by $r(s,a)$. Assume that we initialize all $\hat{Q}$ values to zero. Let $\hat{Q}_n(s,a)$ denote the learned $\hat{Q}(s,a)$  value after the $n$-th iteration of the training procedure in $Q$-learning algorithm.
+            Please show that
+            $$
+                \mathbb{E}_{s'\sim \mb{P}(\cdot|s,a)}\left[r(s,a)+\gamma \max_{a'} \hat{Q}_{n}(s',a')\right] \geq r(s,a)+\gamma  \max_{a'}\mathbb{E}_{s'\sim \mb{P}(\cdot|s,a)}\left[\hat{Q}_{n}(s',a')\right] ,\forall s,a,n.
+            $$
+            \begin{solution}
+                Since the reward function is deterministic, we have
+                \begin{align*}
+                     & \quad \mathbb{E}_{s'\sim \mb{P}(\cdot|s,a)}\left[r(s,a)+\gamma \max_{a'} \hat{Q}_{n}(s',a')\right] = r(s,a) + \gamma \sum_{s'} \mb{P}(s'|s,a) \max_{a'} \hat{Q}_{n}(s',a').
+                \end{align*}
+                Thus, we only need to show that
+                \begin{align*}
+                    \sum_{s'} \mb{P}(s'|s,a) \max_{a'} \hat{Q}_{n}(s',a') \ge \max_{a'} \sum_{s'} \mb{P}(s'|s,a) \hat{Q}_{n}(s',a'),
+                \end{align*}
+                Let $a^* \in \argmax_{a'} \sum_{s'} \mb{P}(s'|s,a) \hat{Q}_{n}(s',a')$. Then, the above inequality becomes
+                \begin{align*}
+                    \sum_{s'} \mb{P}(s'|s,a) \max_{a'} \hat{Q}_{n}(s',a') \ge \sum_{s'} \mb{P}(s'|s,a) \hat{Q}_{n}(s',a^*),
+                \end{align*}
+                which is clearly true.
+                \qedhere
+            \end{solution}
+    \end{enumerate}
+\end{exercise}
+\clearpage
+
+
+
+
+% \bibliography{refs}
+%\bibliographystyle{abbrv}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

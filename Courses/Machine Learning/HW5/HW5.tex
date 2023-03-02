@@ -1,0 +1,1754 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Course info
+\newcommand{\school}{\text{University of Science and Technology of China}}
+\newcommand{\course}{\text{Introduction to Machine Learning}}
+\newcommand{\semester}{\text{Fall 2022}}
+\newcommand{\lecturer}{\text{Jie Wang}}
+% Homework info
+\newcommand{\posted}{\text{Nov. 24, 2022}}
+\newcommand{\due}{\text{Dec. 8, 2022}}
+\newcommand{\hwno}{\text{5}}
+% Student info
+\newcommand{\name}{\text{Yunqin Zhu}}
+\newcommand{\id}{\text{PB20061372}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{../common/HW.tex}
+\begin{document}
+\maketitle
+
+\begin{exercise}[Proximal Operator]
+    For a convex function $f:\mathbb{R}^n\to\mathbb{R}$, we define its proximal operator at $\mb{x}$ by
+    \begin{align*}
+        \prox_{f}(\mb{x})=\amin_{\mb{u}\in\dom f}\left\{f(\mb{u})+\frac{1}{2}\|\mb{u}-\mb{x}\|^{2}\right\}.
+    \end{align*}
+
+    \begin{enumerate}
+        \item Recall the convex optimization problem Lecture 08.
+            \begin{align*}
+                \min _{\mb{x} \in \mathbb{R}^{n}} F(\mb{x}).
+            \end{align*}
+            Please rewrite $p(\mb{x}_c)$ using proximal operator.
+
+            \begin{solution}
+                ~\vspace{-3ex}
+                \begin{align*}
+                    p(\mb{x}_c) & = \amin_{\mb{x}\in\mathbb{R}^{n}}\left\{g(\mb{x})+\frac{L}{2}\left\|\mb{x}-\left(\mb{x}_c-\frac{1}{L}\nabla f(\mb{x}_c)\right)\right\|^{2}\right\}            \\
+                                & = \amin_{\mb{x}\in\mathbb{R}^{n}}\left\{\frac{1}{L}g(\mb{x})+\frac{1}{2}\left\|\mb{x}-\left(\mb{x}_c-\frac{1}{L}\nabla f(\mb{x}_c)\right)\right\|^{2}\right\} \\
+                                & = \prox_{\frac{1}{L}g}\left(\mb{x}_c-\frac{1}{L}\nabla f(\mb{x}_c)\right)
+                    \tag*{\qedhere}
+                \end{align*}
+            \end{solution}
+
+        \item The proximal operator has the following properties.
+            \begin{enumerate}
+                \item If $f$ is proper and closed (which means $\mb{epi} f$ is closed), then for any $\mb{x}\in\mathbb{R}^n$, $\prox_{f}(\mb{x})$ exists and is unique. You can use the properties we have proved in Homework 4 directly.
+                \item If $f$ is proper and closed, then $\mb{u}=\prox_{f}(\mb{x})$ if and only if $\mb{x}-\mb{u} \in \partial f(\mb{u})$.
+                \item Please show that if $\mb{u}=\prox_{f}(\mb{x}), \mb{v}=\prox_{f}(\mb{y})$, then
+                    \begin{align*}
+                        \langle \mb{u}-\mb{v},\mb{x}-\mb{y}\rangle \ge\|\mb{u}-\mb{v}\|_2^2,
+                    \end{align*}
+                    which means $\prox_{f}$ is firmly nonexpansive. Then show that this implies nonexpansive
+                    \begin{align*}
+                        \left\|\prox_{f}(\mb{x})-\prox_{f}(\mb{y})\right\|_{2} \le\|\mb{x}-\mb{y}\|_{2}.
+                    \end{align*}
+            \end{enumerate}
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item Note that $f(\mb{u})+\frac{1}{2}\|\mb{u}-\mb{x}\|^2$ is proper, closed and strongly convex as a sum of the closed strongly convex function $\frac{1}{2}\|\mb{u}-\mb{x}\|^{2}$ on $\mathbb{R}^n$ and the proper closed convex function $f(\mb{u})$. Therefore, there exists a unique minimizer to the problem
+
+                        \begin{equation}\label{prob:prox}
+                            \min_{\mb{u}\in\dom f}\left\{f(\mb{u})+\frac{1}{2}\|\mb{u}-\mb{x}\|^{2}\right\},
+                        \end{equation}
+                        which is $\prox_{f}(\mb{x})$ by definition.
+                    \item We have shown that the convex optimization problem (\ref{prob:prox}) admits a unique minimizer $\prox_{f}(\mb{x})$. By the optimality condition, $\mb{u} = \prox_{f}(\mb{x})$ if and only if $\mb{0} \in \partial f(\mb{u}) + \mb{u} - \mb{x}$, i.e. $\mb{x}-\mb{u} \in \partial f(\mb{u})$.
+                    \item According to (b), we have $\mb{x} - \mb{u} \in \partial f(\mb{u})$ and $\mb{y} - \mb{v} \in \partial f(\mb{v})$. Then,
+                        \begin{gather*}
+                            \left\langle\mb{x} - \mb{u}, \mb{v} - \mb{u}\right\rangle \le f(\mb{v}) - f(\mb{u}), \\
+                            \left\langle\mb{y} - \mb{v}, \mb{u} - \mb{v}\right\rangle \le f(\mb{u}) - f(\mb{v}).
+                        \end{gather*}
+                        Summing up the two inequalities, we obtain
+                        \begin{align*}
+                            \left\langle(\mb{u} - \mb{v}) - (\mb{x} - \mb{y}), \mb{u} - \mb{v}\right\rangle \le 0.
+                        \end{align*}
+                        Hence $\langle \mb{u}-\mb{v},\mb{x}-\mb{y}\rangle \ge\|\mb{u}-\mb{v}\|_2^2$. Using the Cauchy-Schwarz inequality, it follows that
+                        \begin{align*}
+                            \|\mb{u}-\mb{v}\|_2^2 \le \|\mb{u}-\mb{v}\|_{2} \|\mb{x}-\mb{y}\|_{2} \iff \|\mb{u}-\mb{v}\|_{2} \le \|\mb{x}-\mb{y}\|_{2}.
+                            \tag*{\qedhere}
+                        \end{align*}
+                \end{enumerate}
+            \end{solution}
+
+
+        \item The proximal operator satisfies the following equations.
+            \begin{enumerate}
+                \item For $\lambda\not=0$, $a\in\mathbb{R}^n$, we let $h(\mb{x})=f(\lambda \mb{x}+\mb{a})$, then $ \prox_{h}(\mb{x})=\frac{1}{\lambda}\left(\prox_{\lambda^{2} f}(\lambda \mb{x}+\mb{a})-\mb{a}\right)$.
+                \item For $\lambda>0$, we let $h(\mb{x})=\lambda f\left(\frac{\mb{x}}{\lambda}\right)$, then $ \prox_{h}(\mb{x})=\lambda \prox_{\lambda^{-1} f}\left(\frac{\mb{x}}{\lambda}\right)$.
+                \item For $\mb{a}\in\mathbb{R}^n$, we let $h(\mb{x})=f(\mb{x})+\mb{a}^\top \mb{x}$, then $ \prox_{h}(\mb{x})=\prox_{f}(\mb{x}-\mb{a})$.
+                    %  \item For $u>0$, we let $h(\mb{x})=f(\mb{x})+\frac{u}{2}\|\mb{x}-\mb{a}\|_2^2$, then $\prox_{h}(\mb{x})=\prox_{\theta f}(\theta \mb{x}+(1-\theta) \mb{a})$, where $\theta=\frac{1}{1+u}$.
+            \end{enumerate}
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item ~\vspace{-5ex}
+                        \begin{align*}
+                            \prox_h(\mb{x}) & = \amin_{\mb{u}\in\dom h}\left\{f(\lambda\mb{u}+\mb{a})+\frac{1}{2}\|\mb{u}-\mb{x}\|_2^2\right\}                                                              \\
+                                            & = \frac{1}{\lambda}\left(\amin_{\mb{v}\in\dom f}\left\{f(\mb{v})+\frac{1}{2}\left\|\frac{\mb{v}-\mb{a}}{\lambda}-\mb{x}\right\|_2^2\right\}-\mb{a}\right)     \\
+                                            & = \frac{1}{\lambda}\left(\amin_{\mb{v}\in\dom f}\left\{\lambda^2 f(\mb{v})+\frac{1}{2}\left\|\mb{v}-(\lambda\mb{x}+\mb{a})\right\|_2^2\right\} -\mb{a}\right) \\
+                                            & = \frac{1}{\lambda}\left(\prox_{\lambda^2 f}(\lambda\mb{x}+\mb{a})-\mb{a}\right).
+                        \end{align*}
+                    \item ~\vspace{-5ex}
+                        \begin{align*}
+                            \prox_h(\mb{x}) & = \amin_{\mb{u}\in\dom h}\left\{\lambda f(\frac{\mb{u}}{\lambda})+\frac{1}{2}\|\mb{u}-\mb{x}\|_2^2\right\}                        \\
+                                            & = \lambda\amin_{\mb{v}\in\dom f}\left\{\lambda f(\mb{v})+\frac{1}{2}\left\|\lambda\mb{v}-\mb{x}\right\|_2^2\right\}               \\
+                                            & = \lambda\amin_{\mb{v}\in\dom f}\left\{\lambda^{-1} f(\mb{v})+\frac{1}{2}\left\|\mb{v}-\frac{\mb{x}}{\lambda}\right\|_2^2\right\} \\
+                                            & = \lambda\prox_{\lambda^{-1} f}\left(\frac{\mb{x}}{\lambda}\right).
+                        \end{align*}
+                    \item ~\vspace{-5ex}
+                        \begin{align*}
+                            \prox_h(\mb{x}) & = \amin_{\mb{u}\in\dom h}\left\{f(\mb{u})+\mb{a}^\top \mb{u} + \frac{1}{2}\|\mb{u}-\mb{x}\|_2^2\right\} \\
+                                            & = \amin_{\mb{u}\in\dom h}\left\{f(\mb{u}) + \frac{1}{2}\|\mb{u}-(\mb{x}-\mb{a})\|_2^2\right\}           \\
+                                            & = \prox_{f}(\mb{x}-\mb{a}).
+                            \tag*{\qedhere}
+                        \end{align*}
+                        % \item
+                \end{enumerate}
+            \end{solution}
+
+
+        \item Please find the proximal operator of the following functions.
+            \begin{enumerate}
+                \item $f(\mb{x})=0$.
+                \item $f(\mb{x})=\|\mb{x}\|_2$
+                \item $f(\mb{x})=I_C(\mb{x})$, where $C$ is a convex set.
+                \item $f(\mb{x})=\|\mb{x}\|_1$.
+            \end{enumerate}
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item $\prox_f(\mb{x})=\amin_{\mb{u}}\left\{\frac{1}{2}\|\mb{u}-\mb{x}\|_2^2\right\}=\mb{x}$.
+                    \item $\prox_f(\mb{x})=\amin_{\mb{u}}\left\{\|\mb{u}\|_2+\frac{1}{2}\|\mb{u}-\mb{x}\|_2^2\right\}$. Letting $\mb{x} - \mb{u} \in \partial \|\mb{u}\|_2$, we have
+                        \begin{align*}
+                            \begin{cases}
+                                \mb{x} - \mb{u} = \frac{\mb{u}}{\|\mb{u}\|_2}, & \text{if } \mb{u}\neq \mb{0}, \\
+                                \mb{x} - \mb{u} \in B(0,1),                    & \text{if } \mb{u}=\mb{0}.
+                            \end{cases}
+                        \end{align*}
+                        Therefore, $\prox_f(\mb{x})=\begin{cases}
+                                \mb{x}-\frac{\mb{x}}{\|\mb{x}\|_2}, & \text{if } \|\mb{x}\|_2 > 1,   \\
+                                \mb{0},                             & \text{if } \|\mb{x}\|_2 \le 1.
+                            \end{cases}$
+                    \item $\prox_f(\mb{x})=\amin_{\mb{u}}\left\{I_C(\mb{x})+\frac{1}{2}\|\mb{u}-\mb{x}\|_2^2\right\}=\amin_{\mb{u}\in C}\left\{\frac{1}{2}\|\mb{u}-\mb{x}\|_2^2\right\} = \Pi_C(\mb{x})$.
+                    \item $\prox_f(\mb{x})=\amin_{\mb{u}}\left\{\|\mb{u}\|_1+\frac{1}{2}\|\mb{u}-\mb{x}\|_2^2\right\}$. Letting $\mb{x} - \mb{u} \in \partial \|\mb{u}\|_1$, we have
+                        \begin{align*}
+                            \begin{cases}
+                                x_i - u_i = +1,        & \text{if } u_i > 0, \\
+                                x_i - u_i \in [-1,+1], & \text{if } u_i = 0, \\
+                                x_i - u_i = -1,        & \text{if } u_i < 0. \\
+                            \end{cases}
+                        \end{align*}
+                        Therefore, $\mb{u} = \prox_f(\mb{x})$ satisfies
+                        \begin{align*}
+                            \begin{cases}
+                                u_i = x_i - 1, & \text{if } x_i > 1,     \\
+                                u_i = 0,       & \text{if } |x_i| \le 1, \\
+                                u_i = x_i + 1, & \text{if } x_i < -1.    \\
+                            \end{cases}
+                            \tag*{\qedhere}
+                        \end{align*}
+                \end{enumerate}
+            \end{solution}
+
+
+        \item (Optional) Consider the convex optimization problem
+            \begin{align}\label{prob:indicator}
+                \min_{\mb{x}\in\mathbb{R}^n} f(\mb{x})+\tilde{I}_D(\mb{x}),
+            \end{align}
+            where $D\subseteq\mathbb{R}^n$ is a closed convex set and $\tilde{I}_D(\mb{x})$ is the extended-value extension of its indicator function $I_D(\mb{x})$.
+            \begin{enumerate}
+                \item Write down the optimality condition and the proximal operator of the problem (\ref{prob:indicator}).
+                \item Find the relationship between (\ref{prob:indicator}) and the constrained optimization problem
+                    \begin{align*}
+                        \min_{\mb{x}\in D} f(\mb{x}).
+                    \end{align*}
+            \end{enumerate}
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item The optimality condition is $\mb{0}\in \partial f(\mb{x}) + \partial \tilde{I}_D(\mb{x})$, i.e. $-\mb{g} \in N_D(\mb{x})$ for some $\mb{g} \in \partial f(\mb{x})$, where $N_D(\mb{x})$ is the normal cone of $D$ at $\mb{x}$. To be explicit,
+                        \begin{align*}
+                            \text{there exists $\mb{g} \in \partial f(\mb{x})$ such that $\langle\mb{g},\mb{y}-\mb{x}\rangle \ge 0$ for all $\mb{y} \in D$.}
+                        \end{align*}
+
+                        The proximal operator is $\prox_{f+\tilde{I}_D}(\mb{x}) = \amin_{\mb{u}\in D}\left\{f(\mb{u})+\frac{1}{2}\|\mb{u}-\mb{x}\|_2^2\right\}$. Moreover, $\mb{u} = \prox_{f+\tilde{I}_D}(\mb{x})$ iff. $\mb{u} \in D$ and $\mb{x} - \mb{u} -\mb{g} \in N_D(\mb{u})$ for some $\mb{g} \in \partial f(\mb{u})$. That is,
+                        \begin{align*}
+                            \text{there exists $\mb{g} \in \partial f(\mb{u})$ such that $\langle\mb{g}+\mb{u}-\mb{x},\mb{v}-\mb{u}\rangle \ge 0$ for all $\mb{v} \in D$.}
+                        \end{align*}
+
+                    \item Suppose that $D \subseteq \dom f$. Then $f(\mb{x}) + \tilde{I}_D(\mb{x}) = f(\mb{x}) < +\infty$ for any $\mb{x}\in D$, whereas $f(\mb{x}) + \tilde{I}_D(\mb{x}) = +\infty$ for any $\mb{x}\notin D$. It follows that $\argmin_{\mb{x}\in\mathbb{R}^n} \left\{f(\mb{x})+\tilde{I}_D(\mb{x})\right\} = \argmin_{\mb{x}\in D} f(\mb{x})$, i.e. the constrained optimization problem shares the same optimal solution as the unconstrained one.
+                        \qedhere
+                \end{enumerate}
+            \end{solution}
+
+        \item (Optional) Write down the proximal operator of the following convex optimization problems.
+
+            \begin{align*}
+                \min_{\mb{w}\in\mathbb{R}^n} \frac{1}{n}\|\mb{y}-\mb{X}\mb{w}\|_2^2+\lambda_1 \|\mb{w}\|_1+\lambda_2 I_{\mathbb{R}^n_+}(\mb{w}),
+            \end{align*}
+
+            \begin{solution}
+                Let $F(\mb{w}) = \frac{1}{n}\|\mb{y}-\mb{X}\mb{w}\|_2^2+\lambda_1 \|\mb{w}\|_1$. The proximal operator is
+                \begin{align*}
+                    \prox_{F+\lambda_2 I_{\mathbb{R}^n_+}}(\mb{w}) = \amin_{\mb{u}\in\mathbb{R}^n_+}\left\{\frac{1}{n}\|\mb{y}-\mb{X}\mb{u}\|_2^2+\lambda_1 \|\mb{u}\|_1+\frac{1}{2}\|\mb{u}-\mb{w}\|_2^2\right\}.
+                \end{align*}
+                By the optimality condition, $\mb{u} = \prox_{F+\lambda_2 I_{\mathbb{R}^n_+}}(\mb{w})$ if and only if $\mb{u} \in \mathbb{R}^n_+$ and $\mb{g} + \mb{u} - \mb{w} \in -N_{\mathbb{R}^n_+}(\mb{u})$ for some $\mb{g} \in \partial F(\mb{u})$. Since $\partial F(\mb{u}) + \mb{u} - \mb{w} = \lambda_1 \partial \|\mb{u}\|_1 + \tilde{\mb{u}} - \mb{w}$, where $\tilde{\mb{u}} = \left(\frac{2}{n}\mb{X}^\top \mb{X}+\mb{I}\right)\mb{u}-\frac{2}{n}\mb{X}^\top \mb{y}$, we obtain
+                \begin{align*}
+                    \begin{cases}
+                        \lambda_1 + \tilde{u}_i-w_i \ge 0, & \text{if } u_i = 0, \\
+                        \lambda_1 + \tilde{u}_i-w_i = 0,   & \text{if } u_i > 0, \\
+                    \end{cases}
+                \end{align*}
+                Therefore, $\lambda\mb{1} + \tilde{\mb{u}} - \mb{w} = \mb{0}$, and thus
+                \begin{align*}
+                    \prox_{F+\lambda_2 I_{\mathbb{R}^n_+}}(\mb{w}) = \left(\frac{2}{n}\mb{X}^\top \mb{X}+\mb{I}\right)^{-1}\left(\frac{2}{n}\mb{X}^\top \mb{y} + \mb{w} - \lambda_1\mb{1}\right).
+                    \tag*{\qedhere}
+                \end{align*}
+            \end{solution}
+
+    \end{enumerate}
+\end{exercise}
+\clearpage
+
+
+
+\begin{exercise}[Proximal Gradient]
+    Consider the following convex optimization problem
+    \begin{align}\label{prob:ex2}
+        \min_\mb{x}\,        & F(\mb{x})   \\
+        \nonumber\text{s.t.} & \mb{x}\in D
+    \end{align}
+    where $F:\mathbb{R}^n\rightarrow\bar{\mathbb{R}}$ is a proper convex function and $D\subseteq\mathbb{R}^n$
+    is a nonempty convex set with $D\subseteq\dom F$. Suppose that the problem (\ref{prob:ex2}) is solvable, and {\bf we do not require the differentiability of $F$}.
+    \begin{enumerate}
+        \item If $\mb{x}\in\intp(\dom F) \cap D$ and there exists a $\mb{g}\in\partial F(\mb{x})$ such that
+            \begin{align*}
+                \langle \mb{g},\mb{y}-\mb{x} \rangle\ge 0,\, \forall\, \mb{y}\in D,
+            \end{align*}
+            show that $\mb{x}$ is optimal.
+
+            \begin{solution}
+                By the definition of subdifferential,
+                \begin{align*}
+                    F(\mb{y}) \ge F(\mb{x}) + \langle \mb{g},\mb{y}-\mb{x} \rangle \ge F(\mb{x}),\, \forall\, \mb{y}\in D,
+                \end{align*}
+                which implies that $\mb{x}$ is optimal.
+            \end{solution}
+
+
+        \item (Optional) If $\mb{x}\in\intp(\dom F)$ and $\mb{x}$ is optimal, show that $\mb{x}\in D$ and there exists a $\mb{g}\in\partial F(\mb{x})$ such that
+            \begin{align*}
+                \langle \mb{g},\mb{y}-\mb{x} \rangle\ge 0,\, \forall\, \mb{y}\in D.
+            \end{align*}
+
+
+            \begin{solution}
+                By Exercise 1.5(b), the problem is equivalent to $\min_\mb{x}\, F(\mb{x}) + I_D(\mb{x})$. Since $\mb{x}$ is optimal, we have
+                \begin{align*}
+                    F(\mb{y}) \ge F(\mb{x}) = F(\mb{x}) + \langle \mb{0},\mb{y}-\mb{x} \rangle ,\, \forall\, \mb{y}\in D,
+                \end{align*}
+                which implies that $\mb{0}\in\partial F(\mb{x}) + \partial I_D(\mb{x})$. Thus, there exists a $\mb{g}\in\partial F(\mb{x})$ such that $\mb{g} \in -N_{D}(\mb{x})$, where $\partial I_D(\mb{x}) = N_{D}(\mb{x})$ is the normal cone of $D$ at $\mb{x}$. More explicitly, $\langle \mb{g},\mb{y}-\mb{x} \rangle\ge 0,\, \forall\, \mb{y}\in D$.
+            \end{solution}
+
+
+        \item Please give an example to show that $\partial F(\mb{x})$ can be empty.
+
+            \begin{solution}
+                $F(x) = -\sqrt{x}$ is convex on $\dom F = [0,\infty)$ but $\partial F(0) = \emptyset$.
+            \end{solution}
+        \item If $\mb{x}^*$ is an interior point of $D$, show that
+            \begin{align*}
+                \mb{x}^*\in\argmin_{\mb{x}\in D}\,F(\mb{x})\iff 0\in\partial F(\mb{x}^*).
+            \end{align*}
+            You can use the conclusion of Problems 1 and 2.
+
+            \begin{solution}
+
+                By Problem 2, $\mb{x}$ is optimal if and only if $F(\mb{y}) \ge F(\mb{x}) = F(\mb{x}) + \langle \mb{0},\mb{y}-\mb{x} \rangle ,\, \forall\, \mb{y}\in D$, which is equivalent to $\mb{0}\in\partial F(\mb{x}) + \partial I_D(\mb{x})$. For any $\mb{x}^* \in \intp D$, we have $\partial I_D(\mb{x}^*) = N_{D}(\mb{x}^*) = \mb{0}$, and thus $\mb{x}^*\in\argmin_{\mb{x}\in D}\,F(\mb{x})\iff 0\in\partial F(\mb{x}^*)$.
+            \end{solution}
+    \end{enumerate}
+    In many cases, the function $F$ can be decomposed into $F=f+g$,
+    where $g:\mathbb{R}^n\to\bar{\mathbb{R}}$ is a continuous convex function, and $f:\mathbb{R}^n\to\mathbb{R}$ is a convex and continuously differentiable function, whose gradient is Lipschitz continuous with the constant $L$.
+    We can use ISTA, which has been introduced in Lecture 08, to find $\min\limits_{\mb{x}\in\mathbb{R}^n} F(\mb{x})$.
+
+    \begin{enumerate}[resume]
+        \item For a \textbf{given} point $\mb{x}_c$, we consider the following quadratic approximation of $F$:
+            \begin{align*}
+                Q(\mb{x};\mb{x}_c)=f(\mb{x}_c)+\langle\nabla f(\mb{x}_c),\mb{x}-\mb{x}_c\rangle+\frac{L}{2}\|\mb{x}-\mb{x}_c\|^2+g(\mb{x}).
+            \end{align*}
+            Please show that it always admits a unique minimizer
+            \begin{align*}
+                p(\mb{x}_c)= & \amin_{\mb{x}\in\mathbb{R}^n}Q(\mb{x};\mb{x}_c).
+            \end{align*}
+
+            \begin{solution}
+                By Exercise 1.1, $p(\mb{x}_c)=\prox_{\frac{1}{L}g}\left(\mb{x}_c-\frac{1}{L}\nabla f(\mb{x}_c)\right)$. Since $\frac{1}{L}g$ is proper, convex and closed, by Exercise 1.2(a), $\prox_{\frac{1}{L}g}(\mb{x})$ exists and is unique, so is $p(\mb{x}_c)$. Note that the closedness of $\frac{1}{L}g$ follows from its continuity.
+            \end{solution}
+        \item (Optional) We can think of the update step of ISTA, i.e.,  $\mb{x}^+=p(\mb{x})$, as two steps:
+            \begin{enumerate}
+                \item Take a step in the opposite direction of the gradient of $f$ at $\mb{x}$, i.e.,
+                    \begin{align*}
+                        \mb{z}=\mb{x}-\frac{1}{L}\nabla f(\mb{x}).
+                    \end{align*}
+
+                \item Project $\mb{z}$ on some set $C$, i.e.,
+                    \begin{align*}
+                        \mb{x}^+=p(\mb{x})=\Pi_C(\mb{z}).
+                    \end{align*}
+
+            \end{enumerate}
+            Find the set $C$. Is it closed, open or neither? Is it convex or not?
+
+            \begin{solution}
+                Let $C = \{\mb{x}: g(\mb{x})\le g(\mb{x}^+)\}$. Then, on the one hand,
+                \begin{align*}
+                    \min_{\mb{x}}\left\{\|\mb{x}-\mb{z}\|^2+\frac{2}{L}g(\mb{x})\right\} \le \min_{\mb{x}\in C}\left\{\|\mb{x}-\mb{z}\|^2+\frac{2}{L}g(\mb{x})\right\}\le\min_{\mb{x}\in C}\|\mb{x}-\mb{z}\|^2+\frac{2}{L}g(\mb{x}^+).
+                \end{align*}
+                On the other hand, noting that $\mb{x}^+ = \amin_{\mb{x}}\left\{\|\mb{x}-\mb{z}\|^2+\frac{2}{L}g(\mb{x})\right\}$,
+                \begin{align*}
+                    \min_{\mb{x}}\left\{\|\mb{x}-\mb{z}\|^2+\frac{2}{L}g(\mb{x})\right\} = \|\mb{x}^+-\mb{z}\|^2+\frac{2}{L}g(\mb{x}^+) \ge \min_{\mb{x}\in C}\|\mb{x}-\mb{z}\|^2+\frac{2}{L}g(\mb{x}^+).
+                \end{align*}
+                Therefore, $\min_{\mb{x}}\left\{\|\mb{x}-\mb{z}\|^2+\frac{2}{L}g(\mb{x})\right\} = \min_{\mb{x}\in C}\|\mb{x}-\mb{z}\|^2+\frac{2}{L}g(\mb{x}^+)$, and thus
+                \begin{align*}
+                    \mb{x}^+ = \amin_{\mb{x}\in C}\|\mb{x}-\mb{z}\|^2 = \Pi_C(\mb{z}).
+                \end{align*}
+                Note that $C$ is a level set of the closed convex function $g$, so it is closed and convex.\qedhere
+
+            \end{solution}
+        \item Consider the Lasso problem
+            \begin{align*}
+                \min_{\mb{w}\in\mathbb{R}^n} \frac{1}{n} \|\mb{y}-\mb{X}\mb{w}\|_2^2+\lambda\|\mb{w}\|_1.
+            \end{align*}
+            Suppose that $\hat{\mb{w}}$ solves the problem. Write down the optimality condition at $\hat{\mb{w}}$.
+
+            \begin{solution}
+                The optimality condition is $\mb{0} \in \nabla f(\hat{\mb{w}}) + \partial g(\hat{\mb{w}})$, where $f(\mb{w}) = \frac{1}{n} \|\mb{y}-\mb{X}\mb{w}\|_2^2$ and $g(\mb{w}) = \lambda\|\mb{w}\|_1$. So
+                \begin{align*}
+                    \mb{0} \in \frac{2}{n}\left(\mb{X}^\top\mb{X}\hat{\mb{w}}-\mb{X}^\top\mb{y}\right)+\lambda\partial\|\mb{w}\|_1.
+                \end{align*}
+                Letting $\tilde{\mb{w}} = \frac{2}{n}\left(\mb{X}^\top\mb{X}\hat{\mb{w}}-\mb{X}^\top\mb{y}\right)$, we obtain
+                \begin{align*}
+                    \begin{cases}
+                        0 = \tilde{w}_i + \lambda,           & \text{if } \hat{w}_i > 0, \\
+                        0 \in \tilde{w}_i + \lambda [-1, 1], & \text{if } \hat{w}_i = 0, \\
+                        0 = \tilde{w}_i - \lambda,           & \text{if } \hat{w}_i < 0. \\
+                    \end{cases}
+                    \tag*{\qedhere}
+                \end{align*}
+            \end{solution}
+        \item If we use ISTA to solve the Lasso problem, show that
+            \begin{align*}
+                w_i^+=
+                \begin{cases}
+                    z_i+\dfrac{\lambda}{L},\, & \text{if}\,z_i<-\dfrac{\lambda}{L},    \\
+                    0,\,                      & \text{if}\,|z_i|\le\dfrac{\lambda}{L}, \\
+                    z_i-\dfrac{\lambda}{L},\, & \text{if}\,z_i>\dfrac{\lambda}{L},
+                \end{cases}
+            \end{align*}
+            where $\mb{z}=\mb{w}_k-\dfrac{2}{Ln}\mb{X}^\top(\mb{X}\mb{w}_k-\mb{y})$.
+
+            \begin{solution}
+                By Exercise 1.1, $\mb{w}^+ = p(\mb{w}_k)=\prox_{\frac{\lambda}{L}\|\cdot\|_1}\left(\mb{z}\right)$. The optimality condition becomes
+                \begin{align*}
+                    \mb{z} - \mb{w}^+ \in \frac{\lambda}{L}\partial \|\mb{w}^+\|_1.
+                \end{align*}
+                And hence
+                \begin{align*}
+                    \begin{cases}
+                        z_i - w^+_i =  \frac{\lambda}{L},          & \text{if } w^+_i > 0, \\
+                        z_i - w^+_i \in \frac{\lambda}{L} [-1, 1], & \text{if } w^+_i = 0, \\
+                        z_i - w^+_i = - \frac{\lambda}{L},         & \text{if } w^+_i < 0. \\
+                    \end{cases}
+                \end{align*}
+                The result follows.\qedhere
+            \end{solution}
+
+    \end{enumerate}
+
+\end{exercise}
+\clearpage
+
+
+
+\begin{exercise}[Projected Gradient Descent (Optional)]
+    Consider the following problem
+    \begin{align}\label{prob:sc_min}
+        \min_{x\in D}f(x),
+    \end{align}
+    where $f:\mathbb{R}^{n} \to \bar{\mathbb{R}}$ is proper, continuously differentiable and strongly convex with convexity parameter $\mu>0$. We assume that the gradient of $f$ is Lipschitz with a constant $L>0$.
+    \par A commonly used approach to solve the constrained optimization problem (\ref{prob:sc_min}) is the so-called \emph{projected gradient descent}, in which each iteration improves the current estimation $\mb{x}_k$ of the optimum by
+    \begin{align*}
+        \mb{x}_{k+1}=\Pi_{D}(\mb{x}_k-\alpha\nabla f(\mb{x}_k)),
+    \end{align*}
+    where $\alpha>0$ is the step size.
+    \begin{enumerate}
+        \item Show that
+            \begin{align*}
+                f(\mb{y})\ge f(\mb{x})-\frac{1}{2\mu}\|\nabla f(\mb{x})\|_2^2, \,\forall\, \mb{x},\mb{y} \in D.
+            \end{align*}
+
+            \begin{solution}
+                By strong convexity, we have
+                \begin{align*}
+                    f(\mb{y}) & \ge f(\mb{x}) + \langle \nabla f(\mb{x}), \mb{y} - \mb{x} \rangle + \frac{\mu}{2}\|\mb{y} - \mb{x}\|_2^2                                      \\
+                              & = f(\mb{x}) + \frac{1}{2\mu}\left\| \nabla f(\mb{x}) + \mu\left(\mb{y} - \mb{x}\right) \right\|_2^2  - \frac{1}{2\mu}\|\nabla f(\mb{x})\|_2^2 \\
+                              & \ge f(\mb{x}) - \frac{1}{2\mu}\|\nabla f(\mb{x})\|_2^2.
+                    \tag*{\qedhere}
+                \end{align*}
+            \end{solution}
+        \item Consider the problem (\ref{prob:sc_min}) and the sequence generated by the \emph{projected gradient descent} algorithm. Suppose that $\mb{x}^*$ is the solution to the problem (\ref{prob:sc_min}).
+            \begin{enumerate}
+                \item Find the range of $\alpha$ such that the function values $f(\mb{x}_k)$ converge linearly to $f(\mb{x}^*)$.
+                \item When does the (projected) gradient descent always achieve the optimal solution in one iteration wherever the intial point $\mb{x}_0$ is?
+            \end{enumerate}
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item Lipschitz continuity of $\nabla f$ implies that
+                        \begin{align}\label{eq:pgd_lipschitz}
+                            f(\mb{x}_{k+1}) - f(\mb{x}_k) \le \langle \nabla f(\mb{x}_k), \mb{x}_{k+1} - \mb{x}_k \rangle + \frac{L}{2}\|\mb{x}_{k+1} - \mb{x}_k\|_2^2.
+                        \end{align}
+                        Note that $\mb{x}_{k+1} - \mb{x}_k = \Pi_{D}(\mb{x}_k-\alpha\nabla f(\mb{x}_k)) - \Pi_{D}(\mb{x}_k)$. Using both the nonexpansiveness and the firm nonexpansiveness of $\Pi_D$, the above inequality becomes
+                        \begin{align*}
+                            f(\mb{x}_{k+1}) - f(\mb{x}_k) \le -\frac{1}{\alpha} \|\alpha\nabla f(\mb{x}_k)\|_2^2 + \frac{L}{2}\|\alpha\nabla f(\mb{x}_k)\|_2^2 = -\alpha(1-\frac{L}{2}\alpha)\|\nabla f(\mb{x}_k)\|_2^2,
+                        \end{align*}
+                        where the equality holds if $\mb{x}_k-\alpha\nabla f(\mb{x}_k) \in D$ and the equality in  (\ref{eq:pgd_lipschitz}) holds.
+                        To ensure that $\{f(\mb{x}_k)\}$ converges to $f^*$ monotoneously for an arbitrary $f$, we must have $\alpha(1-\frac{L}{2}\alpha) > 0$, i.e. $0 < \alpha < \frac{2}{L}$, such that $f(\mb{x}_{k+1}) < f(\mb{x}_k)$ strictly unless the sufficient optimality condition $\nabla f(\mb{x}_k) = \mb{0}$ is satisfied. Then, we can use the result in Problem 1 to derive
+                        \begin{align*}
+                            f(\mb{x}_{k+1}) - f(\mb{x}_k) \le -\mu\alpha(2-L\alpha)(f(\mb{x}_k) - f(\mb{x}^*)).
+                        \end{align*}
+                        Subtracting $f(\mb{x}^*)$ from both sides and rearranging, we have
+                        \begin{align*}
+                            f(\mb{x}_{k+1}) - f(\mb{x}^*) \le (1 -\mu\alpha(2-L\alpha))(f(\mb{x}_k) - f(\mb{x}^*)),
+                        \end{align*}
+                        which leads to
+                        \begin{align*}
+                            f(\mb{x}_k) - f(\mb{x}^*) \le (1 -\mu\alpha(2-L\alpha))^k (f(\mb{x}_0) - f(\mb{x}^*))  \xrightarrow[]{\textup{linear}} 0.
+                        \end{align*}
+                        Here, we have used the fact that $0 < \mu\alpha(2-L\alpha) \le L\alpha(2-L\alpha) \le 1$. To conclude, the range of $\alpha$ is $(0, \frac{2}{L})$.
+                    \item When $1 -\mu\alpha(2-L\alpha) = 0$, i.e. $\alpha = \frac{1}{L} = \frac{1}{\mu} $, the (projected) gradient descent algorithm achieves the optimal solution in one iteration.
+                        \qedhere
+                \end{enumerate}
+            \end{solution}
+
+    \end{enumerate}
+\end{exercise}
+\clearpage
+
+
+
+\begin{exercise}[\cite{Beck2009a} ISTA with Backtracking]\label{exercise:ISTA-backtracking}
+    Suppose that we would like to apply ISTA to solve the convex optimization problem
+    \begin{align}\label{prob:f+g}
+        \min_{\mb{x}\in\mathbb{R}^n} F(\mb{x})=f(\mb{x})+g(\mb{x}),
+    \end{align}
+    where $g:\mathbb{R}^n\to\bar{\mathbb{R}}$ is a continuous convex function, and $f:\mathbb{R}^n\to\mathbb{R}$ is a convex and continuously differentiable function, whose gradient is Lipschitz continuous with the constant $L$. We assume that the problem (\ref{prob:f+g}) is solvable, i.e., there exists $\mb{x}^*$ such that
+    \begin{align*}
+        F(\mb{x}^*)=F^*=\min_{\mb{x}\in\mathbb{R}^n} F(
+        \mb{x}).
+    \end{align*}
+    In practice, however, a possible drawback of ISTA is that the Lipschitz constant $L$ is not always known or computable. For instance, if $f(\mb{x})=\|\mb{A}\mb{x}-\mb{b}\|_2^2$, the Lipschitz constant for $\nabla f$ depends on $\lambda_{\rm max}(\mb{A}^\top\mb{A})$, which is not always easily computable for large-scale problems. To tackle this problem, we always equip ISTA with the backtracking stepsize rule as shown in Algorithm \ref{alg:ISTA-back}.
+    \par Note that in Algorithm \ref{alg:ISTA-back}, $Q_L$ and $p_L$ are defined as
+    \begin{align*}
+         & Q_{L}(\mb{x};\mb{x}_c)=f(\mb{x}_c)+\langle\nabla f(\mb{x}_c),\mb{x}-\mb{x}_c\rangle+\frac{L}{2}\|\mb{x}-\mb{x}_c\|_2^2+g(\mb{x}) \\
+         & p_L(\mb{x}_c)=\argmin_{\mb{x}\in\mathbb{R}^n} Q_L(\mb{x};\mb{x}_c).
+    \end{align*}
+
+    \begin{center}
+        \begin{minipage}{0.9\linewidth}
+            \begin{algorithm}[H]
+                \caption{ISTA with Backtracking}\label{alg:ISTA-back}
+
+                \begin{algorithmic}[1]
+                    \STATE {\bf Input:} An initial point $\mb{x}_0$, an initial  constant $L_0>0$, a threshold $\eta>1$, and $k=1$.
+                    \WHILE{the {\it termination condition} does not hold}
+                    \STATE Find the smallest non-negative integer $i_k$ such that with $\tilde{L}=\eta^{i_k}L_{k-1}$
+                    \begin{align}\label{eqn:FQ}
+                        F(p_{\tilde{L}}(\mb{x}_{k-1}))\le Q_{\tilde{L}}(p_{\tilde{L}}(\mb{x}_{k-1});\mb{x}_{k-1}).
+                    \end{align}
+                    \STATE $L_k\leftarrow \eta^{i_k}L_{k-1}$, $\mb{x}_k\leftarrow p_{L_k}(\mb{x}_{k-1})$,
+                    \STATE $k \leftarrow k+1$,
+                    \ENDWHILE
+
+                \end{algorithmic}
+            \end{algorithm}
+        \end{minipage}
+    \end{center}
+
+    \begin{enumerate}
+        \item Show that the sequence $\{F(\mb{x}_k)\}$ produced by Algorithm \ref{alg:ISTA-back} is non-increasing.
+
+            \begin{solution}
+                The inequality (\ref{eqn:FQ}) shows that
+                \begin{align}\label{eqn:ISTA-back-1}
+                    F(\mb{x}_k)\le f(\mb{x}_{k-1}) + \langle \nabla f(\mb{x}_{k-1}), \mb{x}_k - \mb{x}_{k-1} \rangle + \frac{L_k}{2}\|\mb{x}_k - \mb{x}_{k-1}\|_2^2 + g(\mb{x}_k).
+                \end{align}
+                Since $\mb{x}_k = \prox_{\frac{1}{L_k}g}(\mb{x}_{k-1} - \frac{1}{L_k}\nabla f(\mb{x}_{k-1}))$, by Exercise 1.2(b), we have
+                \begin{align*}
+                    \mb{x}_{k-1} - \frac{1}{L_k}\nabla f(\mb{x}_{k-1}) - \mb{x}_k \in \frac{1}{L_k}\partial g(\mb{x}_k).
+                \end{align*}
+                Using the definition of subdifferential, we obtain
+                \begin{align}\label{eqn:ISTA-back-2}
+                    \left\langle \mb{x}_{k-1} - \frac{1}{L_k}\nabla f(\mb{x}_{k-1}) - \mb{x}_k, \mb{x} - \mb{x}_k \right\rangle \le \frac{1}{L_k}g(\mb{x}) - \frac{1}{L_k}g(\mb{x}_k), \quad \forall \mb{x} \in \partial g(\mb{x}_k).
+                \end{align}
+                Combining (\ref{eqn:ISTA-back-1}) and (\ref{eqn:ISTA-back-2}) yields
+                \begin{align}
+                    \label{eqn:ISTA-back-3}
+                    \begin{aligned}
+                        F(\mb{x}_k) & \le f(\mb{x}_{k-1})  + \langle \nabla f(\mb{x}_{k-1}), \mb{x} - \mb{x}_{k-1} \rangle + g(\mb{x})                                             \\
+                                    & \quad - \frac{L_k}{2}\|\mb{x}_k - \mb{x}_{k-1}\|_2^2 + L_k \left\langle \mb{x}_{k-1} - \mb{x}_k, \mb{x}_{k-1} - \mb{x} \right\rangle         \\
+                                    & \le F(\mb{x}) - \frac{L_k}{2}\|\mb{x}_k - \mb{x}_{k-1}\|_2^2 + L_k \left\langle \mb{x}_{k-1} - \mb{x}_k, \mb{x}_{k-1} - \mb{x} \right\rangle \\
+                                    & = F(\mb{x}) - \frac{L_k}{2}\left(\|\mb{x}_k - \mb{x}\|_2^2 - \|\mb{x}_{k-1} - \mb{x}\|_2^2\right).
+                    \end{aligned}
+                \end{align}
+                Letting $\mb{x} = \mb{x}_{k-1}$ in the above inequality yields
+                \begin{align*}
+                    F(\mb{x}_k) \le F(\mb{x}_{k-1}) - \frac{L_k}{2}\|\mb{x}_k - \mb{x}_{k-1}\|_2^2 \le F(\mb{x}_{k-1}),
+                \end{align*}
+                which implies that the sequence $\{F(\mb{x}_k)\}$ is non-increasing.
+            \end{solution}
+        \item Show that the inequality (\ref{eqn:FQ}) is satisfied for any $\tilde{L}\ge L$, where $L$ is the Lipschitz constant of $\nabla f$, thus showing that for Algorithm \ref{alg:ISTA-back} one has $L_k\le \eta L$ for every $k\ge 1$.
+
+            \begin{solution}
+                By Newtom-Leibniz formula, we have
+                \begin{align*}
+                    f(\mb{y}) & = f(\mb{x}) + \int_{\mb{y}}^{\mb{x}} \nabla f(\mb{z}) \diff \mb{z}                                                                                                                                 \\
+                              & = f(\mb{x}) + \int_0^1 \left\langle \nabla f(\mb{x} + t(\mb{y} - \mb{x})), \mb{y} - \mb{x} \right\rangle \diff t                                                                                   \\
+                              & = f(\mb{x}) + \left\langle \nabla f(\mb{x}), \mb{y} - \mb{x} \right\rangle + \int_0^1 \left\langle \nabla f(\mb{x} + t(\mb{y} - \mb{x})) - \nabla f(\mb{x}), \mb{y} - \mb{x} \right\rangle \diff t \\
+                              & \le f(\mb{x}) + \left\langle \nabla f(\mb{x}), \mb{y} - \mb{x} \right\rangle  + \int_0^1 \| \nabla f(\mb{x} + t(\mb{y} - \mb{x})) - \nabla f(\mb{x}) \|_2 \|\mb{y} - \mb{x}\|_2 \diff t            \\
+                              & \le f(\mb{x}) + \left\langle \nabla f(\mb{x}), \mb{y} - \mb{x} \right\rangle  + \int_0^1 L \| \mb{y} - \mb{x}\|_2 \diff t                                                                          \\
+                              & = f(\mb{x}) + \left\langle \nabla f(\mb{x}), \mb{y} - \mb{x} \right\rangle  + \frac{L}{2} \| \mb{y} - \mb{x}\|_2^2                                                                                 \\
+                              & \le f(\mb{x}) + \left\langle \nabla f(\mb{x}), \mb{y} - \mb{x} \right\rangle  + \frac{\tilde{L}}{2} \| \mb{y} - \mb{x}\|_2^2
+                \end{align*}
+                for any $\tilde{L}\ge L$ and $\mb{x}, \mb{y}\in \mathbb{R}^n$. Letting $\mb{x} = \mb{x}_{k-1}$, $\mb{y} = p_{\tilde{L}}(\mb{x}_{k-1})$ and adding $g(p_{\tilde{L}}(\mb{x}_{k-1}))$ to both sides of the above inequality yields the inequality (\ref{eqn:FQ}).
+
+                Consider the case where $L_0 \le \eta L$. If $L_k > \eta L$ for some $k\ge 1$, then $\frac{L_k}{\eta} > L$ is a smaller $\tilde{L}$ that satisfies the inequality (\ref{eqn:FQ}), contradicting Line 3 of Algorithm \ref{alg:ISTA-back}. Therefore, $L_k\le \eta L$ for every $k\ge 1$.
+            \end{solution}
+        \item Let $\{\mb{x}_k\}$ be the sequence generated by Algorithm \ref{alg:ISTA-back}. Show that for any $k\ge 1$ we have
+            \begin{align*}
+                F(\mb{x}_k)-F(\mb{x}^*)\le \frac{\eta L \|\mb{x}_0-\mb{x}^*\|_2^2}{2k},\,\forall \mb{x}^*\in \argmin_{\mb{x}\in\mathbb{R}^n} F(\mb{x}).
+            \end{align*}
+            The above result means that the number of iterations of Algorithm \ref{alg:ISTA-back} required to obtain an $\varepsilon$-optimal solution, i.e., an $\hat{\mb{x}}$ such that $F(\hat{\mb{x}})-F(\mb{x}^*)\le \varepsilon$, is at most
+            \begin{align*}
+                \left\lceil \frac{\eta L \|\mb{x}_0-\mb{x}^*\|_2^2}{2\varepsilon} \right\rceil.
+            \end{align*}
+
+            \begin{solution}
+                Invoking the inequality (\ref{eqn:ISTA-back-3}) with $\mb{x} = \mb{x}^*\in \argmin_{\mb{x}\in\mathbb{R}^n} F(\mb{x})$, we have
+                \begin{align*}
+                    \begin{cases}
+                        F(\mb{x}_k) - F(\mb{x}^*) \le \frac{L_k}{2}\|\mb{x}_{k-1} - \mb{x}^*\|_2^2 - \frac{L_k}{2}\|\mb{x}_{k} - \mb{x}^*\|_2^2,               \\
+                        F(\mb{x}_{k-1}) - F(\mb{x}^*) \le \frac{L_{k-1}}{2}\|\mb{x}_{k-2} - \mb{x}^*\|_2^2 - \frac{L_{k-1}}{2}\|\mb{x}_{k-1} - \mb{x}^*\|_2^2, \\
+                        \quad \vdots                                                                                                                           \\
+                        F(\mb{x}_2) - F(\mb{x}^*) \le \frac{L_2}{2}\|\mb{x}_1 - \mb{x}^*\|_2^2 - \frac{L_2}{2}\|\mb{x}_2 - \mb{x}^*\|_2^2,                     \\
+                        F(\mb{x}_1) - F(\mb{x}^*) \le \frac{L_1}{2}\|\mb{x}_0 - \mb{x}^*\|_2^2 - \frac{L_1}{2}\|\mb{x}_1 - \mb{x}^*\|_2^2.                     \\
+                    \end{cases}
+                \end{align*}
+                Summing up the above inequalities yields
+                \begin{align*}
+                    \sum_{i=1}^k F(\mb{x}_i) - kF(\mb{x}^*) & \le \sum_{i=1}^k \frac{L_i}{2}\left(\|\mb{x}_{i-1}- \mb{x}^*\|_2^2 - \|\mb{x}_i - \mb{x}^*\|_2^2\right),                                     \\
+                                                            & \le \frac{\eta L}{2} \left(\|\mb{x}_0 - \mb{x}^*\|_2^2 - \|\mb{x}_k - \mb{x}^*\|_2^2\right) \le \frac{\eta L\|\mb{x}_0 - \mb{x}^*\|_2^2}{2}.
+                \end{align*}
+                Dividing both sides $k$, we obtain
+                \begin{align*}
+                    \frac{1}{k}\sum_{i=1}^k F(\mb{x}_i) - F(\mb{x}^*) \le \frac{\eta L\|\mb{x}_0 - \mb{x}^*\|_2^2}{2k}.
+                \end{align*}
+                As $\{F(\mb{x}_i)\}$ is non-increasing, the average $\frac{1}{k}\sum_{i=1}^k F(\mb{x}_i) \ge F(\mb{x}_k)$, which completes the proof.
+
+                To find an $\varepsilon$-optimal solution, we let $\frac{\eta L}{2k} \|\mb{x}_0 - \mb{x}^*\|_2^2 \le \varepsilon$ and yield
+                \begin{align*}
+                    k \ge \frac{\eta L\|\mb{x}_0 - \mb{x}^*\|_2^2}{2\varepsilon} \implies k \ge \left\lceil \frac{\eta L \|\mb{x}_0-\mb{x}^*\|_2^2}{2\varepsilon} \right\rceil.
+                    \tag*{\qedhere}
+                \end{align*}
+            \end{solution}
+    \end{enumerate}
+
+
+\end{exercise}
+\clearpage
+
+
+
+\begin{exercise}[Programming Exercise: Naive Bayes Classifier]
+    We provide you with a data set that contains spam and non-spam emails (``\texttt{hw5\_nb.zip}"). Please use the Naive Bayes Classifier to detect the spam emails.
+    Finish the following exercises by programming. You can use your favorite programming language.
+    \begin{enumerate}
+        \item Remove all the tokens that contain non-alphabetic characters.
+        \item Train the Naive Bayes Classifier on the training set according to Algorithm \ref{alg:train_bayes}.
+        \item Test the Naive Bayes Classifier on the test set according to Algorithm \ref{alg:test_bayes}. You may encounter a problem that the likelihood probabilities you calculate approach $0$. How do you deal with this problem?
+        \item Compute the confusion matrix, accuracy, precision, recall, and F-score.
+        \item Without the Laplace smoothing technique, complete the steps again.
+    \end{enumerate}
+
+    \begin{center}
+        \begin{minipage}{0.9\linewidth}
+            \begin{algorithm}[H]
+                \caption{Training Naive Bayes Classifier}
+                \label{alg:train_bayes}
+                \textbf{Input:} The training set with the labels $\mathcal{D}=\{(\mb{x}_i,y_i)\}.$
+                \begin{algorithmic}[1]
+                    \STATE $\mathcal{V}\leftarrow$ the set of distinct words and other tokens found in $\mathcal{D}$\\
+                    \FOR{each target value $c$ in the labels set $\mathcal{C}$}
+                    \STATE $\mathcal{D}_c\leftarrow$ the training samples whose labels are $c$\\
+                    \STATE $P(c)\leftarrow\frac{|\mathcal{D}_c|}{|\mathcal{D}|}$\\
+                    \STATE $T_c\leftarrow$ a single document by concatenating all training samples in $\mathcal{D}_c$\\
+                    \STATE $n_c\leftarrow |T_c|$
+                    \FOR{each word $w_k$ in the vocabulary $\mathcal{V}$}
+                    \STATE $n_{c,k}\leftarrow$ the number of times the word $w_k$ occurs in $T_c$\\
+                    \STATE $P(w_k|c)=\frac{n_{c,k}+1}{n_c+|\mathcal{V}|}$
+                    \ENDFOR
+                    \ENDFOR
+                \end{algorithmic}
+            \end{algorithm}
+        \end{minipage}
+    \end{center}
+
+    \begin{center}
+        \begin{minipage}{0.9\linewidth}
+            \begin{algorithm}[H]
+                \caption{Testing Naive Bayes Classifier }
+                \label{alg:test_bayes}
+                \textbf{Input:} An email $\mb{x}$. Let $x_i$ be the $i^{th}$ token in $\mb{x}$ . $\mathcal{I}=\emptyset.$
+                \begin{algorithmic}[1]
+                    \FOR{$i=1,\dots,|\mb{x}|$}
+                    \IF{$\exists\, w_{k_i}\in\mathcal{V}$ such that $w_{k_i}=x_i$}
+                    \STATE $\mathcal{I}\leftarrow\mathcal{I}\cup i$
+                    \ENDIF
+                    \ENDFOR
+                    \STATE predict the label of $\mb{x}$ by $\hat{y}=\arg\max_{c\in\mathcal{C}} P(c)\prod_{i\in\mathcal{I}}P(w_{k_i}|c)$
+                \end{algorithmic}
+            \end{algorithm}
+        \end{minipage}
+    \end{center}
+\end{exercise}
+\begin{solution}
+    A python implementation is given below.
+    \begin{minted}{python}
+# Naive Bayes Classifier
+import numpy as np
+import pandas as pd
+import os
+import re
+
+
+def to_tokens(text):
+    '''
+    Extract alphabetic tokens from a text, convert them to lowercase, and return the counts of tokens in a Series.
+    '''
+    # Extract the tokens
+    tokens = re.findall('[a-z]+', text.lower())
+    # Count the tokens
+    return pd.Series(tokens).value_counts()
+
+
+class TextClassifier:
+    '''
+    Multinomial Naive Bayes for text classification.
+    '''
+
+    def __init__(self, smoothing=0):
+        '''
+        Initialize the classifier.
+        '''
+        self.smoothing = smoothing
+
+    def fit(self, train_data):
+        '''
+        Train the classifier on the given training data.
+        '''
+        # Compute the log of joint probabilities
+        self.label_probs = train_data['label'].value_counts() / len(train_data)
+        # Initialize the counts for each token
+        self.token_counts = {
+            label: pd.Series(dtype='int')
+            for label in self.label_probs.index
+        }
+        documents = train_data.groupby('label')['sample'].sum()
+        self.token_counts = documents.apply(to_tokens).T.fillna(0)
+        # Compute the conditional probabilities for each token
+        self.token_probs = (self.token_counts + self.smoothing) / (
+            self.token_counts.sum() + self.smoothing * len(self.token_counts))
+
+        return self
+
+    def predict(self, text):
+        '''
+        Classify the given text using the trained classifier.
+        '''
+        # Compute the log of posterior probabilities for each label
+        log_probs = np.log(self.label_probs)
+        for label in self.label_probs.index:
+            for token, count in to_tokens(text).items():
+                if token in self.token_probs[label]:
+                    log_probs[label] += count * np.log(
+                        self.token_probs[label][token])
+
+        # Return the label with the highest log-probability
+        return log_probs.idxmax()
+
+
+def load_data(dir):
+    '''
+    Load the data from the given directory.
+    '''
+    data = []
+    for filename in os.listdir(dir):
+        with open(dir + filename, 'r') as f:
+            sample = f.read()
+        label = 'spam' if 'spmsg' in filename else 'notspam'
+        data.append((label, sample))
+    return pd.DataFrame(data, columns=['label', 'sample'])
+
+
+def evaluate(label, pred, p, n):
+    '''
+    Evaluate the performance of a binary classifier.
+    '''
+    # Compute the confusion matrix
+    TP = np.sum((label == p) & (pred == p))
+    FP = np.sum((label == n) & (pred == p))
+    TN = np.sum((label == n) & (pred == n))
+    FN = np.sum((label == p) & (pred == n))
+    confusion_matrix = pd.DataFrame([[TP, FP], [FN, TN]],
+                                    index=[p, n],
+                                    columns=[p, n])
+
+    # Compute the accuracy, precision, recall, and F1 score
+    accuracy = (TP + TN) / (TP + FP + TN + FN)
+    precision = TP / (TP + FP)
+    recall = TP / (TP + FN)
+    f1_score = 2 * TP / (2 * TP + FP + FN)
+
+    # Print the results
+    print(f'Confusion matrix:\n{confusion_matrix}\n')
+    print(f'Accuracy:  {accuracy:.2f}')
+    print(f'Precision: {precision:.2f}')
+    print(f'Recall:    {recall:.2f}')
+    print(f'F1 score:  {f1_score:.2f}')
+    print()
+
+    # Return all the results in a Dataframe
+    return pd.DataFrame(
+        [[TP, FP, TN, FN, accuracy, precision, recall, f1_score]],
+        index=['result'],
+        columns=[
+            'TP', 'FP', 'TN', 'FN', 'accuracy', 'precision', 'recall',
+            'f1_score'
+        ])
+
+
+def main(smoothing):
+    # Load the training and test data
+    train_data = load_data('hw5_nb/train-mails/')
+    test_data = load_data('hw5_nb/test-mails/')
+    # Train the classifier
+    clf = TextClassifier(smoothing).fit(train_data)
+    # Test and evaluate the classifier
+    test_data['prediction'] = test_data['sample'].apply(clf.predict)
+    return evaluate(test_data['label'], test_data['prediction'], 'spam',
+                    'notspam')
+
+
+# CASE1: Using the Laplace smoothing technique
+print('CASE1: Using the Laplace smoothing technique\n')
+res1 = main(smoothing=1)
+# CASE2: Without using the Laplace smoothing techniqu
+print('CASE2: Without using the Laplace smoothing technique\n')
+res2 = main(smoothing=0)
+
+# Save the DataFrame
+df = pd.concat([res1, res2])
+df.index = ['Laplace smoothing', 'No smoothing']
+df.to_csv('naive_bayes.csv')
+    \end{minted}
+    The results are shown in Table \ref{tab:nb}. We notice that the Laplace smoothing technique improves the performance of the classifier significantly by preventing the classifier from assigning zero probability to unseen tokens.
+    \begin{table}[H]
+        \centering
+        \caption{Results of Naive Bayes Classifier}
+        \label{tab:nb}
+        \begin{tabular}{lllllllll}
+            \toprule
+                              & TP & FP & TN  & FN & Accuracy & Precision & Recall & F1 score \\
+            \midrule
+            Laplace smoothing & 47 & 0  & 242 & 2  & 0.9931   & 1.0       & 0.9592 & 0.9792   \\
+            No smoothing      & 8  & 0  & 242 & 41 & 0.8591   & 1.0       & 0.1633 & 0.2807   \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+
+    \noindent{\bf Answer to Problem 3:} We compute the log-likelihoods by summing up the log-probabilities of each token conditional on the label, and then choose the label with the highest log-joint probability. With this technique, we avoid multiplying many small probabilities and thus avoid the underflow problem.
+    \qedhere
+
+\end{solution}
+\clearpage
+
+
+\begin{exercise}[Logistic Regression and Newton's Method]
+    Given the training data $\mathcal{D}=\{ (\mb{x}_i,y_i) \}_{i=1}^n$, where $\mb{x}_i \in \mathbb{R}^d$ and $y_i \in \{ 0,1 \}$. Let
+    \begin{align*}
+        \mathcal{I}^+ & =\{i:i\in[n],y_i=1\}, \\
+        \mathcal{I}^- & =\{i:i\in[n],y_i=0\},
+    \end{align*}
+    where $[n]=\{1,2,\ldots,n\}$. We assume that $\mathcal{I}^+$ and $\mathcal{I}^-$ are not empty.\\
+    Then, we can formulate the logistic regression of the form.
+    \begin{equation}\label{prob:logistic}
+        \min_{\mb{w}}\,\,L(\mb{w})=-\frac{1}{n}\sum_{i=1}^n \left( y_i \log \left( \frac{\exp(\langle \mb{w},  \bar{\mb{x}}_i \rangle)}{1+\exp(\langle \mb{w},  \bar{\mb{x}}_i \rangle) } \right) + (1-y_i)\log \left( \frac{1}{1+\exp(\langle \mb{w},  \bar{\mb{x}}_i \rangle)} \right) \right),
+    \end{equation}
+    where $\mb{w} \in \mathbb{R}^{d+1}$ is the model parameter to be estimated and $ \bar{\mb{x}}_i^{\top} = (1,\mb{x}_i^{\top}) $.
+    \begin{enumerate}
+        \item
+            \begin{enumerate}
+                \item Suppose that the training data is strictly linearly separable, that is, there exists $\hat{\mb{w}}\in\mathbb{R}^{d+1}$ such that
+                    \begin{align*}
+                         & \langle \hat{\mb{w}}, \mb{\bar{x}}_i\rangle>0,\,\forall\,i\in\mathcal{I}^+, \\
+                         & \langle \hat{\mb{w}}, \mb{\bar{x}}_i\rangle<0,\,\forall\,i\in\mathcal{I}^-.
+                    \end{align*}
+                    Show that problem (\ref{prob:logistic}) has no solution.
+                \item
+                    Suppose that the training data is NOT linearly separable, that is, for all $\mb{w} \in \mathbb{R}^{d+1}$, there exists $ i \in \left[ n \right] $ such that
+                    \begin{align*}
+                         & \langle \mb{w}, \mb{\bar{x}}_i\rangle< 0,\,\text{if\ } i\in\mathcal{I}^+,
+                    \end{align*}
+                    or
+                    \begin{align*}
+                         & \langle \mb{w}, \mb{\bar{x}}_i\rangle> 0,\,\text{if\ } i\in\mathcal{I}^-.
+                    \end{align*}
+                    Show that problem (\ref{prob:logistic}) always admits a solution.
+            \end{enumerate}
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item We can write the objective function $L(\hat{\mb{w}})$ as
+                        \begin{align*}
+                            L(\mb{w}) = \frac{1}{n}\left(\sum_{i\in \mathcal{I}^+} \log \left( 1 + \exp(-\langle \mb{w}, \mb{\bar{x}}_i\rangle) \right) + \sum_{i\in \mathcal{I}^-} \log \left( 1 + \exp(\langle \mb{w}, \mb{\bar{x}}_i\rangle) \right)\right) > 0.
+                        \end{align*}
+                        Let $\hat{\mb{w}}$ be a solution such that $\langle \hat{\mb{w}}, \mb{\bar{x}}_i\rangle>0$ if $y_i = 1$, and $\langle \hat{\mb{w}}, \mb{\bar{x}}_i\rangle<0$ if $y_i = 0$. Then, for any $\alpha > 1$, we have
+                        \begin{align*}
+                            L(\alpha \hat{\mb{w}})  = \frac{1}{n}\left(\sum_{i\in \mathcal{I}^+} \log \left( 1 + \exp(-\alpha\langle \hat{\mb{w}}, \mb{\bar{x}}_i\rangle) \right) + \sum_{i\in \mathcal{I}^-} \log \left( 1 + \exp(\alpha\langle \hat{\mb{w}}, \mb{\bar{x}}_i\rangle) \right)\right) \xrightarrow{\alpha \to +\infty} 0.
+                        \end{align*}
+                        Hence $\inf_\mb{w} L(\mb{w}) = 0$ cannot be attained, implying that the problem is not solvable.
+                    \item
+                        Given any $\mb{w}$ and $\alpha \to +\infty$, there exists $ i \in \mathcal{I}^+ $ such that $\log \left( 1 + \exp(-\alpha\langle \hat{\mb{w}}, \mb{\bar{x}}_i\rangle) \right) \to +\infty$, or $i\in\mathcal{I}^- $ such that $\log \left( 1 + \exp(\alpha\langle \hat{\mb{w}}, \mb{\bar{x}}_i\rangle) \right) \to +\infty$. Therefore,
+                        \begin{align*}
+                            \lim_{\alpha\to+\infty}L(\alpha \hat{\mb{w}}) = +\infty,
+                        \end{align*}
+                        implying that the objective function is coercive\cite{beckFirstOrderMethodsOptimization2017}, and hence it attains its minimum over $\dom L$, i.e. the problem is solvable.
+                        %  Letting $\nabla L(\mb{w}) = 0$, we have $\bar{\mb{X}}\mb{w} = \sigma^{-1} (\mb{u})$, where $\mb{u}$ is the solution to the linear system $\bar{\mb{X}}^\top\mb{u} = \bar{\mb{X}}^\top\mb{y}$, and $\sigma^{-1}$ is the logit function
+                        % \begin{align*}
+                        %     \sigma^{-1}(\mb{z}) = \logit(\mb{z}) = \left(\log \frac{z_1}{1-z_1},\log \frac{z_2}{1-z_2},\dots,\log \frac{z_n}{1-z_n}\right).
+                        % \end{align*}
+                        \qedhere
+                \end{enumerate}
+            \end{solution}
+        \item  Suppose that $\bar{\mb{X}}=(\bar{\mb{x}}_1,\bar{\mb{x}}_2,\dots,\bar{\mb{x}}_n)^\top\in\mathbb{R}^{n \times (d+1)}$ and $\rank{\bar{\mb{X}}}=d+1$. Show that $L(\mb{w})$ is strictly convex, i.e., for all $\mb{w}_1\neq \mb{w}_2$,
+            \begin{align*}
+                L(t\mb{w}_1 + (1-t)\mb{w}_2) < t L(\mb{w}_1)+(1-t)L(\mb{w}_2),\forall\, t \in (0,1).
+            \end{align*}
+
+            \begin{solution}
+                The gradient of $L(\mb{w})$ is
+                \begin{align*}
+                    \nabla L(\mb{w}) = \frac{1}{n}\sum_{i=1}^n \left( \frac{1}{1+\exp(-\langle \mb{w}, \mb{\bar{x}}_i\rangle)} - y_i \right) \mb{\bar{x}}_i = \frac{1}{n} \bar{\mb{X}}^\top \left( \sigma(\bar{\mb{X}}\mb{w}) - \mb{y} \right),
+                \end{align*}
+                where we define $\sigma$ as the sigmoid function
+                \begin{align*}
+                    \sigma(\mb{z}) = \sigmoid(\mb{z}) = \left(\frac{1}{1+\exp(-z_1)},\frac{1}{1+\exp(-z_2)},\dots,\frac{1}{1+\exp(-z_n)}\right).
+                \end{align*}
+                Note that
+                \begin{align*}
+                    \nabla \sigma(\mb{z}) & = \sigma(\mb{z})^\top \mb{I} (1-\sigma(\mb{z})) \\
+                                          & =
+                    \begin{pmatrix}
+                        \sigma(z_1) (1-\sigma(z_1)) & 0                           & \dots  & 0                           \\
+                        0                           & \sigma(z_2) (1-\sigma(z_2)) & \dots  & 0                           \\
+                        \vdots                      & \vdots                      & \ddots & \vdots                      \\
+                        0                           & 0                           & \dots  & \sigma(z_n) (1-\sigma(z_n))
+                    \end{pmatrix}
+                    \succ 0.
+                \end{align*}
+                So the Hessian of $L(\mb{w})$ satisfies
+                \begin{align*}
+                    \nabla^2 L(\mb{w}) = \frac{1}{n} \bar{\mb{X}}^\top \mb{\Sigma}_\mb{w} \bar{\mb{X}} \succeq 0,
+                \end{align*}
+                where we define $\mb{\Sigma}_\mb{w} = \nabla \sigma(\mb{z}) \big |_{\mb{z}=\bar{\mb{X}}\mb{w}}$ for notational convenience. This implies that $L(\mb{w})$ is convex. If $\rank{\bar{\mb{X}}}=d+1$, then $\nabla^2 L(\mb{w}) \succ 0$, implying that $L(\mb{w})$ is strictly convex.
+                \qedhere
+            \end{solution}
+        \item In real applications, a widely-used method to learn the parameters' values of logistic regression is to solve the optimization problem (\ref{prob:logistic}) with a regularization term, e.g.,
+            $$
+                \min_{\mb{w}} F(\mb{w})=L(\mb{w})+\frac{\lambda}{2}\|\mb{w}\|_{2}^2, \  \lambda >0.
+            $$
+            The Newton's method is an iterative method for optimization problems.
+            % Newton's method finds the roots of a differentiable function $F$, which are solutions to the equation $F(\mb{x}) = 0$. As such, Newton's method can be applied to the derivative $f'$ of a twice-differentiable function $f$ to find the roots of the derivative (solutions to $f'(x) = 0$). These solutions may be minima, maxima, or saddle points.
+            We use the Newton's method to fit the regularized logistic regression by the following algorithm.
+
+            \begin{center}
+                \begin{minipage}{0.9\linewidth}
+                    \begin{algorithm}[H]\label{alg:newton}
+                        \caption{Newton's Method for Logistic Regression }
+                        \textbf{Input:} The twice-differentiable objective function $F(\mb{w})$, the initial point $\mb{w_0}$, the degree of precision $\epsilon$.
+
+                        \textbf{Output:} $\hat{\mb{w}}$,the first point satisfying $ \|\hat{\mb{g}}\|_2 < \epsilon $.
+                        
+                        \begin{algorithmic}[1]
+                            \STATE Calculate the gradient $\mb{g}(\mb{w})=\nabla F(\mb{w})$ and the Hessian matrix $\mathbb{H}(\mb{w})$ of the input $F(\mb{w})$.
+                            \WHILE{$ \|\mb{g}_k(\mb{w}_k)\|_2 \geq \epsilon $}
+                            \STATE Let $\mathbb{H}(\mb{w}_k)=\mathbb{H}_{k}$ and $\mb{g}(\mb{w}_k)=\mb{g}_k$ to simplify notations. \\
+                            Calculate the Hessian matrix $\mathbb{H}_k$, and the let $\mb{w}_{k+1}=\mb{w}_k-\mathbb{H}^{-1}_{k}\mb{g}_k$.
+                            \STATE $k\leftarrow k+1$.
+                            \STATE Calculate the gradient $\mb{g}_{k+1}$.
+                            \ENDWHILE
+                        \end{algorithmic}
+                    \end{algorithm}
+                \end{minipage}
+            \end{center}
+            \begin{enumerate}
+                \item Please calculate the gradient $\mb{g}(\mb{w})$ and the Hessian matrix $\mathbb{H}(\mb{w})$ of the regularized logistic regression.
+                \item Please show that the Hessian matrix $\mathbb{H}(\mb{w})$ is invertible.
+                \item (Bonus) Please show the local convergence of Newton’s method in logistic regression, i.e.,
+                    $$
+                        \frac{\|\mb{w}_{k+1}-\mb{w}^{*}\|}{\|\mb{w}_{k}-\mb{w}^{*}\|^2}<B,
+                    $$
+                    for some $B\in\mathbb{R}$, if the initial point is closed enough to $\mb{w}^{*}=\arg \min_{\mb{w}} F(\mb{w})$.
+            \end{enumerate}
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item Using the results in Problem 2, we have
+                        \begin{gather*}
+                            \mb{g}(\mb{w}) = \nabla L(\mb{w}) + \lambda \mb{w} =
+                            \frac{1}{n} \bar{\mb{X}}^\top (\sigma(\bar{\mb{X}}\mb{w})-\mb{y}) + \lambda \mb{w}, \\
+                            \mathbb{H}(\mb{w}) = \nabla^2 L(\mb{w}) + \lambda \mb{I} = \frac{1}{n} \bar{\mb{X}}^\top \sigma(\mb{z})^\top \mb{I} (1-\sigma(\mb{z})) \bar{\mb{X}} + \lambda \mb{I}.
+                        \end{gather*}
+                    \item We have shown in Problem 2 that $\nabla^2 L(\mb{w}) \succeq 0$, and thus $\mathbb{H}(\mb{w}) \succ 0$ is invertible.
+                    \item To prove the local convergence, we assume the following statements hold.
+                        \begin{enumerate}
+                            \item $\forall \mb{w}, \ \|\mathbb{H}(\mb{w})^{-1}\| \leq \frac{1}{\mu}$ for some $\mu > 0$.
+                            \item $\forall \mb{w}_1, \mb{w}_2,\ \|\mathbb{H}(\mb{w}_1) - \mathbb{H}(\mb{w}_2)\| \leq L_{\mathbb{H}} \|\mb{w}_1 - \mb{w}_2\|$ for some $L_{\mathbb{H}} > 0$.
+                        \end{enumerate}
+                        The Newton step implies that
+                        \begin{align*}
+                            \mb{w}_{k+1} = \mb{w}_k - \mathbb{H}_k^{-1} \mb{g}_k = \mb{w}_k - \mathbb{H}_k^{-1} \int_{\mb{w}^*}^{\mb{w}_k} \mathbb{H}(\mb{w}) \diff \mb{w} = \mb{w}^* + \mathbb{H}_k^{-1} \int_{\mb{w}^*}^{\mb{w}_k} (\mathbb{H}_k- \mathbb{H}(\mb{w})) \diff \mb{w}.
+                        \end{align*}
+                        Subtracting $\mb{w}^*$ from both sides and taking the norm, we have
+                        \begin{align*}
+                            \|\mb{w}_{k+1} - \mb{w}^*\| & = \left\|\mathbb{H}_k^{-1} \int_{\mb{w}^*}^{\mb{w}_k} (\mathbb{H}_k- \mathbb{H}(\mb{w})) \diff \mb{w} \right\| \le \|\mathbb{H}_k^{-1}\| \int_{\mb{w}^*}^{\mb{w}_k} \|\mathbb{H}_k- \mathbb{H}(\mb{w})\| \|\diff \mb{w}\| \\
+                                                        & \le \frac{1}{\mu} \int_{\mb{w}^*}^{\mb{w}_k} L_{\mathbb{H}} \|\mb{w}_k - \mb{w}\| \|\diff \mb{w}\| = \frac{L_{\mathbb{H}}}{2\mu} \|\mb{w}_k - \mb{w}^*\|^2,
+                        \end{align*} from which the local convergence follows.
+
+                        We now show that the statements i and ii hold. In regularized logistic regression, we have $\|\mathbb{H}(\mb{w})\| \ge \lambda$, and thus $\|\mathbb{H}(\mb{w})^{-1}\| \le \frac{1}{\lambda}$. To establish the second statement, we have
+                        \begin{align*}
+                            \|\mathbb{H}(\mb{w}_1) - \mathbb{H}(\mb{w}_2)\|_2 & =  \frac{1}{n} \left\|\bar{\mb{X}}^\top (\mb{\Sigma}_{\mb{w}_1} - \mb{\Sigma}_{\mb{w}_2}) \bar{\mb{X}}\right\| \le \frac{1}{n}\|\bar{\mb{X}}\|^2 \|\mb{\Sigma}_{\mb{w}_1} - \mb{\Sigma}_{\mb{w}_2}\| \\
+                            % & = \frac{\|\bar{\mb{X}}\|^2}{n} \max_{i=1,\ldots,n} \left\|\sigma(\bar{\mb{X}}\mb{w}_1)_i(1-\sigma(\bar{\mb{X}}\mb{w}_1)_i) - \sigma(\bar{\mb{X}}\mb{w}_2)_i(1-\sigma(\bar{\mb{X}}\mb{w}_2)_i)\right\| \\
+                                                                              & \le \frac{1}{n}\|\bar{\mb{X}}\|^2 \left\|\mb{1} + \sigma(\bar{\mb{X}}\mb{w}_1) + \sigma(\bar{\mb{X}}\mb{w}_2)\right\| \left\|\sigma(\bar{\mb{X}}\mb{w}_1) - \sigma(\bar{\mb{X}}\mb{w}_2)\right\|     \\
+                                                                              & \le \frac{1}{4n}\|\bar{\mb{X}}\|^3 \left\|\mb{1} + \sigma(\bar{\mb{X}}\mb{w}_1) + \sigma(\bar{\mb{X}}\mb{w}_2)\right\| \|\mb{w}_1 - \mb{w}_2\|,
+                        \end{align*}
+                        where we use the Lipschitz continuity of $\sigma$ (see Exercise 8.1). Since $\mb{w}$ is bounded in a neighborhood of $\mb{w}^*$, we conclude that $\|\mathbb{H}(\mb{w}_1) - \mathbb{H}(\mb{w}_2)\|_2 \le L_{\mathbb{H}} \|\mb{w}_1 - \mb{w}_2\|$ for some $L_{\mathbb{H}} > 0$. The proof is complete.
+                        \qedhere
+                \end{enumerate}
+            \end{solution}
+
+    \end{enumerate}
+
+
+\end{exercise}
+\clearpage
+
+
+
+\begin{exercise}[Convergence of Stochastic Gradient Descent for Convex Function]
+    Consider an optimization problem
+    \begin{equation}\label{prob:SGD}
+        \min_{\mb{w}} F(\mb{w})=\frac{1}{n}\sum_{i=1}^n f_i(\mb{w}),
+    \end{equation}
+    where the objective function $F$ is  continuously differentiable and strongly convex with convexity parameter $\mu>0$. Suppose that the gradient of $F$, i.e., $\nabla F$, is Lipschitz continuous with Lipschitz constant $L$, and $F$ can attain its minimum $F^*$ at $\mb{w}^*$. We use the stochastic gradient descent(SGD) algorithm introduced in Lecture 12 to solve the problem (\ref{prob:SGD}). Let the solution sequence generated by SGD be $\{\mb{w}_k\}$.
+    \begin{enumerate}
+        \item Please show that $\forall\mb{w}\in\mb{dom }\ F$, the following inequality
+            \begin{align}
+                F(\mb{w})-F^*\leq \frac{1}{2\mu}\|\nabla F(\mb{w})\|^2
+            \end{align}
+            holds, and interpret the role of strong convexity based on this.
+
+            \begin{solution}
+                By strong convexity, we have
+                \begin{align*}
+                    F(\mb{w}^*) & \ge F(\mb{w}) + \langle \nabla F(\mb{w}), \mb{w}^* - \mb{w} \rangle + \frac{\mu}{2}\|\mb{w^*} - \mb{w}\|^2                                  \\
+                                & = F(\mb{w}) + \frac{1}{2\mu}\left\| \nabla F(\mb{w}) + \mu\left(\mb{w}^* - \mb{w}\right) \right\|^2  - \frac{1}{2\mu}\|\nabla F(\mb{w})\|^2 \\
+                                & \ge F(\mb{w}) - \frac{1}{2\mu}\|\nabla F(\mb{w})\|^2,
+                \end{align*}
+                i.e. $F(\mb{w})-F^*\leq \frac{1}{2\mu}\|\nabla F(\mb{w})\|^2$. The strong convexity parameter $\mu$ controls the upper bound of the optimality gap.
+                \qedhere
+            \end{solution}
+
+        \item Recall that with a fixed stepsize $\alpha\in [0,\frac{1}{LM_G}]$ where $M_G$ (as well as the following $M$) is a parameter regarding the upper bound of the variance of stochastic gradient in SGD, the sequence $\{\mathbb{E}[F(\mb{w}_k)]\}$ generated by SGD converges to a neighborhood of $F^*$ with a linear rate, i.e,
+            \begin{align*}
+                \mathbb{E}_{\xi_0:\xi_{k-1}}[F(\mb{w}_{k})-F^*] & \leq\frac{LM}{2\mu}\alpha+(1-\mu\alpha)^{k}(F(\mb{w}_0)-F^*-\frac{LM}{2\mu}\alpha)
+                \xrightarrow[]{\textup{linear}}\frac{LM}{2\mu}\alpha.
+            \end{align*}
+            This means that the expected optimality gap, i.e., $\mathbb{E}_{\xi_0:\xi_{k-1}}[F(\mb{w}_{k})-F^*]$, fails to converge to zero. In order to alleviate this problem, we consider a strategy of diminishing stepsize $\alpha_k$. Suppose that the SGD method is run with a stepsize sequence $\{\alpha_k\}$ such that, for all $k \in \mathbb{N}$, $\alpha_k=\frac{\beta}{\gamma+k}$ for some $\beta>\frac{1}{\mu}$ and $\gamma>0$ satisfying $\alpha_0\leq\frac{1}{LM_G}$. Please show that $\forall k\in\mathbb{N}$, we have
+            \begin{align*}
+                \mathbb{E}_{\xi_0:\xi_{k-1}}[F(\mb{w}_{k})-F^*]\leq\frac{\tau}{\gamma+k},
+            \end{align*}
+            where $\tau=\max\{\frac{\beta^2LM}{2(\beta\mu-1)},\gamma(F(\mb{w}_0)-F^*)\}$.
+
+            \begin{solution}
+                The following result has been shown in Lecture 11:
+                \begin{align}\label{eq:SGD-1}
+                    \mathbb{E}_{\xi_{k}}[F(\mb{w}_{k+1})-F(\mb{w}_k)] \leq -\alpha_k(1-\frac{L}{2}M_G\alpha_k)\|\nabla F(\mb{w}_k)\|^2 + \frac{L}{2}M\alpha_k^2.
+                \end{align}
+                As $0 < \alpha_k < \alpha_0\leq\frac{1}{LM_G}$, we have
+                \begin{align*}
+                    \mathbb{E}_{\xi_{k}}[F(\mb{w}_{k+1})-F(\mb{w}_k)] \leq -\frac{1}{2}\alpha_k\|\nabla F(\mb{w}_k)\|^2 + \frac{L}{2}M\alpha_k^2.
+                \end{align*}
+                Using the result in Problem 1, we have
+                \begin{align*}
+                    \mathbb{E}_{\xi_{k}}[F(\mb{w}_{k+1})-F(\mb{w}_k)] \leq \alpha_k\mu(F(\mb{w}^*) - F(\mb{w}_k)) + \frac{L}{2}M\alpha_k^2.
+                \end{align*}
+                Subtracting $F^*$ from both sides, taking expectations and rearranging, we obtain
+                \begin{align*}
+                    \mathbb{E}_{\xi_0:\xi_{k}}[F(\mb{w}_{k+1})-F(\mb{w}^*)] \leq (1-\alpha_k\mu)\mathbb{E}_{\xi_0:\xi_{k-1}}[F(\mb{w}_k)-F(\mb{w}^*)] + \frac{L}{2}M\alpha_k^2.
+                \end{align*}
+                To prove by induction, we assume that $\mathbb{E}_{\xi_0:\xi_{k-1}}[F(\mb{w}_k)-F(\mb{w}^*)] \le \frac{\tau}{\gamma+k}$. Then,
+                \begin{align*}
+                    \mathbb{E}_{\xi_0:\xi_{k}}[F(\mb{w}_{k+1})-F(\mb{w}^*)] & \le (1-\alpha_k\mu)\frac{\tau}{\gamma+k} + \frac{L}{2}M\alpha_k^2                                                         \\
+                                                                            & = \left(1-\frac{\beta\mu}{\gamma+k}\right)\frac{\tau}{\gamma+k} + \frac{L}{2}M\left(\frac{\beta}{\gamma+k}\right)^2       \\
+                                                                            & = \left(1-\frac{1}{(\gamma+k)^2}\right)\tau + \frac{1}{(\gamma+k)^2}\left((1 - \beta\mu)\tau + \frac{\beta^2LM}{2}\right) \\
+                                                                            & \le \left(1-\frac{1}{(\gamma+k)^2}\right)\tau \le \frac{\tau}{\gamma + k + 1}.
+                \end{align*}
+                Moreover, by definition of $\tau$, $F(\mb{w}_0) - F^* \le \frac{\tau}{\gamma}$, which completes the proof.
+                \qedhere
+            \end{solution}
+
+        \item In practice, for the same problem, SGD enjoys less time cost but more iteration steps than gradient descent methods and may suffer from non-convergence. As a trade-off between SGD and gradient descent approaches, consider using mini-batch samples to estimate the full gradient. Taking $k^\text{th}$ iteration as an example, instead of picking a single sample, we randomly select a subset $\mathcal{S}_k$ of the sample indices to compute the update direction
+            \begin{align*}
+                \mb{g}_k(\xi_k)=\frac{1}{|\mathcal{S}_k|}\sum_{i\in\mathcal{S}_k} \nabla f_{i}(\mb{w}_k)
+            \end{align*}
+            where $\xi_k$ is the selected samples. For simplicity, suppose that the mini-batches in all iterations are of constant size, i.e., $|\mathcal{S}_k|=n_m$, and the stepsize $\alpha$ is fixed. Please show that for mini-batch SGD, there holds
+            \begin{align*}
+                \mathbb{E}_{\xi_0:\xi_{k-1}}[F(\mb{w}_{k})-F^*] & \leq\frac{LM}{2\mu n_m}\alpha+(1-\mu\alpha)^{k}(F(\mb{w}_0)-F^*-\frac{LM}{2\mu n_m}\alpha)
+                \xrightarrow[]{\textup{linear}}\frac{LM}{2\mu n_m}\alpha.
+            \end{align*}
+            Moreover, point out the advantage of mini-batch SGD compared to SGD
+            in terms of the number of the iteration step.
+
+            \begin{solution}
+                Note that $\mathbb{E}_{\xi_k}[\mb{g}_k(\xi_k)] = \nabla F(\mb{w}_k)$ still holds. Using the result in Lecture 11, we have
+                \begin{align*}
+                    \mathbb{E}_{\xi_k}[F(\mb{w})_{k+1}-F(\mb{w}_k)] \le -\alpha(1-\frac{L}{2}\alpha)\|\nabla F(\mb{w}_k)\|^2 + \frac{L}{2}\alpha^2 \mathbb{V}_{\xi_k}[\mb{g}_k(\xi_k)],
+                \end{align*}
+                where the variance satisfies
+                \begin{align*}
+                    \mathbb{V}_{\xi_k}[\mb{g}_k(\xi_k)] & = \mathbb{V}_{\xi_k}\left[\frac{1}{n_m}\sum_{i\in\mathcal{S}_k} \nabla f_{i}(\mb{w}_k)\right]   = \frac{1}{n_m^2}\sum_{i\in\mathcal{S}_k}\mathbb{V}_{\xi_k}\left[ \nabla f_{i}(\mb{w}_k)\right] \\
+                                                        & \le \frac{1}{n_m^2}\sum_{i\in\mathcal{S}_k}\left(M + M_V\|\nabla F(\mb{w}_k)\|^2\right)  = \frac{M}{n_m} + \frac{M_V}{n_m}\|\nabla F(\mb{w}_k)\|^2.
+                \end{align*}
+                Thus, the equation (\ref{eq:SGD-1}) becomes
+                \begin{align*}
+                    \mathbb{E}_{\xi_{k}}[F(\mb{w}_{k+1})-F(\mb{w}_k)] \leq -\alpha(1-\frac{LM_G}{2n_m}\alpha)\|\nabla F(\mb{w}_k)\|^2 + \frac{LM}{2n_m}\alpha^2.
+                \end{align*}
+                Letting $0 < \alpha < \frac{n_m}{LM_G}$, we have
+                \begin{align*}
+                    \mathbb{E}_{\xi_{k}}[F(\mb{w}_{k+1})-F(\mb{w}_k)] \leq -\frac{\alpha}{2}\|\nabla F(\mb{w}_k)\|^2 + \frac{LM}{2n_m}\alpha^2.
+                \end{align*}
+                Using the result in Problem 1, we have
+                \begin{align*}
+                    \mathbb{E}_{\xi_{k}}[F(\mb{w}_{k+1})-F(\mb{w}_k)] \leq \mu\alpha(F(\mb{w}_k)-F^*) + \frac{LM}{2n_m}\alpha^2.
+                \end{align*}
+                Subtracting $F^*$ from both sides, taking expectations and rearranging, we obtain
+                \begin{align*}
+                    \mathbb{E}_{\xi_{k}}[F(\mb{w}_{k+1})-F^*] \leq (1-\mu\alpha)\mathbb{E}_{\xi_{k-1}}[F(\mb{w}_k)-F^*] + \frac{LM}{2n_m}\alpha^2,
+                \end{align*}
+                which is equivalent to
+                \begin{align*}
+                    \mathbb{E}_{\xi_0:\xi_{k}}[F(\mb{w}_{k+1})-F^*] - \frac{LM}{2\mu n_m}\alpha \leq (1-\mu\alpha)\left(\mathbb{E}_{\xi_0:\xi_{k-1}}[F(\mb{w}_k)-F^*] - \frac{LM}{2\mu n_m}\alpha\right).
+                \end{align*}
+                The result follows immediately, i.e.
+                \begin{align*}
+                    \mathbb{E}_{\xi_0:\xi_k}[F(\mb{w}_{k+1})-F^*] & \leq\frac{LM}{2\mu n_m}\alpha+(1-\mu\alpha)^{k+1}(F(\mb{w}_0)-F^*-\frac{LM}{2\mu n_m}\alpha)
+                    \xrightarrow[]{\textup{linear}}\frac{LM}{2\mu n_m}\alpha.
+                \end{align*}
+                To obtain the same optimality gap using SGD, we need to choose a stepsize $\frac{\alpha}{n_m}$ and then
+                \begin{align*}
+                    \mathbb{E}_{\xi_0:\xi_k}[F(\mb{w}_{k+1})-F^*] & \leq\frac{LM}{2\mu n_m}\alpha+(1-\frac{\mu\alpha}{n_m})^{k+1}(F(\mb{w}_0)-F^*-\frac{LM}{2\mu n_m}\alpha)
+                    \xrightarrow[]{\textup{linear}}\frac{LM}{2\mu n_m}\alpha.
+                \end{align*}
+                As $1-\mu\alpha < 1-\frac{\mu\alpha}{n_m}$, we see that the mini-batch SGD needs fewer iteration steps.
+            \end{solution}
+
+
+        \item Notice that in real applications, $F$ is not always strongly convex. Let $F$ be convex and continuously  differentiable, and the second moment of stochastic gradient $ \mb{g} $ be bounded, i.e.,
+            \begin{align*}
+                \mathbb{E}_{\xi}[\|\mb{g}(\xi)\|_2^2]\leq G^2.
+            \end{align*}
+            We denote $\{\mb{w}_k\}$ as a sequence generated by SGD algorithm with a fixed stepsize $\alpha$. Besides, define
+            $ \mb{\tilde{w}}_K=\frac{1}{K+1}\sum_{k=0}^{K} \mb{w}_k $ and $ F^*=F(\mb{w}^*) $.
+            \begin{enumerate}
+                \item If $X$ is a random variable and $h:\mathbb{R}\rightarrow\mathbb{R}$ is a convex function, please show that
+                    $$h(\mathbb{E}[X]) \leq \mathbb{E}[h(X)].$$
+                \item Suppose that the stochastic gradient at $ k^{th} $ iteration is $ \mb{g}_k $.  Please show that
+                    \begin{align*}
+                        \mathbb{E}_{\xi_0:\xi_{k}}[F(\mb{w}_{k})-F^*]\leq\mathbb{E}_{\xi_0:\xi_{k}}[\langle{\mb{g}_k, \mb{w}_{k}-\mb{w}^*}\rangle].
+                    \end{align*}
+                \item Please show that
+                    \begin{align*}
+                        \mathbb{E}_{\xi_0:\xi_{k}}[F(\mb{w}_k)-F^*]\leq\frac{1}{2\alpha}\mathbb{E}_{\xi_0:\xi_{k}}[\|\mb{w}_k-\mb{w}^*\|_2^2 - \|\mb{w}_{k+1}-\mb{w}^*\|_2^2 + \alpha^2 \|\mb{g}_k\|_2^2].
+                    \end{align*}
+                \item Please show that
+                    \begin{align*}
+                        \mathbb{E}_{\xi_0:\xi_K}[F(\tilde{\mb{w}}_K)-F^*] & \leq \frac{\|\mb{w}_0-\mb{w}^*\|_2^2 + \alpha^2 G^2 (K+1)}{2\alpha (K+1)}\xrightarrow[]{}\frac{\alpha G^2}{2}.
+                    \end{align*}
+            \end{enumerate}
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item Denote the cumulative distribution function of $X$ by $F_X(x)$. Since $\int \diff F_X(x) = 1$, by convexity of $h$, we have
+                        \begin{align*}
+                            h(\mathbb{E}[X]) = h\left(\int x\ \diff F_X(x) \right) \le \int h(x)\ \diff F_X(x) = \mathbb{E}[h(X)].
+                        \end{align*}
+                    \item The full gradient $\nabla F(\mb{w})$ satisfies
+                        \begin{align*}
+                            F^* \ge F(\mb{w}_k) + \langle \nabla F(\mb{w}_k), \mb{w}^* - \mb{w}_k \rangle.
+                        \end{align*}
+                        Rearranging the terms and taking expectation on both sides, we obtain
+                        \begin{align*}
+                            \mathbb{E}_{\xi_0:\xi_{k}}[F(\mb{w}_{k})-F^*] \le \mathbb{E}_{\xi_0:\xi_{k}}[\langle{\nabla F(\mb{w}_k), \mb{w}_{k}-\mb{w}^*}\rangle] = \mathbb{E}_{\xi_0:\xi_{k}}[\langle{\mathbb{E}_{\xi_k}[\mb{g}_k], \mb{w}_{k}-\mb{w}^*}\rangle].
+                        \end{align*}
+                        It is easy to see that $\mathbb{E}_{\xi_0:\xi_{k}}[\langle{\cdot, \mb{w}_{k}-\mb{w}^*}\rangle]$ is convex as a linear combinition of affine functions. Therefore,
+                        \begin{align*}
+                            \mathbb{E}_{\xi_0:\xi_{k}}[F(\mb{w}_{k})-F^*] \le \mathbb{E}_{\xi_k}\left\{\mathbb{E}_{\xi_0:\xi_{k}}[\langle{\mb{g}_k, \mb{w}_{k}-\mb{w}^*}\rangle]\right\} = \mathbb{E}_{\xi_0:\xi_{k}}[\langle{\mb{g}_k, \mb{w}_{k}-\mb{w}^*}\rangle].
+                        \end{align*}
+                    \item Note that
+                        \begin{align*}
+                            2 \left\langle \mb{w}_k - \mb{w}_{k+1}, \mb{w}_k - \mb{w}^* \right\rangle = \|\mb{w}_k - \mb{w}^*\|_2^2 - \|\mb{w}_{k+1} - \mb{w}^*\|_2^2 + \|\mb{w}_{k+1} - \mb{w}_k\|_2^2,
+                        \end{align*}
+                        where $\mb{w}_{k+1} - \mb{w}_k = -\alpha\mb{g}_k$. Therefore,
+                        \begin{align*}
+                            2 \alpha \left\langle \mb{g}_k, \mb{w}_k - \mb{w}^* \right\rangle = \|\mb{w}_k - \mb{w}^*\|_2^2 - \|\mb{w}_{k+1} - \mb{w}^*\|_2^2 + \alpha^2\|\mb{g}_k\|_2^2,
+                        \end{align*}
+                        Plugging this into the inequality in (b), we have
+                        \begin{align*}
+                            \mathbb{E}_{\xi_0:\xi_{k}}[F(\mb{w}_{k})-F^*] & \le \frac{1}{\alpha}\mathbb{E}_{\xi_0:\xi_{k}}[\langle{\mb{w}_k - \mb{w}_{k+1}, \mb{w}_{k}-\mb{w}^*}\rangle]                          \\
+                                                                          & = \frac{1}{2\alpha}\mathbb{E}_{\xi_0:\xi_{k}}[\|\mb{w}_k-\mb{w}^*\|_2^2 - \|\mb{w}_{k+1}-\mb{w}^*\|_2^2 + \alpha^2 \|\mb{g}_k\|_2^2].
+                        \end{align*}
+                    \item Summing up the following inequalities,
+                        \begin{align*}
+                            \begin{cases}
+                                \mathbb{E}_{\xi_0:\xi_{K}}[F(\mb{w}_K)-F^*]\leq\frac{1}{2\alpha}\mathbb{E}_{\xi_0:\xi_{K}}[\|\mb{w}_K-\mb{w}^*\|_2^2 - \|\mb{w}_{K+1}-\mb{w}^*\|_2^2 + \alpha^2 \|\mb{g}_K\|_2^2], \\
+                                % \mathbb{E}_{\xi_0:\xi_{K-1}}[F(\mb{w}_{K-1})-F^*]\leq\frac{1}{2\alpha}\mathbb{E}_{\xi_0:\xi_{K-1}}[\|\mb{w}_{K-1}-\mb{w}^*\|_2^2 - \|\mb{w}_K-\mb{w}^*\|_2^2 + \alpha^2 \|\mb{g}_{K-1}\|_2^2], \\
+                                \quad \vdots                                                                                                                                                                       \\
+                                \mathbb{E}_{\xi_0:\xi_{1}}[F(\mb{w}_1)-F^*]\leq\frac{1}{2\alpha}\mathbb{E}_{\xi_0:\xi_1}[\|\mb{w}_1-\mb{w}^*\|_2^2 - \|\mb{w}_{2}-\mb{w}^*\|_2^2 + \alpha^2 \|\mb{g}_1\|_2^2],     \\
+                                \mathbb{E}_{\xi_0}[F(\mb{w}_0)-F^*]\leq\frac{1}{2\alpha}\mathbb{E}_{\xi_0}[\|\mb{w}_0-\mb{w}^*\|_2^2 - \|\mb{w}_{1}-\mb{w}^*\|_2^2 + \alpha^2 \|\mb{g}_0\|_2^2],                   \\
+                            \end{cases}
+                        \end{align*}
+                        we have
+                        \begin{align*}
+                                & \mathbb{E}_{\xi_0:\xi_{K}}\left[\sum_k^{K+1}F(\mb{w}_k)-(K+1)F^*\right]                                                                                                                                          \\
+                            \le & \frac{1}{2\alpha}\left\{\mathbb{E}_{\xi_0:\xi_{K}}\left[\|\mb{w}_0-\mb{w}^*\|_2^2 - \|\mb{w}_{K+1}-\mb{w}^*\|_2^2\right]  + \mathbb{E}_{\xi_0:\xi_{K}}\left[\alpha^2 \sum_k^{K+1}\|\mb{g}_k\|_2^2\right]\right\} \\
+                            \le & \frac{1}{2\alpha}\left\{\|\mb{w}_0-\mb{w}^*\|_2^2 + \alpha^2 (K+1) G^2\right\}.
+                        \end{align*}
+                        Dividing both sides by $K+1$, we obtain
+                        \begin{align*}
+                            \mathbb{E}_{\xi_0:\xi_K}[F(\tilde{\mb{w}}_K)-F^*] & \leq \frac{\|\mb{w}_0-\mb{w}^*\|_2^2 + \alpha^2 G^2 (K+1)}{2\alpha (K+1)}\xrightarrow[]{}\frac{\alpha G^2}{2},
+                        \end{align*}
+                        as desired.
+                        \qedhere
+                \end{enumerate}
+            \end{solution}
+
+    \end{enumerate}
+
+
+\end{exercise}
+\clearpage
+
+
+
+% \begin{exercise}[Example in Stochastic Gradient Descent]
+% Consider a simple linear regression model $ f(x;w) = wx $ with samples $ \{(x_i,y_i)\}_{i=1}^2 $, where $x_i,y_i \in \mathbb{R}$ for $i=1,2$. We use SGD algorithm to minimize the average fitting error
+% \begin{align*}
+% L(w) = \frac{1}{2}\sum_{i=1}^{2}(y_i-wx_i)^2.
+% \end{align*}
+% We uniformly sample a data instance $ \xi_k=(x_{i_k}, y_{i_k}) $ from $ \{(x_i,y_i)\}_{i=1}^2 $ at $ k^{th} $ iteration. The sequence $(w_k)$ is generated by the stochastic gradient descent algorithm.
+% \begin{enumerate}
+% 	\item  Please write down the derivative $  L^\prime(w_k) $ and stochastic derivative $ g_k $.
+% 	\item  Please write down the variance of the stochastic derivative $ \mathbb{V}_{\xi_k}[g_k] $.
+% 	\item We assume the upper bound of $ \mathbb{V}_{\xi_k}[g_k] $ takes the form of
+% 	\begin{align*}
+% 	\mathbb{V}_{\xi_k}[g_k]\leq M + M_V |L^\prime(w_k)|^2.
+% 	\end{align*}
+% 	Please find the corresponding $ M $ and $ M_V $ in this problem. Specifically, when will $ M $ become zero, and when will $ M_V $ become zero?
+% 	\item Can you explain why we cannot expect $\mathbb{V}_{\xi_k}[g_k]$ is bounded or equal to 0?
+% \end{enumerate}
+% \end{exercise}
+% \clearpage
+
+
+
+% \begin{exercise}[Law of Total Variance]
+%  Let $X, Y,$ and $Z$ be random variables.
+% 	   \begin{enumerate}
+% 	        \item Show that the tower property holds, i.e.,
+%         	\begin{align*}
+%         	    \mathbb{E}[X|Y] = \mathbb{E}[\mathbb{E}[X|Y,Z] |Y].
+%         	\end{align*}
+%         	\item The law of total variance holds, i.e.,
+%         	\begin{align*}
+%         	    \mathbb{V}[X] = \mathbb{E}[\mathbb{V}[X|Y]]+\mathbb{V}[\mathbb{E}[X|Y]].
+%         	\end{align*}
+% 	   \end{enumerate}
+% 	   \emph{Hint: if you do not know measure theory well, you can assume that $X$, $Y$, and $Z$ are continuous random variables.}
+% \end{exercise}
+% \clearpage
+
+
+
+% \begin{exercise}[Convergence of SGD for Convex Function]
+% 	Suppose that $f:\mathbb{R}^n \rightarrow \mathbb{R}$ is convex and continuously differentiable, and it attains its minimum at $\mb{x}^*$. Suppose the second moment of stochastic gradient $ \mb{g} $ is bounded, i.e.,
+% 	\begin{align*}
+% 	\mathbb{E}_{\xi}[\|\mb{g}(\mb{x},\xi)\|_2^2]\leq G^2,\,\forall\,\mb{x}\in \mathbb{R}^n.
+% 	\end{align*}
+% 	Suppose that $(\mb{x}_k)$ is a sequence generated by SGD algorithm with a fixed stepsize $\alpha$. Define
+% 	$ \mb{\tilde{x}}_K=\frac{1}{K}\sum_{k=1}^{K} \mb{x}_k $ and $ f^*=f(\mb{x}^*) $.
+
+% 	\begin{enumerate}
+% 	    \item If $X$ is a random variable and $h:\mathbb{R}\rightarrow\mathbb{R}$ is a convex function, please show that
+% 	    $$h(\mathbb{E}[X]) \leq \mathbb{E}[h(X)].$$
+% 		\item Suppose that the stochastic gradient at $ k^{th} $ iteration is $ \mb{g}_k $.  Please show that
+
+% 		\begin{align*}
+% 		\mathbb{E}_{\xi_1:\xi_k}[f(\mb{x}_k)-f^*]\leq\mathbb{E}_{\xi_1:\xi_k}[\langle{\mb{g}_k, \mb{x}_k-\mb{x}^*}\rangle].
+% 		\end{align*}
+% 		\item Please show that
+% 		\begin{align*}
+% 		\mathbb{E}_{\xi_1:\xi_k}[f(\mb{x}_k)-f^*]\leq\frac{1}{2\alpha}\mathbb{E}_{\xi_1:\xi_k}[\|\mb{x}_k-\mb{x}^*\|_2^2 - \|\mb{x}_{k+1}-\mb{x}^*\|_2^2 + \alpha^2 \|\mb{g}_k\|_2^2].
+% 		\end{align*}
+% 		\item Please show that
+% 		\begin{align*}
+% 		\mathbb{E}_{\xi_1:\xi_K}[f(\tilde{x}_K)-f^*] &\leq \frac{\|x_1-x^*\|_2^2 + \alpha^2 G^2 K}{2\alpha K}\\
+% 		&\xrightarrow[]{O(1/K)}\frac{\alpha G^2}{2}.
+% 		\end{align*}
+% 	\end{enumerate}
+% \end{exercise}
+% \clearpage
+
+
+
+\begin{exercise}[Programming Exercise: Logistic Regression (Optional)]
+
+    We provide you with a dataset of handwritten digits\footnotemark\,that contains a training set of 60000 examples and a test set of 2022 examples (``hw5\_lr.mat''). Each image in this dataset  has $28\times28$ pixels and the associated label is the handwritten digit---that is, an integer from the set $\{0,1,\cdots,9\}$---in the image. In this exercise, you need to build a logistic regression classifier to \textit{predict if a given image has the handwritten digit $6$ in it or not}. You can use your favorite programming language to finish this exercise.
+    \begin{enumerate}
+        \item Normalize the data matrix and please find a Lipschitz constant of $\nabla L(\mb{w})$, where $L(\mb{w})$ is the objective function of the logistic regression after normalizing and  $\mb{w}$ is the model parameter to be estimated.
+
+            \begin{solution}
+                According to Exercise 6.2, we have
+                \begin{align*}
+                    \left\|\nabla^2 L(\mb{w})\right\|_2 & = \frac{1}{n}\left\|\bar{\mb{X}}^\top \mb{\Sigma}_\mb{w} \bar{\mb{X}}\right\|_2 \le \frac{1}{n} \|\mb{\Sigma}_\mb{w}\|_2 \left\|\bar{\mb{X}}\right\|^2_2,
+                \end{align*}
+                where $\bar{\mb{X}} \in \mathbb{R}^{n\times (d+1)}$ is the normalized data matrix with $n=60000$ and $d=28\times 28$, respectively. As $\mb{\Sigma}_\mb{w}$ is a diagonal matrix with the $i^\text{th}$ diagonal element $p_i(1-p_i)$ for some $0\le p_i\le 1$, we have
+                \begin{align*}
+                    \|\mb{\Sigma}_\mb{w}\|_2 = \max_{i=1,\cdots,n} p_i (1-p_i) \le \max_{0\le p\le 1} p(1-p) = \frac{1}{4}.
+                \end{align*}
+                We derive the upper bounds of $\left\|\bar{\mb{X}}\right\|^2_2$ as
+                \begin{align*}
+                    \left\|\bar{\mb{X}}\right\|^2_2 & \le \left\|\bar{\mb{X}}\right\|_1 \left\|\bar{\mb{X}}\right\|_\infty = n \max_{i=1,\cdots,n} \| \bar{\mb{x}}_i\|_1 \le n (d+1).
+                \end{align*}
+                Hence $\left\|\nabla^2 L(\mb{w})\right\|_2 \le \frac{\left\|\bar{\mb{X}}\right\|^2_2}{4n} \le \frac{d+1}{4} = 196.25$, i.e. a Lipschitz constant of $\nabla L(\mb{w})$ is $196.25$.
+                Moreover, by computing $\frac{\left\|\bar{\mb{X}}\right\|^2_2}{4n}$, we can obtain a smaller Lipschitz constant of $\nabla L(\mb{w})$ as $9.753154$. In the following, we will use this smaller Lipschitz constant to train the logistic regression classifier.
+                \qedhere
+            \end{solution}
+
+        \item
+            \begin{enumerate}
+                \item Use the gradient descent algorithm (GD), which is a special case of ISTA introduced in Lecture 09, and SGD to train the logistic regression classifier on the training set, respectively. Evaluate the classification accuracy on the training set after each iteration. Stop the iteration when $\text{Accuracy}\geq 90\%$ or total steps are more than $5000$. Please plot the accuracy of these two classifiers (the one trained by GD and the other trained by SGD) versus the iteration step on one graph.
+                \item Compare the total iteration counts and the total time cost of the two methods (GD and SGD), respectively. Please report your result.
+                \item Compare the confusion matrix, precision, recall and F1 score of the two classifiers (the one trained by GD and the other trained by SGD). Please report your result.
+                \item Use GD and SGD to train the logistic regression classifier with a 2-norm regularization term. Note that other experimental setup details is in line with 2(a). Please plot the accuracy of these two classifiers (the one trained by GD and the other trained by SGD) versus the iteration step on one graph and compare the confusion matrix, precision, recall and F1 score of the two classifiers.
+            \end{enumerate}
+
+            \begin{solution}
+                A python implementation is shown at the end of this exercise. The results using the original imbalanced training set are shown in Table \ref{tab:lr-1}. The plot of the accuracy and loss of the two classifiers versus the iteration step is shown in Figure \ref{fig:lr-1}.
+
+                {\bf Comments:}
+                \begin{itemize}
+                    \item The stochastic gradient descent is much faster than the full gradient descent when computing gradient, and needs less iterations to reach the same accuracy by introducing randomness.
+                    \item We only measure the time cost for computing the gradient and updating the model parameter. However, as we need to plot the accuracy score, we always compute the full probability vector in each iteration, which cause the stochastic gradient descent to be as slow as the full gradient descent in practice.
+                    \item The speed of convergence tends to be faster when the regularization term is set to be larger. This is due to the imbalanced nature of the training set. When the weights are all equal to zero, the model will predict the majority class for all the images, which will result in a high accuracy near $90\%$. This also explains why the recall is getting lower when the regularization term is set to be larger.
+                        \qedhere
+                \end{itemize}
+            \end{solution}
+
+        \item
+            \begin{enumerate}
+                \item The training set is imbalanced as the majority class has roughly nine times more images than the minority class. Imbalanced data can hurt the performance of the classifiers badly. Thus, please undersample the majority class such that the numbers of images in the two classes are roughly the same.
+                \item Use GD and SGD to train the logistic regression classifier on the new training set after undersampling. Stop the iteration when $\text{Accuracy}\geq 90\%$ or total steps are more than $5000$.
+                \item Evaluate the two classifiers (the one trained with GD on the original training set and the other trained on the new training set after undersampling) on the test set. Compare the confusion matrix, precision, recall and F1 score of the two classifiers. Please report your result.
+            \end{enumerate}
+
+            \begin{solution}
+                The results using the undersampled training set are shown in Table \ref{tab:lr-2}. The plot of the accuracy and loss of the two classifiers versus the iteration step is shown in Figure \ref{fig:lr-2}.
+
+                {\bf Comments:}
+                \begin{itemize}
+                    \item After undersampling the majority class, the precision get higher and the recall get lower, implying that the model is more confident in predicting the minority class, but it is less confident in predicting the majority class.
+                    \item For $\lambda=10$, the full gradient descent method finds the global minimum quickly but fails to satisfies the stopping criterion. The stochastic gradient descent oscillates around the global minimum and also fails to reach the target accuracy. This result implies the importance of a proper regularization term.
+                        \qedhere
+                \end{itemize}
+            \end{solution}
+    \end{enumerate}
+\end{exercise}
+% \footnotetext[1]{This dataset is modified from the MNITS dataset: http://yann.lecun.com/exdb/mnist/}
+\clearpage
+\begin{table}[H]
+    \centering
+    \caption{The results of logistic regression on imbalanced training set.}
+    \label{tab:lr-1}
+    \begin{tabular}{llllllllllll}
+        \toprule
+        Method               & $\lambda$ & TP  & FP  & TN   & FN  & Accu.  & Prec.  & Recall & F1     & Time    & Iter \\
+        \midrule
+        \multirow{5}{*}{GD}  & 0         & 115 & 114 & 1727 & 66  & 0.9110 & 0.5022 & 0.6354 & 0.5610 & 19.0613 & 133  \\
+                             & 0.01      & 113 & 112 & 1729 & 68  & 0.9110 & 0.5022 & 0.6243 & 0.5567 & 22.6330 & 122  \\
+                             & 0.1       & 99  & 89  & 1752 & 82  & 0.9154 & 0.5266 & 0.5470 & 0.5366 & 16.0233 & 76   \\
+                             & 1         & 18  & 11  & 1830 & 163 & 0.9139 & 0.6207 & 0.0994 & 0.1714 & 3.5002  & 22   \\
+                             & 10        & 0   & 0   & 1841 & 181 & 0.9105 & NaN    & 0.0000 & 0.0000 & 1.0105  & 6    \\
+        \midrule
+        \multirow{5}{*}{SGD} & 0         & 55  & 33  & 1808 & 126 & 0.9214 & 0.6250 & 0.3039 & 0.4089 & 0.0237  & 92   \\
+                             & 0.01      & 57  & 31  & 1810 & 124 & 0.9233 & 0.6477 & 0.3149 & 0.4238 & 0.0245  & 92   \\
+                             & 0.1       & 41  & 23  & 1818 & 140 & 0.9194 & 0.6406 & 0.2265 & 0.3347 & 0.0180  & 73   \\
+                             & 1         & 3   & 3   & 1838 & 178 & 0.9105 & 0.5000 & 0.0166 & 0.0321 & 0.0046  & 13   \\
+                             & 10        & 0   & 1   & 1840 & 181 & 0.9100 & 0.0000 & 0.0000 & 0.0000 & 0.0012  & 4    \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{imbalanced.pdf}
+    \caption{The accuracy and loss of logistic regression on imbalanced training set.}
+    \label{fig:lr-1}
+\end{figure}
+\begin{table}[H]
+    \centering
+    \caption{The results of logistic regression on undersampled training set.}
+    \label{tab:lr-2}
+    \begin{tabular}{llllllllllll}
+        \toprule
+        Method               & $\lambda$ & TP  & FP  & TN   & FN  & Accu.  & Prec.  & Recall & F1     & Time   & Iter \\
+        \midrule
+        \multirow{5}{*}{GD}  & 0.0       & 161 & 223 & 1618 & 20  & 0.8798 & 0.4193 & 0.8895 & 0.5699 & 5.8963 & 155  \\
+                             & 0.01      & 162 & 222 & 1619 & 19  & 0.8808 & 0.4219 & 0.8950 & 0.5735 & 5.1759 & 142  \\
+                             & 0.1       & 164 & 226 & 1615 & 17  & 0.8798 & 0.4205 & 0.9061 & 0.5744 & 4.8542 & 86   \\
+                             & 1.0       & 169 & 235 & 1606 & 12  & 0.8778 & 0.4183 & 0.9337 & 0.5778 & 1.0152 & 26   \\
+                             & 10.0      & 178 & 411 & 1430 & 3   & 0.7953 & 0.3022 & 0.9834 & 0.4623 & Failed &      \\
+        \midrule
+        \multirow{5}{*}{SGD} & 0.0       & 166 & 194 & 1647 & 15  & 0.8966 & 0.4611 & 0.9171 & 0.6137 & 0.0543 & 191  \\
+                             & 0.01      & 159 & 141 & 1700 & 22  & 0.9194 & 0.5300 & 0.8785 & 0.6611 & 0.0537 & 191  \\
+                             & 0.1       & 141 & 81  & 1760 & 40  & 0.9402 & 0.6351 & 0.7790 & 0.6998 & 0.0709 & 156  \\
+                             & 1.0       & 151 & 137 & 1704 & 30  & 0.9174 & 0.5243 & 0.8343 & 0.6439 & 0.0498 & 160  \\
+                             & 10.0      & 0   & 0   & 1841 & 181 & 0.9105 & NaN    & 0.0000 & 0.0000 & Failed &      \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{undersampled.pdf}
+    \caption{The accuracy and loss of logistic regression on undersampled training set.}
+    \label{fig:lr-2}
+\end{figure}
+
+\clearpage
+\begin{minted}{python}
+# Logistic Regression
+
+import os
+import time
+import numpy as np
+import pandas as pd
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+mpl.rcParams['mathtext.fontset'] = 'cm'
+mpl.rcParams['font.size'] = 8
+mpl.rcParams['font.family'] = 'serif'
+
+# Load MNITS dataset from hw5_lr.mat
+import scipy.io as sio
+mat = sio.loadmat('hw5_lr.mat')
+train_data, test_data = mat['train_data'], mat['test_data']
+train_label, test_label = mat['train_label'], mat['test_label']
+
+# Normalize pixel values
+train_data = (train_data / 255).reshape(-1, 28 * 28)
+test_data = (test_data / 255).reshape(-1, 28 * 28)
+
+# Convert label for binary classification (digit 6 or not)
+train_label = (train_label == 6).astype(int).flatten()
+test_label = (test_label == 6).astype(int).flatten()
+
+
+def evaluate_binary_classifier(label, pred):
+    '''
+    Evaluate the performance of a binary classifier.
+    '''
+    '''
+    Evaluate the performance of a binary classifier.
+    '''
+    # Compute the confusion matrix
+    TP = np.sum((label == 1) & (pred == 1))
+    FP = np.sum((label == 0) & (pred == 1))
+    TN = np.sum((label == 0) & (pred == 0))
+    FN = np.sum((label == 1) & (pred == 0))
+    confusion_matrix = pd.DataFrame([[TP, FP], [FN, TN]],
+                                    index=[1, 0],
+                                    columns=[1, 0])
+
+    # Compute the accuracy, precision, recall, and F1 score
+    accuracy = (TP + TN) / (TP + FP + TN + FN)
+    precision = TP / (TP + FP)
+    recall = TP / (TP + FN)
+    f1_score = 2 * TP / (2 * TP + FP + FN)
+
+    # Print the results
+    print(f'Confusion matrix:\n{confusion_matrix}\n')
+    print(f'Accuracy:  {accuracy:.2f}')
+    print(f'Precision: {precision:.2f}')
+    print(f'Recall:    {recall:.2f}')
+    print(f'F1 score:  {f1_score:.2f}')
+    print()
+
+    # Return all the results in a Dataframe
+    return pd.DataFrame(
+        [[TP, FP, TN, FN, accuracy, precision, recall, f1_score]],
+        index=['result'],
+        columns=[
+            'TP', 'FP', 'TN', 'FN', 'Accuracy', 'Precision', 'Recall',
+            'F1 score'
+        ])
+
+
+def sigmoid(x):
+    '''
+    Sigmoid function.
+    '''
+    if x >= 0:
+        z = np.exp(-x)
+        return 1 / (1 + z)
+    else:
+        z = np.exp(x)
+        return z / (1 + z)
+
+
+def log(x):
+    '''
+    Log function.
+    '''
+    if x == 0:
+        return -1e10
+    else:
+        return np.log(x)
+
+
+sigmoid = np.vectorize(sigmoid)
+log = np.vectorize(log)
+
+
+class BinaryClassifier:
+    '''
+    Binomial Logistic Regression using GD, SGD, or mini-batch SGD with L2 regularization.
+    '''
+
+    def __init__(self,
+                 alpha=0.01,
+                 learning_rate=None,
+                 batch_size=None,
+                 target_accuracy=0.90,
+                 max_iter=5000,
+                 random_state=0):
+        self.alpha = alpha
+        self.learning_rate = learning_rate
+        self.batch_size = batch_size
+        self.target_accuracy = target_accuracy
+        self.max_iter = max_iter
+        self.random_state = random_state
+
+        self.n = None  # Number of samples
+        self.d = None  # Number of features
+        self.X = None  # Feature matrix with bias
+        self.y = None  # Label vector
+        self.w = None  # Weight vector
+        self.L = None  # Lipschitz constant
+        self.prob = None  # Predicted probabilities
+        self.grad = None  # Gradient of loss
+        self.loss_list = []  # Cross-entropy loss
+        self.score_list = []  # Accuracy score
+        self.total_iter = 0  # Total number of iterations
+        self.total_time = 0  # Total time elapsed
+        self.converged = False  # Whether the algorithm converged
+
+    def fit(self,
+            X,
+            y,
+            w0=None,
+            verbose=False,
+            record_loss=False,
+            record_score=True):
+        '''
+        Train the classifier.
+        '''
+        # Set the random seed
+        np.random.seed(self.random_state)
+        # Initialize the parameters
+        self.n = X.shape[0]
+        self.d = X.shape[1]
+        self.X = np.hstack((np.ones((self.n, 1)), X))
+        self.y = y
+        self.w = w0.copy()
+        if self.w is None:
+            self.w = np.random.randn(self.d + 1)
+        if self.learning_rate is None:
+            # Estimate the Lipschitz constant (See Problem 1)
+            self.L = (self.d + 1) / 4
+        else:
+            self.L = 1 / self.learning_rate
+        self.score_list.clear()
+        self.loss_list.clear()
+        self.total_time = 0
+        self.converged = False
+        # Minimize the loss function
+        for self.total_iter in range(1, self.max_iter + 1):
+            # Start timer
+            start = time.time()
+            # Compute the gradient of the loss function
+            if self.batch_size is None:
+                # Full gradient
+                self.prob = sigmoid(self.X @ self.w)
+                self.grad = self.X.T @ (self.prob - self.y) / self.n
+            else:
+                # Stochastic gradient
+                idx = np.random.randint(self.X.shape[0], size=self.batch_size)
+                self.prob = sigmoid(self.X[idx] @ self.w)
+                self.grad = self.X[idx].T @ (self.prob -
+                                             self.y[idx]) / self.batch_size
+            # Update the weights
+            self.w -= 1 / (self.L + self.alpha) * (self.grad +
+                                                   self.alpha * self.w)
+            # Stop timer
+            duration = time.time() - start
+            self.total_time += duration
+            # As we need to evaluate the accuracy score in each iteration, we must compute the full probability vector here, which cause the stochastic gradient descent to be as slow as the full gradient descent.
+            if self.batch_size is not None:
+                self.prob = sigmoid(self.X @ self.w)
+            # Compute the cross-entropy loss
+            loss = self.loss()
+            if record_loss:
+                self.loss_list.append(self.loss())
+            # Compute the accuracy score
+            score = self.score()
+            if record_score:
+                self.score_list.append(score)
+            # Print the progress
+            if verbose:
+                print(f'Iteration {self.total_iter:4d}: '
+                      f'Loss = {loss:.4f}, '
+                      f'Score = {score:.4f}, '
+                      f'Time = {duration:.4f} sec')
+            # Stop if the target accuracy is reached
+            if self.target_accuracy < score:
+                self.converged = True
+                break
+
+    def predict(self, X):
+        '''
+        Predict the labels.
+        '''
+        prob = self.predict_proba(X)
+        return (prob > 0.5).astype(int)
+
+    def predict_proba(self, X):
+        '''
+        Predict the probabilities of the positive class.
+        '''
+        X = np.hstack((np.ones((X.shape[0], 1)), X))
+        return sigmoid(X @ self.w)
+
+    def loss(self):
+        '''
+        Evaluate the cross-entropy loss on the training set.
+        '''
+        return -np.mean(self.y * log(self.prob) +
+                        (1 - self.y) * log(1 - self.prob)
+                        ) + self.alpha / 2 * np.sum(self.w**2)
+
+    def score(self):
+        '''
+        Evaluate the accuracy on the training set.
+        '''
+        return np.mean((self.prob >= 0.5).astype(int) == self.y)
+
+    def plot_loss(self, ax=None, **kwargs):
+        '''
+        Plot the loss function.
+        '''
+        if ax is None:
+            ax = plt.gca()
+        ax.plot(self.loss_list, **kwargs)
+
+    def plot_score(self, ax=None, **kwargs):
+        '''
+        Plot the accuracy score.
+        '''
+        if ax is None:
+            ax = plt.gca()
+        ax.plot(self.score_list, **kwargs)
+
+    def plot(self, ax=None, **kwargs):
+        if ax is None:
+            _, ax = plt.subplots(1, 2, figsize=(12, 4))
+        self.plot_loss(ax[0], **kwargs)
+        self.plot_score(ax[1], **kwargs)
+
+    def report(self, data, label):
+        '''
+        Test the classifier on the given dataset.
+        '''
+        pred = self.predict(data)
+        df = evaluate_binary_classifier(label, pred)
+        df['Time'] = self.total_time
+        df['Iter'] = self.total_iter
+        df['Converged'] = self.converged
+        return df
+
+
+n = train_data.shape[0]
+d = train_data.shape[1]
+X = np.hstack((np.ones((n, 1)), train_data))
+# Compute a Lipschitz constant
+L = 0.25 * np.linalg.norm(X, ord=2)**2 / n
+# Generate random initial weights
+np.random.seed(0)
+w0 = np.random.randn(d + 1)
+
+clf = BinaryClassifier(learning_rate=1 / L, random_state=0)
+    
+lamb_list = [0, 0.01, 0.1, 1, 10]
+
+fig, ax = plt.subplots(len(lamb_list),
+                       2,
+                       figsize=(12, 2 * len(lamb_list)),
+                       sharex=True)
+for i in range(len(lamb_list)):
+    ax[i, 0].set_title(f'$\lambda$ = {lamb_list[i]}')
+    ax[i, 1].set_title(f'$\lambda$ = {lamb_list[i]}')
+    ax[i, 0].set_ylabel('Accuracy')
+    ax[i, 1].set_ylabel('Cross-entropy')
+ax[len(lamb_list) - 1, 0].set_xlabel('Iteration')
+ax[len(lamb_list) - 1, 1].set_xlabel('Iteration')
+
+res1 = []
+# CASE1: Imbalanced dataset & Full gradient
+print('\nImbalanced dataset & Full gradient\n')
+for i, lamb in enumerate(lamb_list):
+    print(f'lambda = {lamb}')
+    print('----------------')
+    clf.alpha = lamb
+    clf.batch_size = None
+    clf.fit(train_data, train_label, w0=w0, verbose=True, record_loss=True)
+    res1.append(clf.report(test_data, test_label))
+    clf.plot_score(ax[i, 0], label='GD')
+    clf.plot_loss(ax[i, 1], label='GD')
+res1 = pd.concat(res1)
+
+res2 = []
+# CASE2: Imbalanced dataset & Stochastic gradient
+print('\nImbalanced dataset & Stochastic gradient\n')
+for i, lamb in enumerate(lamb_list):
+    print(f'lambda = {lamb}')
+    print('----------------')
+    clf.alpha = lamb
+    clf.batch_size = 1
+    clf.fit(train_data, train_label, w0=w0, verbose=True, record_loss=True)
+    res2.append(clf.report(test_data, test_label))
+    clf.plot_score(ax[i, 0], label='SGD')
+    clf.plot_loss(ax[i, 1], label='SGD')
+    ax[i, 0].legend()
+    ax[i, 1].legend()
+res2 = pd.concat(res2)
+
+fig.savefig('imbalanced.pdf')
+res1.index = lamb_list
+res2.index = lamb_list
+res = pd.concat([res1, res2], keys=['GD', 'SGD'])
+res.to_csv('imbalanced.csv')
+
+fig, ax = plt.subplots(len(lamb_list),
+                       2,
+                       figsize=(12, 2 * len(lamb_list)),
+                       sharex=True)
+for i in range(len(lamb_list)):
+    ax[i, 0].set_title(f'$\lambda$ = {lamb_list[i]}')
+    ax[i, 1].set_title(f'$\lambda$ = {lamb_list[i]}')
+    ax[i, 0].set_ylabel('Accuracy')
+    ax[i, 1].set_ylabel('Cross-entropy')
+ax[len(lamb_list) - 1, 0].set_xlabel('Iteration')
+ax[len(lamb_list) - 1, 1].set_xlabel('Iteration')
+
+clf.max_iter = 200
+
+res3 = []
+# CASE3: Undersampled dataset & Full gradient
+print('\nUndersampled dataset & Full gradient\n')
+for i, lamb in enumerate(lamb_list):
+    print(f'lambda = {lamb}')
+    print('----------------')
+    clf.alpha = lamb
+    clf.batch_size = None
+    clf.fit(train_data_rus, train_label_rus, w0=w0, verbose=True, record_loss=True)
+    res3.append(clf.report(test_data, test_label))
+    clf.plot_score(ax[i, 0], label='GD')
+    clf.plot_loss(ax[i, 1], label='GD')
+res3 = pd.concat(res3)
+
+res4 = []
+# CASE4: Undersampled dataset & Stochastic gradient
+print('\nUndersampled dataset & Stochastic gradient\n')
+for i, lamb in enumerate(lamb_list):
+    print(f'lambda = {lamb}')
+    print('----------------')
+    clf.alpha = lamb
+    clf.batch_size = 1
+    clf.fit(train_data_rus, train_label_rus, w0=w0, verbose=True, record_loss=True)
+    res4.append(clf.report(test_data, test_label))
+    clf.plot_score(ax[i, 0], label='SGD')
+    clf.plot_loss(ax[i, 1], label='SGD')
+    ax[i, 0].legend()
+    ax[i, 1].legend()
+res4 = pd.concat(res4)
+
+fig.savefig('undersampled.pdf')
+res3.index = lamb_list
+res4.index = lamb_list
+res = pd.concat([res3, res4], keys=['GD', 'SGD'])
+res.to_csv('undersampled.csv')
+
+\end{minted}
+
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliography{refs}
+\bibliographystyle{abbrv}
+
+
+\end{document}
+

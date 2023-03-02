@@ -1,0 +1,922 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Course info
+\newcommand{\school}{\text{University of Science and Technology of China}}
+\newcommand{\course}{\text{Introduction to Machine Learning}}
+\newcommand{\semester}{\text{Fall 2022}}
+\newcommand{\lecturer}{\text{Jie Wang}}
+% Homework info
+\newcommand{\posted}{\text{Dec. 9, 2022}}
+\newcommand{\due}{\text{Dec. 22, 2022}}
+\newcommand{\hwno}{\text{6}}
+% Student info
+\newcommand{\name}{\text{Yunqin Zhu}}
+\newcommand{\id}{\text{PB20061372}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{../common/HW.tex}
+\begin{document}
+\maketitle
+
+
+
+
+\begin{exercise}[SVM for Linearly Separable Cases]
+    Given the training set $\mathcal{D}=\{ (\mb{x}_i,y_i) \}_{i=1}^n$, where $\mb{x}_i \in \mathbb{R}^d$ and $y_i \in \{ -1,1 \}$. Let
+    \begin{align*}
+        \mathcal{D}^+=\{(\mb{x}_i,y_i)\in\mathcal{D}:y_i=1\},\hspace{5mm}\mathcal{D}^-=\{(\mb{x}_i,y_i)\in\mathcal{D}:y_i=-1\}.
+    \end{align*}
+    Assume that $\mathcal{D}^+$ and $\mathcal{D}^-$ are nonempty and the training set $\mathcal{D}$ is linearly separable. We have shown in Lecture 13 that SVM can be written as
+    \begin{align}\label{prob:SVM-1}
+        \begin{aligned}
+             & \min_{\mb{w},b}\,\,\frac{1}{2}\| \mb{w} \|^2,                            \\
+             & \text{ s.t. } \min_i y_{i} ( \langle \mb{w}, \mb{x}_i \rangle + b ) = 1.
+        \end{aligned}
+    \end{align}
+    Moreover, we further transform Problem (\ref{prob:SVM-1}) to
+    \begin{align}\label{prob:SVM}
+        \begin{aligned}
+             & \min_{\mb{w},b}\,\,\frac{1}{2}\| \mb{w} \|^2,                                          \\
+             & \text{ s.t. }\,\, y_{i} ( \langle \mb{w}, \mb{x}_i \rangle + b ) \geq 1, i=1,\ldots,n.
+        \end{aligned}
+    \end{align}
+    We denote the feasible set of Problem (\ref{prob:SVM}) by $$\mathcal{F}=\{(\mb{w},b):y_{i} ( \langle \mb{w}, \mb{x}_i \rangle + b ) \geq 1, i=1,\ldots,n\}.$$
+
+    \begin{enumerate}
+        \item The Euclidean distance between a linear classifier $f(\mb{x};\mb{w},b)=\langle\mb{w},\mb{x}\rangle+b$ and a point $\mb{z}$ is
+            \begin{align*}
+                d(\mb{z},f)=\min_{\mb{x}}\{\|\mb{z}-\mb{x} \|:f(\mb{x};\mb{w},b)=0\}.
+            \end{align*}
+            Please find the closed form of $d(\mb{z},f)$.
+
+            \begin{solution}
+                Denote $C = \{ \mb{x} \in \mathbb{R}^d: \langle\mb{w}, \mb{x}\rangle=0 \}$, which is a subspace. As $\mb{w}$ is a normal vector of $C$, projecting an arbitraty $\mb{x}$ onto the orthogonal complement of $C$ yields
+                \begin{align*}
+                    \Pi_{C^\bot}(\mb{x}) = \mb{w}(\mb{w}^\top\mb{w})^{-1}\mb{w}^\top \mb{x} = \frac{\langle\mb{w}, \mb{x}\rangle}{\|\mb{w}\|^2}\mb{w}.
+                \end{align*}
+                Let $\mb{x}_0 \in \mathbb{R}^d$ satisfy $\langle\mb{w}, \mb{x}_0\rangle = b$. Then, by the definition of projection, we have
+                \begin{align*}
+                    d(\mb{z},f) = \|\mb{z} - \Pi_{C-\mb{x}_0}(\mb{z})\| = \|\Pi_{C^\bot}(\mb{z} + \mb{x}_0)\| = \frac{|\langle\mb{w}, \mb{z}\rangle + b|}{\|\mb{w}\|}.
+                    \tag*{\qedhere}
+                \end{align*}
+            \end{solution}
+
+        \item Show that $\mathcal{F}$ is nonempty.
+
+            \begin{solution}
+                Since the training set is linearly separable, there exists $(\hat{\mb{w}},\hat{b})$ such that $y_i = \sgn ( \langle \hat{\mb{w}}, \mb{x}_i \rangle + \hat{b} )$ for all $i$, i.e. $y_i ( \langle \hat{\mb{w}}, \mb{x}_i \rangle + \hat{b} ) > 0$. Letting $c = \min_{i} y_{i} ( \langle \hat{\mb{w}}, \mb{x}_i \rangle + \hat{b} )$, we have $y_i ( \langle \hat{\mb{w}}, \mb{x}_i \rangle + \hat{b} ) > c$ and hence $y_i ( \langle \frac{\hat{\mb{w}}}{c}, \mb{x}_i \rangle + \frac{\hat{b}}{c} ) \geq 1$ for all $i$. Therefore, $(\frac{\hat{\mb{w}}}{c},\frac{\hat{b}}{c}) \in \mathcal{F}$.
+            \end{solution}
+
+        \item Show that Problem (\ref{prob:SVM}) admits an optimal solution.
+
+            \begin{solution}
+                Let $\mathcal{G} = \{\mb{w}:(\mb{w},b) \in \mathcal{F}\}$, which is the image of $\mathcal{F}$ under an affine transformation. We note that $\mathcal{F}$ is nonempty, closed and convex, so is $\mathcal{G}$. Consider the following problem
+                \begin{align}
+                    \min_\mb{w}\,\,\frac{1}{2}\|\mb{w}\|^2, \text{ s.t. } \mb{w} \in \mathcal{G}. \label{prob:SVM-2}
+                \end{align}
+                It is easy to see that Problem (\ref{prob:SVM}) attains its optimal value if and only if Problem (\ref{prob:SVM-2}) does. Since the objective function of Problem (\ref{prob:SVM-2}) is strongly convex, it is solvable and has a unique global minimum. Hence, Problem (\ref{prob:SVM}) is also solvable.
+            \end{solution}
+
+
+        \item Let $(\mb{w}^*,b^*)$ be the optimal solution to Problem (\ref{prob:SVM}). Show that $\mb{w}^*\neq\mb{0}$.
+
+            \begin{solution}
+                If $\mb{w}=\mb{0}$, then the constraint becomes $y_i b \ge 1$ for all $i = 1,\ldots,n$. Because both $\mathcal{D}^+$ and $\mathcal{D}^-$ are nonempty, we have $b \ge 1$ and $-b \ge 1$, which is impossible. That is, $(\mb{0},b)$ cannot be a feasible solution, let alone an optimal solution.
+            \end{solution}
+
+
+        \item Show that Problems (\ref{prob:SVM-1}) and (\ref{prob:SVM}) are equivalent; that is, they share the same set of optimal solutions.
+
+            \begin{solution}
+                Denote the set of optimal solutions to Problems (\ref{prob:SVM-1}) and (\ref{prob:SVM}) by $\mathcal{S}_1$ and $\mathcal{S}_2$, respectively. According to Homework 5, $(\mb{w}^*,b^*) \in \mathcal{S}_2 \cap \intp \mathcal{F}$ only if the gradient of the objective equals $\mb{0}$, i.e. $\mb{w}^* = \mb{0}$, which contradicts the result in Exercise 1.4. So $\mathcal{S}_2 \subset \bd \mathcal{F} \subset \mathcal{F}$, where $\bd \mathcal{F}$ is the feasible set of Problem (\ref{prob:SVM-1}). Thus, we can conclude that $\mathcal{S}_2 \subset \mathcal{S}_1$. Since all solutions in $\mathcal{S}_1$ and $\mathcal{S}_2$ share the same optimal value, we have $\mathcal{S}_1 = \mathcal{S}_2$.
+            \end{solution}
+
+
+        \item Let $(\mb{w}^*,b^*)$ be the optimal solution to Problem (\ref{prob:SVM}). Show that there exist at least one positive sample and one negative sample, respectively, such that the corresponding equality holds. In other words, there exist $i,j \in \{ 1,2,\dots,n \}$ such that
+            \begin{align*}
+                1=y_i =  & \langle \mb{w}^*, \mb{x}_i \rangle + b^*, \\
+                -1=y_j = & \langle \mb{w}^*, \mb{x}_j \rangle + b^*.
+            \end{align*}
+
+            \begin{solution}
+                Denote $\mathcal{F}^+=\{(\mb{w},b): \langle \mb{w}, \mb{x}_i \rangle + b \ge 1, \forall (\mb{x}_i, y_i) \in \mathcal{D}^+\}$ and $\mathcal{F}^-=\{(\mb{w},b): \langle \mb{w}, \mb{x}_i \rangle + b \le -1, \forall (\mb{x}_i, y_i) \in \mathcal{D}^-\}$. Assume that $(\mb{w}^*,b^*) \in \bd \mathcal{F}^+ \cap \intp \mathcal{F}^-$. Then there exists $\delta > 0$ such that the neighborhood $B = \{(\mb{w},b): \|(\mb{w},b) - (\mb{w}^*,b^*)\| < \delta\} \subset \mathcal{F}^-$. Since $(\mb{w}^*,b^*) \in \mathcal{F} \cap B = \mathcal{F}^+ \cap \mathcal{F}^- \cap B = \mathcal{F}^+ \cap B$, it is also the local minimum, and thus the global minimum of the following convex optimization problem
+                \begin{align*}
+                    \min_{\mb{w},b}\,\,\frac{1}{2}\|\mb{w}\|^2, \text{ s.t. } (\mb{w},b) \in \mathcal{F}^+.
+                \end{align*}
+                However, the above problem attains its optimal value at $\mb{w}^* = \mb{0}$, which contradicts the result in Exercise 1.4. Therefore, $(\mb{w}^*,b^*) \notin \bd \mathcal{F}^+ \cap \intp \mathcal{F}^-$. Similarly, we can show that $(\mb{w}^*,b^*) \notin \intp \mathcal{F}^+ \cap \bd \mathcal{F}^-$. So $(\mb{w}^*,b^*) \in \bd \mathcal{F}^+ \cap \bd \mathcal{F}^-$, which implies that there exists at least one positive sample and one negative sample such that the corresponding equality holds.
+            \end{solution}
+
+
+        \item Show that the optimal solution to Problem (\ref{prob:SVM}) is unique.
+
+            \begin{solution}
+                Again, consider Problem (\ref{prob:SVM-2}) in Exercise 1.3, which is strongly convex and admits a unique solution. It follows that the optimal solutions $(\mb{w}^*, b^*)$ to Problem (\ref{prob:SVM}) share the same $\mb{w}^*$. To see that $b^*$ is also unique, we let $\mb{x}_i$ be a support vector (we have shown its existence). Then $y_i(\langle \mb{w}^*, \mb{x}_i \rangle + b^*) = 1$, which leads to $b^* = y_i - \langle \mb{w}^*, \mb{x}_i \rangle$ and completes the proof.
+            \end{solution}
+
+
+        \item Can we remove the inequalities that hold strictly at the optimum to Problem (\ref{prob:SVM}) without affecting the solution? Please justify your claim rigorously.
+
+            \begin{solution}
+                Yes, we can. Define $\mathcal{I}_{\text{ac}} = \{i: |\langle \mb{w}^*, \mb{x}_i \rangle + b^*| = 1\}$ and $\mathcal{I}_{\text{ia}} = \{i: |\langle \mb{w}^*, \mb{x}_i \rangle + b^*| > 1\}$ as the index sets of the support and non-support vectors, respectively, where $(\mb{w}^*,b^*)$ is the optimal solution to Problem (\ref{prob:SVM}). Moreover, we define $\mathcal{F}_{\text{ac}} = \{(\mb{w},b): \langle \mb{w}, \mb{x}_i \rangle + b \ge y_i, \forall i \in \mathcal{I}_{\text{ac}}\}$ and $\mathcal{F}_{\text{ia}} = \{(\mb{w},b): \langle \mb{w}, \mb{x}_i \rangle + b \ge y_i, \forall i \in \mathcal{I}_{\text{ia}}\}$. Then $(\mb{w}^*,b^*) \in \bd \mathcal{F}_{\text{ac}} \cap \intp \mathcal{F}_{\text{ia}}$. Similar to Exercise 1.6, there exist $\delta > 0$ such that the neighborhood $B = \{(\mb{w},b): \|(\mb{w},b) - (\mb{w}^*,b^*)\| < \delta\} \subset \mathcal{F}_{\text{ia}}$. Since $(\mb{w}^*,b^*) \in \mathcal{F} \cap B = \mathcal{F}_{\text{ac}} \cap \mathcal{F}_{\text{ia}} \cap B = \mathcal{F}_{\text{ac}} \cap B$, it is the local minimum, and thus the global minimum of the following convex optimization problem
+                \begin{align*}
+                    \min_{\mb{w},b}\,\,\frac{1}{2}\|\mb{w}\|^2, \text{ s.t. } (\mb{w},b) \in \mathcal{F}_{\text{ac}},
+                \end{align*}
+                which is the desired result.
+            \end{solution}
+
+
+        \item Find the dual problem of (\ref{prob:SVM}) and the corresponding optimality conditions.
+
+            \begin{solution}
+                To find the dual problem, we first construct the Lagrangian
+                \begin{align*}
+                    L(\mb{w},b,\bm{\alpha}) = \frac{1}{2}\|\mb{w}\|^2 - \sum_{i=1}^n \alpha_i \left(y_i(\langle \mb{w}, \mb{x}_i \rangle + b) - 1\right),
+                \end{align*}
+                where $\bm{\alpha} = (\alpha_1, \ldots, \alpha_n)$ is the dual variable. We next find the dual function
+                \begin{align*}
+                    q(\bm{\alpha}) & = \inf_{\mb{w},b} L(\mb{w},b,\bm{\alpha})                                                                                                                                                        \\
+                                   & = \inf_{\mb{w}} \left\{\frac{1}{2}\|\mb{w}\|^2 - \langle \mb{w}, \sum_{i=1}^n \alpha_i y_i\mb{x}_i \rangle \right\} + \inf_b \left\{-b \sum_{i=1}^n \alpha_i y_i \right\}+ \sum_{i=1}^n \alpha_i \\
+                                   & = -\frac{1}{2} \left\|\sum_{i=1}^n \alpha_i y_i\mb{x}_i \right\|^2 + \sum_{i=1}^n \alpha_i.
+                \end{align*}
+                To attain the above infimum, we must have
+                \begin{align*}
+                    \nabla_{\mb{w}} L(\mb{w},b,\bm{\alpha}) = \mb{w} - \sum_{i=1}^n \alpha_i y_i \mb{x}_i = \mb{0} \quad \text{and} \quad \nabla_b L(\mb{w},b,\bm{\alpha}) = -\sum_{i=1}^n \alpha_i y_i = 0.
+                \end{align*}
+                That is, $\dom q = \left\{\bm{\alpha}: \sum_{i=1}^n \alpha_i y_i = 0 \right\}$. The dual problem is
+                \begin{align*}
+                    \max_{\bm{\alpha}} \  & - \frac{1}{2} \sum_{i=1}^n \sum_{j=1}^n \alpha_i \alpha_j y_i y_j \langle \mb{x}_i, \mb{x}_j \rangle + \sum_{i=1}^n \alpha_i, & \\
+                    \text{ s.t. }      \  & \sum_{i=1}^n \alpha_i y_i = 0,                                                                                                & \\
+                                          & \alpha_i \ge 0,\ i = 1, \ldots, n.                                                                                            &
+                \end{align*}
+                Since the primal problem is convex quadratic and solvable, the dual problem is also solvable and the duality gap is zero. To sum up, the KKT conditions are
+                \begin{align*}
+                     & \mb{w}^* = \sum_{i=1}^n \alpha_i^* y_i \mb{x}_i,\quad \sum_{i=1}^n \alpha_i^* y_i = 0,                 & (\text{Lagrangian optimality})   \\
+                     & y_i(\langle \mb{w}^*, \mb{x}_i \rangle + b^*) \ge 1, \quad i = 1, \ldots, n,                           & (\text{primal feasibility})      \\
+                     & \alpha_i^* \ge 0, \quad i = 1, \ldots, n,                                                              & (\text{dual feasibility})        \\
+                     & \alpha_i^* \left(y_i(\langle \mb{w}^*, \mb{x}_i \rangle + b^*) - 1\right) = 0, \quad i = 1, \ldots, n, & (\text{complementary slackness})
+                \end{align*}
+                where $\mb{w}^*$ and $b^*$ are the primal optimal solution, and $\bm{\alpha}^*$ is the dual optimal solution.
+            \end{solution}
+
+    \end{enumerate}
+
+\end{exercise}
+\clearpage
+
+
+
+
+\begin{exercise}[Discussions on Geometric Multiplier and Duality Gap]
+
+    Consider the primal problem
+    \begin{align}\label{prob:geometric}
+        \min _{\mb{x}}\  & f(\mb{x})                               \\ \nonumber
+        \text{s.t.}\     & g_{i}(\mb{x}) \leq 0,\, i=1, \cdots, m, \\ \nonumber
+                         & h_{i}(\mb{x})=0, i=1, \cdots, p,        \\ \nonumber
+                         & \mb{x} \in X.
+    \end{align}
+    Let
+    \begin{align}\label{def:image-set}
+        S=\{(\mb{g}(\mb{x}),\mb{h}(\mb{x}),f(\mb{x})):\mb{x}\in X\}\subset\mathbb{R}^{m+p+1}.
+    \end{align}
+    Are the following claims on the geometric multiplier and the duality gap for the primal problem correct? Justify the claims rigorously if they are correct. Otherwise please give a counterexample for each.
+    \begin{enumerate}
+        \item The geometric multiplier for the primal problem (\ref{prob:geometric}) always exists.
+
+            \begin{solution}
+                False. Consider the following primal problem
+                \begin{align*}
+                    \min_x\       & f(x) = x          \\
+                    \text{s.t.}\  & g(x) = x^2 \le 0.
+                \end{align*}
+                The dual function is
+                \begin{align*}
+                    q(\lambda) = \inf_{x} \left\{ x + \lambda x^2 \right\} = -\frac{1}{4\lambda},
+                \end{align*}
+                whose supremum $q^* = 0$ cannot be attained over $\lambda \ge 0$. Therefore, the geometric multiplier does not exist.
+            \end{solution}
+
+        \item If the geometric multiplier exists, then it is unique.
+
+            \begin{solution}
+                False. Consider the following primal problem
+                \begin{align*}
+                    \min_x\       & f(x) = x^2        \\
+                    \text{s.t.}\  & g(x) = x^2 \le 0.
+                \end{align*}
+                The dual function is
+                \begin{align*}
+                    q(\lambda) = \inf_{x} \left\{ x^2 + \lambda x^2 \right\} = 0 = q^*.
+                \end{align*}
+                That is, any $\lambda \ge 0$ is a geometric multiplier.
+                \qedhere
+            \end{solution}
+
+
+        \item If the geometric multiplier exists, then the duality gap is zero.
+
+            \begin{solution}
+                True. The geometric multiplier is defined as some $(\bm{\lambda}^*, \bm{\mu}^*)$ such that $\bm{\lambda}^* \ge \mb{0}$ and
+                \begin{align*}
+                    f^* = \inf_{x\in X} L(x, \bm{\lambda}^*, \bm{\mu}^*) = q(\bm{\lambda}^*, \bm{\mu}^*)
+                \end{align*}
+                By the weak duality theorem, we have $q^* \le f^*$. On the other hand, $q^* \ge q(\bm{\lambda}^*, \bm{\mu}^*) = f^*$. So $q^* = f^*$, i.e. the duality gap is zero.
+                \qedhere
+            \end{solution}
+
+        \item If the duality gap is zero, there exists at least one geometric multiplier.
+
+            \begin{solution}
+                False. Consider the primal and dual problems in Exercise 2.1. We have $f^* = q^* = 0$ but the geometric multiplier does not exist.
+                \qedhere
+            \end{solution}
+
+        \item Let $(\lambda^*,\mu^*)$ be a geometric multiplier. Then, the problem $\argmin_{\mb{x}\in X} L(\mb{x}, \lambda^*,\mu^*)$ always admits at least one solution, where $L(\mb{x}, \lambda, \mu)$ is the Lagrangian for (\ref{prob:geometric}).
+
+            \begin{solution}
+                False. Consider the following primal problem
+                \begin{align*}
+                    \min_x\       & f(x) = e^x            \\
+                    \text{s.t.}\  & g(x) = e^x - 1 \le 0.
+                \end{align*}
+                The Lagrangian is $L(x, \lambda) = e^x + \lambda e^x - \lambda$, whose infimum with respect to $x$ is $- \lambda$ but cannot be attained. However, the dual problem
+                \begin{align*}
+                    \max_{\lambda}\  & -\lambda = 0  \\
+                    \text{s.t.}\     & \lambda \ge 0
+                \end{align*}
+                admits a unique optimal solution $\lambda^* = 0$, which is a geometric multiplier.
+                \qedhere
+            \end{solution}
+
+
+        \item If $(\bm{\lambda}^*,\bm{\mu}^*)$ is a geometric multiplier and the problem $\argmin_{\mb{x}\in X} L(\mb{x}, \bm{\lambda}^*,\bm{\mu}^*)$ admits a solution $\mb{x}^*$, then $\mb{x}^*$ is feasible.
+
+            \begin{solution}
+                False. Consider the following primal problem
+                \begin{align*}
+                    \min_x\       & f(x) =
+                    \begin{cases}
+                        -x, & x < 0,  \\
+                        0,  & x \ge 0
+                    \end{cases}                   \\
+                    \text{s.t.}\  & g(x) = x \le 0.
+                \end{align*}
+                The Lagrangian is
+                \begin{align*}
+                    L(x, \lambda) =
+                    \begin{cases}
+                        (\lambda - 1) x, & x < 0,   \\
+                        \lambda x,       & x \ge 0.
+                    \end{cases}
+                \end{align*}
+                $\inf_x L(x, \lambda)$ is finite if and only if $0 \le \lambda \le 1$. We see that $q^* = f^* = 0$ and any $\lambda^* \in [0,1]$ is a geometric multiplier. Take $\lambda^* = 0$ for example. In this case, we have $x^* \in [0, \infty)$. However, only $x^* = 0$ is feasible for the primal problem. \qedhere
+            \end{solution}
+
+        \item 	Let $(\bm{\lambda}^*,\bm{\mu}^*)$ be a geometric multiplier. Then, $\mb{x}^*$ is a global minimum of the primal problem if and only if $\mb{x}^*$ is feasible and $\mb{x}^*\in\argmin_{\mb{x}\in X}\,L(\mb{x},\bm{\lambda}^*,\bm{\mu}^*)$.
+
+            \begin{solution}
+                False. Consider the primal and dual problem in Exercise 2.6. Letting $\lambda^* = 1$, we have $x^* \in (-\infty, 0]$, which is feasible. However, only $x^* = 0$ is optimal for the primal problem.
+                \qedhere
+            \end{solution}
+
+
+        \item  $(\bm{\lambda}^*,\bm{\mu}^*)$ is a geometric multiplier if and only if $\bm{\lambda}^*\geq\mb{0}$ and among all hyperplanes with normal $(\bm{\lambda}^*,\bm{\mu}^*,1)$ that contain the set $S$ in their positive halfspace, the highest attained level of interception of the vertical axis is $f^*$, where
+            \begin{align*}
+                f^*=\inf\{f(\mb{x}):\mb{g}(\mb{x})\leq0,\mb{h}(\mb{x})=0,\mb{x}\in X\}.
+            \end{align*}
+
+            \begin{solution}
+                True. We only need to show that among all hyperplanes with normal $(\bm{\lambda}^*,\bm{\mu}^*,1)$ that contain the set $S$ in their positive halfspace, the highest attained level of interception of the vertical axis is $\inf_{\mb{x}\in X} L(\mb{x}, \bm{\lambda}^*, \bm{\mu}^*)$. In fact, by definition, any hyperplane with normal $(\bm{\lambda}^*,\bm{\mu}^*,1)$ can be written as $L = f(\mb{x}) + \left\langle\bm{\lambda}^*, \mb{g}(\mb{x})\right\rangle + \left\langle\bm{\mu}^*, \mb{h}(\mb{x})\right\rangle$. The hyperplane contains $S$ in its positive halfspace if and only if $L \le \inf_{\mb{x}\in X} L(\mb{x}, \bm{\lambda}^*, \bm{\mu}^*)$. Setting $\mb{g}(\mb{x})$ and $\mb{h}(\mb{x})$ as zero, we obtain the interception $f(\mb{x}) = L$, whose maximum with respect to $\mb{x}$ is $\inf_{\mb{x}\in X} L(\mb{x}, \bm{\lambda}^*, \bm{\mu}^*)$.
+                \qedhere
+            \end{solution}
+
+    \end{enumerate}
+\end{exercise}
+\clearpage
+
+
+
+
+\begin{exercise}[The Dual Problem of SVM]
+    Suppose that the training set is $\mathcal{D}=\{ (\mb{x}_i,y_i) \}_{i=1}^n$, where $\mb{x}_i \in \mathbb{R}^d$ and $y_i \in \{ -1,1 \}$. Let
+    \begin{align*}
+        \mathcal{D}^+=\{(\mb{x}_i,y_i)\in\mathcal{D}:y_i=1\},\hspace{5mm}\mathcal{D}^-=\{(\mb{x}_i,y_i)\in\mathcal{D}:y_i=-1\}.
+    \end{align*}
+    Assume that $\mathcal{D}^+$ and $\mathcal{D}^-$ are nonempty.
+    The soft margin SVM takes the form of
+    \begin{align}\label{prob:soft-SVM-1}
+        \begin{aligned}
+            \min_{\mb{w},b,\bm{\xi}} \  & \frac{1}{2}\|\mb{w}\|^2_2+C\sum_{i=1}^n\xi_i,                   \\
+            \text{ s.t. }            \, & y_i(\langle\mb{w},\mb{x}_i\rangle+b)\ge 1-\xi_i,i=1,\ldots,n, & \\
+                                        & \,\xi_i\geq0,\,i=1,\ldots,n,
+        \end{aligned}
+    \end{align}
+    The corresponding dual problem is
+    \begin{align}\label{prob:dual-soft-SVM}
+        \begin{aligned}
+            \min_{\alpha} \  & \frac{1}{2}\sum_{i=1}^n\sum_{j=1}^n\,\alpha_i\alpha_jy_iy_j\langle\mb{x}_i,\mb{x}_j\rangle-\sum_{i=1}^n\alpha_i \\
+            \text{ s.t. }    & \sum_{i=1}^n\alpha_iy_i=0,                                                                                      \\
+                             & \alpha_i\in[0,C],i=1,\ldots,n.
+        \end{aligned}
+    \end{align}
+    \begin{enumerate}
+        \item Show that the problems (\ref{prob:soft-SVM-1}) and (\ref{prob:dual-soft-SVM}) always admit optimal solutions.
+
+
+            \begin{solution}
+                The primal problem has convex quadratic objective with linear constraints. Moreover, it is bounded from below. By Proposition 5 in Lecture 13, the primal and dual problems have optimal solutions and the duality gap is zero.
+            \end{solution}
+
+
+        \item Let $(\mb{w}^*,b^*)$ be the solution to (\ref{prob:soft-SVM-1}) and $\alpha^*$ be the corresponding solution to (\ref{prob:dual-soft-SVM}).
+            \begin{enumerate}
+                \item When is $\alpha_i^*$ equal to $C$, $i=1,\ldots,n$? Please give an example and find the corresponding solutions.
+                \item When is $\mb{w}^*$ equal to zero? Please give an example and find the corresponding solutions.
+            \end{enumerate}
+            Notice that, you need to find all the primal and dual optimal solutions if they are not unique.
+
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item
+                        In addition to the feasibility of the primal and dual problems, we have the complementary slackness
+                        \begin{align*}
+                            \alpha_i^*(y_i(\langle\mb{w}^*,\mb{x}_i\rangle+b^*) - 1 + \xi_i^*) = (C-\alpha_i^*) \xi_i^*=0,\ i=1,\ldots,n,
+                        \end{align*}
+                        and the Lagrangian optimality
+                        \begin{align*}
+                            \mb{w}^* = \sum_{i=1}^n\alpha_i^*y_i\mb{x}_i,\quad \sum_{i=1}^n\alpha_i^*y_i=0.
+                        \end{align*}
+                        When $\alpha_i^*$ equals $C$ for all $i=1,\ldots,n$, the complementary slackness implies that $y_i(\langle\mb{w}^*,\mb{x}_i\rangle+b^*)=1 - \xi_i^*$, i.e. each $\mb{x}_i$ is either a support vector or wrongly classified. Moreover, the Lagrangian optimality implies that $\sum_{i=1}^n y_i = 0$, i.e. $\mathcal{D}^+$ and $\mathcal{D}^-$ have the same number of samples, and
+                        \begin{align}\label{eq:example-1-1}
+                            \mb{w}^* = C\left(\sum_{y_i = 1} \mb{x}_i - \sum_{y_j = -1} \mb{x}_j\right).
+                        \end{align}
+                        Conversely, if $\mathcal{D}^+$ and $\mathcal{D}^-$ have the same number of samples, and there exists $b^*$ such that
+                        \begin{align}\label{eq:example-1-2}
+                            y_i(\langle\mb{w}^*,\mb{x}_i\rangle+b^*)\le 1,\ \forall\, i=1,\ldots,n,
+                        \end{align}
+                        where $\mb{w}^*$ is defined by (\ref{eq:example-1-1}), then $\alpha_i^* = C$ for all $i=1,\ldots,n$.
+
+                        For example, let $C = \frac{1}{2}$ and $\mathcal{D} = \{(1, 1), (-1, -1)\}$. By (\ref{eq:example-1-1}), we have $w^* = 1$. Plugging it into (\ref{eq:example-1-2}) yields $b^* = 0$ and $\xi^* = \mb{0}$. In this case, the dual problem is
+                        \begin{align*}
+                            \min_{\alpha} \  & \frac{1}{2}(\alpha_1 + \alpha_2)^2 - \alpha_1 - \alpha_2 \\
+                            \text{ s.t. }    & \alpha_1 - \alpha_2 = 0,                                 \\
+                                             & 0 \le \alpha_1, \alpha_2 \le 1.
+                        \end{align*}
+                        It is easy to see that the dual optimal solution is $\alpha_1^* = \alpha_2^* = \frac{1}{2}$, as desired.
+                    \item If $\mb{w}^* = \mb{0}$ is optimal, then the primal feasibility reduces to
+                        \begin{align*}
+                            \xi_i^* = \max\{0, 1-y_i b^*\},\ i=1,\ldots,n.
+                        \end{align*}
+                        Then, the primal problem becomes
+                        \begin{align*}
+                            \min_b \ \left\{|\mathcal{D}^+| \max\{0, 1- b\} + |\mathcal{D}^-|\max\{0, 1+ b\}\right\}.
+                        \end{align*}
+                        We can see that the optimal value is $2\min \left\{|\mathcal{D}^+|, |\mathcal{D}^-|\right\}$, and the optimal $b^*$ satisfies
+                        \begin{itemize}
+                            \item If $|\mathcal{D}^+| > |\mathcal{D}^-|$, then $b^* = 1$.
+                            \item If $|\mathcal{D}^+| < |\mathcal{D}^-|$, then $b^* = -1$.
+                            \item If $|\mathcal{D}^+| = |\mathcal{D}^-|$, then $b^* \in [-1,1]$.
+                        \end{itemize}
+
+
+                        The complementary slackness implies that
+                        \begin{align*}
+                            \alpha_i^* (y_i b^* - 1 + \xi_i^*) = (C-\alpha_i^*) \xi_i^* = 0,\ i=1,\ldots,n,
+                        \end{align*}
+                        and hence
+                        \begin{itemize}
+                            \item If $|\mathcal{D}^+| > |\mathcal{D}^-|$, then $\alpha_i^* = C$ if $y_i = -1$.
+                            \item If $|\mathcal{D}^+| < |\mathcal{D}^-|$, then $\alpha_i^* = C$ if $y_i = 1$.
+                            \item If $|\mathcal{D}^+| = |\mathcal{D}^-|$, then $\alpha_i^* = C$ for all $i=1,\ldots,n$, where we use $\sum^n_{i = 1} \alpha^*_i y_i= 0$
+                        \end{itemize}
+
+                        We then discuss the KKT conditions.
+                        \begin{itemize}
+                            \item If $|\mathcal{D}^+| > |\mathcal{D}^-|$, $\mb{w}^* = \mb{0}$ is optimal if and only if there exists $\alpha_i^*\in [0,C]$ for each $y_i = 1$ such that $\sum_{y_i = 1} \alpha^*_i = C |\mathcal{D}^-|$ and $\sum_{y_i = 1} \alpha^*_i \mb{x}_i = C \sum_{y_j = -1} \mb{x}_j$.
+                            \item If $|\mathcal{D}^+| < |\mathcal{D}^-|$, $\mb{w}^* = \mb{0}$ is optimal if and only if there exists $\alpha_i^*\in [0,C]$ for each $y_i = -1$ such that $\sum_{y_i = -1} \alpha^*_i = C |\mathcal{D}^+|$ and $\sum_{y_i = -1} \alpha^*_i \mb{x}_i = C \sum_{y_j = 1} \mb{x}_j$.
+                            \item If $|\mathcal{D}^+| = |\mathcal{D}^-|$, $\mb{w}^* = \mb{0}$ is optimal if and only if $\sum_{y_i = 1} \mb{x}_i = \sum_{y_j = -1} \mb{x}_j$.
+                        \end{itemize}
+
+                        A trivial case is that $\mathcal{D}^+ = \emptyset$ or $\mathcal{D}^- = \emptyset$. If so, we also have $\bm{\alpha}^* = \mb{0}$, $\bm{\xi}^* = \mb{0}$. However, this case contradicts the assumption in the problem statement.
+
+                        For another example, let $C = 1$, $\mathcal{D}^- = \{(-2,-1), (2,-1)\}$ and $\mathcal{D}^+ = \{(-1,1), (1,1)\}$. Clearly, the aforementioned conditions can be satisfied, and hence $\mb{w}^* = \mb{0}$ is optimal. To verify this, consider the dual problem
+                        \begin{align*}
+                            \max_{\alpha} \  & -\frac{1}{2} \bm{\alpha}^\top
+                            \begin{pmatrix*}[r]
+                                4  & -4 & -2 & 2  \\
+                                -4 & 4  & 2  & -2 \\
+                                -2 & 2  & 1  & -1 \\
+                                2  & -2 & -1 & 1
+                            \end{pmatrix*}
+                            \bm{\alpha} + \bm{1}^\top \bm{\alpha}                                  \\
+                            \text{ s.t. }    & -\alpha_1 - \alpha_2 + \alpha_3 + \alpha_4 = 0,     \\
+                                             & 0 \le \alpha_1, \alpha_2, \alpha_3, \alpha_4 \le C.
+                        \end{align*}
+                        Solving this problem, we obtain $\alpha_1^* = \alpha_2^* = \alpha_3^* = \alpha_4^* = 1$ and $p^* = 4$, which is consistent with the established result. Futhermore, the optimal solution to the primal problem is $\mb{w}^* = \mb{0}$, $b^* \in [-1,1]$ and $\xi_i^* = 1-y_i b^*$ for all $i=1,\ldots,n$. \qedhere
+                \end{enumerate}
+            \end{solution}
+
+
+    \end{enumerate}
+\end{exercise}
+\clearpage
+
+
+
+
+\begin{exercise}[An Example of the Soft Margin SVM]
+    Recall that the soft margin SVM takes the form of
+    \begin{align}\label{prob:soft-SVM-2}
+        \min_{\mb{w},b,\xi}\, & \frac{1}{2}\|\mb{w}\|^2+C\sum_{i=1}^n\xi_i,                       \\ \nonumber
+        {\rm s.t.\,}          & \,y_i(\langle\mb{w},\mb{x}_i\rangle+b)\geq1-\xi_i,i=1,\ldots,n, & \\ \nonumber
+                              & \,\xi_i\geq0,\,i=1,\ldots,n,
+    \end{align}
+    where $C>0$.
+    \begin{enumerate}
+        \item The function of the slack variables used in the optimization problem for soft margin hyperplanes takes the form $\sum_{i=1}^n \xi_i$. We could also use $\sum_{i=1}^n \xi_i^p$, where $p>1$. The soft margin SVM becomes
+            \begin{align}\label{prob:soft-SVM-p}
+                \min_{\mb{w},b,\boldsymbol{\xi}}\, & \frac{1}{2}\|\mb{w}\|^2_2+C\sum_{i=1}^n\xi_i^p,                   \\ \nonumber
+                {\rm s.t.\,}                       & \,y_i(\langle\mb{w},\mb{x}_i\rangle+b)\geq1-\xi_i,i=1,\ldots,n, & \\ \nonumber
+                                                   & \,\xi_i\geq0,\,i=1,\ldots,n.
+            \end{align}
+            Please find the dual problem of (\ref{prob:soft-SVM-p}) and the corresponding optimal conditions.
+    \end{enumerate}
+
+    \begin{solution}
+        To find the dual problem, we first construct the Lagrangian
+        \begin{align*}
+            L(\mb{w},b,\bm{\xi},\bm{\alpha},\bm{\mu}) = \frac{1}{2}\|\mb{w}\|^2 + C\sum_{i=1}^n\xi_i^p - \sum_{i=1}^n\alpha_i\left(y_i(\langle\mb{w},\mb{x}_i\rangle+b)-1+\xi_i\right) - \sum_{i=1}^n\mu_i\xi_i,
+        \end{align*}
+        where $\bm{\alpha} = (\alpha_1, \ldots, \alpha_n)$ and $\bm{\mu} = (\mu_1, \ldots, \mu_n)$ are the dual variables. We next find the dual function
+        \begin{align*}
+            q(\bm{\alpha}, \bm{\mu}) & = \inf_{\mb{w},b,\bm{\xi}} L(\mb{w},b,\bm{\xi},\bm{\alpha},\bm{\mu})                                                                                                      \\
+                                     & = \inf_{\mb{w}} \left\{\frac{1}{2}\|\mb{w}\|^2 - \langle \mb{w}, \sum_{i=1}^n \alpha_i y_i\mb{x}_i \rangle \right\} + \inf_b \left\{-b \sum_{i=1}^n \alpha_i y_i \right\} \\
+                                     & \quad + \sum_{i=1}^n \inf_{\xi_i} \left\{ C \xi_i^p - (\alpha_i + \mu_i) \xi_i \right\} + \sum_{i=1}^n \alpha_i
+        \end{align*}
+        To attain the above infimum, we must have
+        \begin{align*}
+             & \nabla_{\mb{w}} L(\mb{w},b,\bm{\xi},\bm{\alpha},\bm{\mu}) = \mb{w} - \sum_{i=1}^n \alpha_i y_i \mb{x}_i = \mb{0},    \\
+             & \nabla_b L(\mb{w},b,\bm{\xi},\bm{\alpha},\bm{\mu}) = -\sum_{i=1}^n \alpha_i y_i = 0,                                 \\
+             & \nabla_{\xi_i} L(\mb{w},b,\bm{\xi},\bm{\alpha},\bm{\mu}) = C p \xi_i^{p-1} - (\alpha_i + \mu_i) = 0, \ i=1,\ldots,n.
+        \end{align*}
+        Then
+        \begin{align*}
+            q(\bm{\alpha}, \bm{\mu}) & = -\frac{1}{2} \left\|\sum_{i=1}^n \alpha_i y_i\mb{x}_i \right\|^2 + \sum_{i=1}^n \alpha_i + \sum_{i=1}^n \frac{(1-p)(\alpha_i + \mu_i)}{p} \left(\frac{\alpha_i + \mu_i}{Cp}\right)^{\frac{1}{p-1}},
+        \end{align*}
+        where $\dom q = \left\{\bm{\alpha}: \sum_{i=1}^n \alpha_i y_i = 0 \right\}$. Note that we can always set $\mu_i = 0$ to achieve a smaller $\xi_i$ and thus a smaller objective. So $\bm{\mu}^* = \mb{0}$. The dual problem reduces to
+        \begin{align*}
+            \max_{\bm{\alpha}} \  & \sum_{i=1}^n \alpha_i - \frac{1}{2} \sum_{i=1}^n \sum_{j=1}^n \alpha_i \alpha_j y_i y_j \langle \mb{x}_i, \mb{x}_j \rangle - \frac{p-1}{p}\sum_{i=1}^n \alpha_i \left(\frac{\alpha_i}{Cp}\right)^{\frac{1}{p-1}}, & \\
+            \text{ s.t. }      \  & \sum_{i=1}^n \alpha_i y_i = 0,\quad \alpha_i \ge 0,\ i = 1, \ldots, n.                                                                                                                                            &
+        \end{align*}
+        By Proposition 4 in Lecture 13, the duality gap is zero. The KKT conditions are
+        \begin{align*}
+             & \mb{w}^* = \sum_{i=1}^n \alpha_i^* y_i \mb{x}_i,\quad \sum_{i=1}^n \alpha_i^* y_i = 0,\quad \xi_i^* = \left(\frac{\alpha_i}{Cp}\right)^{\frac{1}{p-1}} & (\text{Lagrangian optimality})   \\
+             & y_i(\langle \mb{w}^*, \mb{x}_i \rangle + b^*) \ge 1 - \xi_i^*, \quad i = 1, \ldots, n,                                                                 & (\text{primal feasibility})      \\
+             & \alpha_i^* \ge 0, \quad i = 1, \ldots, n,                                                                                                              & (\text{dual feasibility})        \\
+             & \alpha_i^* \left(y_i(\langle \mb{w}^*, \mb{x}_i \rangle + b^*) - 1 + \xi_i\right) = 0, \quad i = 1, \ldots, n,                                         & (\text{complementary slackness})
+        \end{align*}
+        where $\mb{w}^*, b^*, \bm{\xi}^*$ are the primal optimal solution, and $\bm{\alpha}^*$ are the dual optimal solution.
+    \end{solution}
+
+    As shown in Figure \ref{svm}, the training set is  $\mathcal{D}=\{ (\mb{x}_i,y_i) \}_{i=1}^{11}$, where $\mb{x}_i \in \mathbb{R}^2$ and $y_i \in \{ +1,-1 \}$. Suppose that we use the soft margin SVM to classify the data points and get the optimal parameters $\mb{w}^*$, $b^*$, and $\boldsymbol{\xi}^*$  by solving the problem \eqref{prob:soft-SVM-p}.
+    \begin{enumerate}[resume]
+        \item Please write down the equations of the separating hyperplane ($H_0$) and the marginal hyperplanes ($H_1$ and $H_2$) in terms of $\mb{w}^*$ and $b^*$.
+
+            \begin{solution}
+                $H_0 = \{\mb{x}: \left\langle\mb{w}^*,\mb{x}\right\rangle + b^* = 0\}$. $H_1 = \{\mb{x}: \left\langle\mb{w}^*,\mb{x}\right\rangle + b^* = 1\}$. $H_2 = \{\mb{x}: \left\langle\mb{w}^*,\mb{x}\right\rangle + b^* = -1\}$.
+                \qedhere
+            \end{solution}
+
+        \item Please find the support vectors and the non-support vectors.
+
+            \begin{solution}
+                The support vectors are $\mb{x}_5$, $\mb{x}_7$, $\mb{x}_{10}$, which are on the marginal hyperplanes. All the other data points are non-support vectors.
+                \qedhere
+            \end{solution}
+
+        \item Please find the values (or ranges) of the optimal slack variables $\xi_i^*$ for $i=1,2,\dots,11$. (\textit{Hint: The possible answers are $\xi_i^*=0$, $0<\xi_i^*<1$, $\xi_i^*=1$, and $\xi_i^*>1$}). How do the slack variables change when the parameter $C$ increases and decreases?
+
+            \begin{solution}
+                $\xi_1, \xi_2, \xi_3, \xi_5, \xi_7, \xi_8, \xi_9, \xi_{10}, \xi_{11} = 0$. $0 < \xi_6 < 1$. $\xi_4, \xi_8 > 1$. The slack variables decrease when $C$ increases and increase when $C$ decreases.
+                \qedhere
+            \end{solution}
+    \end{enumerate}
+
+\end{exercise}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm]{img/2021_fall_svm.png}
+    \caption{Classifying the data points using the soft margin SVM. $H_0$ is the separating hyperplane. $H_1$ and $H_2$ are the marginal hyperplanes.}
+    \label{svm}
+\end{figure}
+\clearpage
+
+
+
+
+\begin{exercise}[Neural Networks]
+    \begin{enumerate}
+        \item The softmax function $\mb{f}:\mathbb{R}^n\rightarrow\mathbb{R}^n$ is defined by:
+            $$f_i(\mb{x})=\frac{\exp(x_i)}{\sum_{k=1}^{n}\exp(x_k)}, i=1,\ldots,n,$$
+            where $x_i$ is the $i^{th}$ component of $\mb{x}\in\mathbb{R}^n$. The function  $\mb{f}(\mb{x})=(f_1(\mb{x}),f_2(\mb{x}),\ldots,f_n(\mb{x}))^{\top}$ converts each input $\mb{x}$ into a probability (stochastic) vector in which all entries are nonnegative and add up to one.
+            \begin{enumerate}
+
+                \item Please find the gradient and Jacobian matrix of $\mb{f}(\mb{x})$, i.e., $\nabla \mb{f}(\mb{x})$ and $\mb{J}_\mb{f}(\mb{x})$.
+
+                \item Show that $\mb{f}(\mb{x})=\mb{f}(\mb{x}-c\mb{1})$, where $c=\max\{x_1,x_2,...,x_n\}$ and $\mb{1}$ is a vector all of whose components are one. When do we need this transformation?
+            \end{enumerate}
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item Note that the partial derivatives of $\mb{f}(\mb{x})$ are:
+                        \begin{align*}
+                            \frac{\partial f_i}{\partial x_j} = f_i(\delta_{ij} - f_j) =
+                            \begin{cases}
+                                f_i(1-f_i), & i=j     \\
+                                - f_i f_j,  & i\neq j
+                            \end{cases}.
+                        \end{align*}
+                        So the gradient of $\mb{f}(\mb{x})$ is:
+                        \begin{align*}
+                            \nabla \mb{f}(\mb{x}) & =
+                            \begin{pmatrix}
+                                \frac{\partial f_1}{\partial x_1} & \frac{\partial f_1}{\partial x_2} & \cdots & \frac{\partial f_1}{\partial x_n} \\
+                                \frac{\partial f_2}{\partial x_1} & \frac{\partial f_2}{\partial x_2} & \cdots & \frac{\partial f_2}{\partial x_n} \\
+                                \vdots                            & \vdots                            & \ddots & \vdots                            \\
+                                \frac{\partial f_n}{\partial x_1} & \frac{\partial f_n}{\partial x_2} & \cdots & \frac{\partial f_n}{\partial x_n}
+                            \end{pmatrix} =
+                            \begin{pmatrix}
+                                f_1(1-f_1) & -f_1f_2    & \cdots & -f_1f_n    \\
+                                -f_2f_1    & f_2(1-f_2) & \cdots & -f_2f_n    \\
+                                \vdots     & \vdots     & \ddots & \vdots     \\
+                                -f_nf_1    & -f_nf_2    & \cdots & f_n(1-f_n)
+                            \end{pmatrix}.
+                        \end{align*}
+                        The Jacobian, as the transpose of the gradient, is the same
+                        \begin{align*}
+                            \mb{J}_\mb{f}(\mb{x}) & = \nabla \mb{f}(\mb{x})^{\top} =
+                            \begin{pmatrix}
+                                f_1(1-f_1) & -f_2f_1    & \cdots & -f_nf_1    \\
+                                -f_1f_2    & f_2(1-f_2) & \cdots & -f_nf_2    \\
+                                \vdots     & \vdots     & \ddots & \vdots     \\
+                                -f_1f_n    & -f_2f_n    & \cdots & f_n(1-f_n)
+                            \end{pmatrix}.
+                        \end{align*}
+                    \item For any $c \in \mathbb{R}$, we have
+                        \begin{align*}
+                            f_i(\mb{x}) = \frac{\exp(x_i)}{\sum_{k=1}^{n}\exp(x_k)} = \frac{\exp(x_i-c)}{\sum_{k=1}^{n}\exp(x_k-c)} = f_i(\mb{x}-c\mb{1}).
+                        \end{align*}
+                        Thus, $\mb{f}(\mb{x})=\mb{f}(\mb{x}-c\mb{1})$. When $\max\{x_1,x_2,...,x_n\}$ is large, we need this transformation to avoid overflow in the numerical computation.
+                        \qedhere
+                \end{enumerate}
+            \end{solution}
+        \item Consider the neural network with a single hidden layer in Figure 2. Let $\mb{x}\in\mathbb{R}^3$ be an input vector, and $\mb{y}$ be its corresponding output of the network. $f$ implies that there exist four units in the hidden layer, each of which is followed by a sigmoid activation function $\sigma$, converting its input $\mb{z}$ to output $\mb{a}$. Suppose that  the ground truth label vector of $\mb{x}$ is $[0,0,1]^\top$ and we use the cross entropy introduced in Lecture 15 as the loss function.
+            \begin{enumerate}
+                \item Please find the update formula for the $j^{\rm th}$ weight of the $i^{\rm th}$ hidden unit , i.e., $w^1_{ij}$ where $i\in\{1,2,3,4\}$ and $j\in\{1,2,3\}$.
+                \item Can we initialize all the parameters, i.e., weights and bias, of the neural network to zero? Please state you conclusion.
+            \end{enumerate}
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item For simplicity, we do not consider the bias. Then, we have
+                        \begin{align*}
+                            \begin{cases}
+                                z_i = \sum_{j=1}^3 w^1_{ij} x_j, \\
+                                a_i = \sigma(z_i),               \\
+                                y_i = \sum_{j=1}^4 w^2_{ij} a_j, \\
+                                \mb{p} = \softmax\,(\mb{y}),     \\
+                                \text{Loss} = - \log p_3.
+                            \end{cases}
+                        \end{align*}
+                        The partial derivative of the loss with respect to $y_i, w^2_{ij}, z_i, w^1_{ij}$ are
+                        \begin{align*}
+                            \frac{\partial \text{Loss}}{\partial y_i}      & = \frac{\partial \text{Loss}}{\partial p_3} \frac{\partial p_3}{\partial y_i} = -\frac{1}{p_3} p_3(\delta_{3i} - p_3) = p_3 - \delta_{3i},                                           \\
+                            \frac{\partial \text{Loss}}{\partial w^2_{ij}} & = \frac{\partial \text{Loss}}{\partial y_i} \frac{\partial y_i}{\partial w^2_{ij}} = (p_3 - \delta_{3i}) a_j,                                                                        \\
+                            \frac{\partial \text{Loss}}{\partial z_i}      & = \frac{\partial a_i}{\partial z_i} \sum_{j=1}^3 \frac{\partial \text{Loss}}{\partial y_j} \frac{\partial y_j}{\partial a_i} = a_i(1-a_i) \sum_{j=1}^3 (p_3 - \delta_{3j}) w^2_{ij}, \\
+                            \frac{\partial \text{Loss}}{\partial w^1_{ij}} & = \frac{\partial \text{Loss}}{\partial z_i} \frac{\partial z_i}{\partial w^1_{ij}} = \left\{a_i(1-a_i) \sum_{k=1}^3 (p_3 - \delta_{3k}) w^2_{ik}\right\} x_j.
+                        \end{align*}
+
+
+                        Suppose that the learning rate is $\eta$. Then the update formula for the $j^{\rm th}$ weight of the $i^{\rm th}$ hidden unit is
+                        \begin{align*}
+                            w^1_{ij} \leftarrow w^1_{ij} - \eta \left\{a_i(1-a_i) \sum_{k=1}^3 (p_3 - \delta_{3k}) w^2_{ik}\right\} x_j.
+                        \end{align*}
+                    \item Yes, we can, but it is not recommended. When all the parameters are initialized to zero, the inital forward propagation ends with $\mb{z} = \mb{y} = \mb{0}$ and $\mb{a} = \mb{p} = (1/3, 1/3, 1/3)$ and the backward propagation ends with $w^1_{1j} = w^1_{2j} = w^1_{3j} = w^1_{4j}$ for all $j = 1,2,3$ and $w^2_{i1} = w^2_{i2} = w^2_{i3} = w^2_{i4}$ for all $i = 1,2,3$, implying that all the hidden nodes are symmetric. As a result, in the following iterations, the parameters of four hidden nodes will be updated in the same way, which is not what we want. \qedhere
+                \end{enumerate}
+            \end{solution}
+
+        \item Consider a convolutional neural network as shown in Table \ref{tab:cnn}.
+            \begin{enumerate}
+                \item The convolutional layer parameters are denoted as ``conv$\langle$filter size$\rangle$-$\langle$number of filters$\rangle$".
+                \item  The fully connected layer parameters are denoted as ``FC$\langle$number of neurons$\rangle$".
+                \item The window size of pooling layers is $2$.
+                \item The stride of convolutinal layers is $1$.
+                \item The stride of pooling layers is $2$.
+                \item You may want to use padding in both convolutional and pooling layers if necessary.
+                \item For convenience, we assume that there is no activation function and bias.
+            \end{enumerate}
+
+            Suppose that the input is a $\mb{210\times 160}$ \textbf{RGB} image. Please derive the size of all feature maps and the number of parameters.
+
+            \begin{solution}
+                Denote the layers shown in Table \ref{tab:cnn} as C1, C2, S3, C4, C5, S6, F7, F8, respectively.
+
+                The size of the input is $3 \times 210 \times 160$. \\
+                The size of the output of C1 (conv3-32) is $32 \times (210 - 2) \times (160 - 2) = 32 \times 208 \times 158$. \\
+                The size of the output of C2 (conv5-32) is $32 \times (208 - 4) \times (158 - 4) = 32 \times 204 \times 154$. \\
+                The size of the output of S3 (max pool) is $32 \times 204 / 2 \times 154 / 2 = 32 \times 102 \times 77$. \\
+                The size of the output of C4 (conv3-64) is $64 \times (102 - 2) \times (77 - 2) = 64 \times 100 \times 75$. \\
+                The size of the output of C5 (conv5-64) is $64 \times (100 - 4) \times (75 - 4) = 64 \times 96 \times 71$. \\
+                The size of the output of S6 (max pool) is $64 \times 96 / 2 \times \lceil 71 / 2 \rceil = 64 \times 48 \times 36$. \\
+                The size of the output of F7 (FC128) and F8 (FC10) are 128 and 10, respectively.
+
+                The number of parameters in C1 is $32 \times 3 \times 3 \times 3 = 864$. \\
+                The number of parameters in C2 is $32 \times 32 \times 5 \times 5 = 25600$. \\
+                The number of parameters in C4 is $64 \times 32 \times 3 \times 3 = 18432$. \\
+                The number of parameters in C5 is $64 \times 64 \times 5 \times 5 = 102400$. \\
+                The number of parameters in F7 is $64 \times 48 \times 36 \times 128 = 14155776$. \\
+                The number of parameters in F8 is $128 \times 10 = 1280$. \\
+                The total number of parameters is $14304352$. \qedhere
+            \end{solution}
+
+    \end{enumerate}
+\end{exercise}
+
+\begin{figure}[ht]
+    \centering\includegraphics[width=12cm]{img/2021_fall_nn.png}
+    \caption{A neural network with a single hidden layer.}
+    \label{backpropogation}
+\end{figure}
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|c|c|}
+        \hline
+        conv3-32 & conv5-32 & max pool & conv3-64 & conv5-64 & max pool & FC-128 & FC-10 \\
+        \hline
+    \end{tabular}
+    \caption{The architecture of convolutional neural network} \label{tab:cnn}
+\end{table}
+\clearpage
+
+
+
+
+\begin{exercise}[Exercises of Dual Problems ({\bf Optional})]
+    \begin{enumerate}
+        \item
+            Consider the optimization problem
+            \begin{align*}
+                \min_x\,     & x^2+1            \\
+                {\rm s.t.}\, & (x-2)(x-4)\le 0, \\
+                             & x\in\mathbb{R}.
+            \end{align*}
+            \begin{enumerate}
+                \item
+                    Give the feasible set, the optimal value, and the optimal solution.
+                \item
+                    Plot the objective $x^2+1$ versus $x$. On the same plot, show the feasible set, optimal point and value, and plot the Lagrangian $L(x, \lambda)$ versus $x$ for a few positive values of $\lambda$. Verify the lower bound property, i.e., $p^* \ge \inf_x L(x, \lambda)$ for $\lambda\ge 0$, where $p^*$ is the optimal value. Derive and sketch the Lagrange dual function.
+                \item
+                    State the dual problem, and verify that it is a concave maximization problem. Find the dual optimal value and dual optimal solution $\lambda^*$. Does strong duality hold?
+                \item
+                    ({\bf Sensitivity analysis}) Let $p^*(u)$ denote the optimal value of the problem
+                    \begin{align*}
+                        \min_x\,     & x^2+1            \\
+                        {\rm s.t.}\, & (x-2)(x-4)\le u, \\
+                                     & x\in\mathbb{R},
+                    \end{align*}
+                    as a function of the parameter $u$. Please plot $p^*(u)$ and verify that $\mathrm{d}p^*(0)/\mathrm{d}u=-\lambda^*$.
+            \end{enumerate}
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item The feasible set is $[2,4]$.
+                        The optimal value is $5$. The optimal solution is $2$.
+                    \item The Lagrangian is
+                        \begin{align*}
+                            L(x, \lambda) = x^2+1+\lambda(x-2)(x-4).
+                        \end{align*}
+                        The plot of the Lagrangian is shown in Figure \ref{fig:lagrangian}. It is clear that $p^* \ge \inf_x L(x, \lambda)$.
+
+                        The dual function is
+                        \begin{align*}
+                            q(\lambda) & = \inf_x L(x, \lambda) = \inf_x \{x^2+1+\lambda(x-2)(x-4)\}                                                                      \\
+                                       & = \inf_x \left\{ (\lambda+1) \left(x - \frac{3\lambda}{\lambda+1}\right)^2 + \frac{-\lambda^2 + 9\lambda + 1}{\lambda+1}\right\} \\
+                                       & = \frac{-\lambda^2 + 9\lambda + 1}{\lambda+1}.
+                        \end{align*}
+                        Its plot is shown in Figure \ref{fig:dual}.
+
+                        \begin{figure}[H]
+                            \centering
+                            \begin{subfigure}[b]{0.45\textwidth}
+                                \centering
+                                \includegraphics[width=\textwidth]{lagrangian.pdf}
+                                \caption{The Lagrangian}
+                                \label{fig:lagrangian}
+                            \end{subfigure}
+                            \begin{subfigure}[b]{0.45\textwidth}
+                                \centering
+                                \includegraphics[width=\textwidth]{dual.pdf}
+                                \caption{The dual function}
+                                \label{fig:dual}
+                            \end{subfigure}
+                            \caption{The Lagrangian and the dual function}
+                        \end{figure}
+                    \item The dual problem is
+                        \begin{align*}
+                            \max_{\lambda}\, & \frac{-\lambda^2 + 9\lambda + 1}{\lambda+1}, \\
+                            {\rm s.t.}\,     & \lambda\ge 0.
+                        \end{align*}
+                        It is a concave maximization problem. The dual optimal value is $5$ and the dual optimal solution is $\lambda = 2$. The strong duality holds.
+                    \item The optimal solution is $x^*=3 - \sqrt{u+1}$ and the optimal value is $p^*(u) = u + 11 - 6\sqrt{u+1}$. The plot of $p^*(u)$ is shown in Figure \ref{fig:sensitivity}.
+                        \begin{figure}[H]
+                            \centering
+                            \includegraphics[width=0.45\textwidth]{sensitivity.pdf}
+                            \caption{The sensitivity analysis}
+                            \label{fig:sensitivity}
+                        \end{figure}
+                        The derivative of $p^*(u)$ is
+                        \begin{align*}
+                            \frac{\mathrm{d}p^*(u)}{\mathrm{d}u} = 1 - \frac{3}{\sqrt{u+1}}.
+                        \end{align*}
+                        Hence $\mathrm{d}p^*(0)/\mathrm{d}u=-2=-\lambda^*$.
+                        \qedhere
+                \end{enumerate}
+            \end{solution}
+
+        \item
+            Please use the duality to show that in three-dimensional space, the (minimum) distance from the origin to a line is equal to the maximum over all (minimum) distances of the origin from planes that contain the line.
+
+            \begin{solution}
+                Suppose that $\mb{x}\in\mathbb{R}^3$. Let the line be defined by the equations $\langle \mb{w}_1, \mb{x}\rangle + b_1 = 0$ and $\langle \mb{w}_2, \mb{x}\rangle + b_2 = 0$, where $\mb{w}_1 \perp \mb{w}_2$ and $\|\mb{w}_1\| = \|\mb{w}_2\| = 1$. Then, the optimization problem is
+                \begin{align*}
+                    \min_{\mb{x}}\, & \|\mb{x}\|^2,                              \\
+                    {\rm s.t.}\,    & \langle \mb{w}_1, \mb{x}\rangle + b_1 = 0, \\
+                                    & \langle \mb{w}_2, \mb{x}\rangle + b_2 = 0.
+                \end{align*}
+                The Lagrangian is
+                \begin{align*}
+                    L(\mb{x}, \lambda_1, \lambda_2) = \|\mb{x}\|^2 + \lambda_1\left(\langle \mb{w}_1, \mb{x}\rangle + b_1\right) + \lambda_2\left(\langle \mb{w}_2, \mb{x}\rangle + b_2\right).
+                \end{align*}
+                The dual function is
+                \begin{align*}
+                    q(\lambda_1, \lambda_2) & = \inf_{\mb{x}} L(\mb{x}, \lambda_1, \lambda_2) = \inf_{\mb{x}} \left\{ \|\mb{x}\|^2 + \lambda_1\left(\langle \mb{w}_1, \mb{x}\rangle + b_1\right) + \lambda_2\left(\langle \mb{w}_2, \mb{x}\rangle + b_2\right) \right\} \\
+                                            & = -\left\|\frac{\lambda_1\mb{w}_1 + \lambda_2\mb{w}_2}{2}\right\|^2 + \lambda_1b_1 + \lambda_2b_2                                                                                                                         \\
+                                            & = -\frac{1}{4}\left\{(\lambda_1 - 2b_1)^2 + (\lambda_2 - 2b_2)^2\right\} + b_1^2 + b_2^2
+                    \le b_1^2 + b_2^2.
+                \end{align*}
+                The equality holds if and only if $\lambda_1 = 2b_1$ and $\lambda_2 = 2b_2$. Since the primal problem is convex quadratic and the constraints are linear, there is no duality gap, and thus the optimal solution to the primal problem is also $b_1^2 + b_2^2$. That is, the minimum distance from the origin to the line is $\sqrt{b_1^2 + b_2^2}$.
+
+                On the other hand, any plane that contains the line can be written as $\left\langle \mu_1 \mb{w}_1 + \mu_2 \mb{w}_2 , \mb{x}\right\rangle + \mu_1 b_1 + \mu_2 b_2  = 0$. By Exercise 1.1, the distance from the origin to the plane is $\frac{|\mu_1 b_1 + \mu_2 b_2|}{\sqrt{\mu_1^2 + \mu_2^2}}$. The optimization problem can be formulated as
+                % \begin{align*}
+                %     \min_{\mu_1, \mu_2}\  & -(\mu_1 b_1 + \mu_2 b_2)^2, \\
+                %     {\rm s.t.}\           & \mu_1^2 + \mu_2^2 
+                %     \le 1.
+                % \end{align*}
+                % The Lagrangian is
+                % \begin{align*}
+                %     L(\mu_1, \mu_2, \lambda) = -(\mu_1 b_1 + \mu_2 b_2)^2 + \lambda\left(\mu_1^2 + \mu_2^2 - 1\right).
+                % \end{align*}
+                % The dual function is
+                % \begin{align*}
+                %     q(\lambda) & = \inf_{\mu_1, \mu_2} L(\mu_1, \mu_2, \lambda) = \inf_{\mu_1, \mu_2} \left\{ -(\mu_1 b_1 + \mu_2 b_2)^2 + \lambda\left(\mu_1^2 + \mu_2^2 - 1\right) \right\} \\
+                %                & =
+                % \end{align*}
+                \begin{align*}
+                    \max_{\mu_1, \mu_2}\  & (\mu_1 b_1 + \mu_2 b_2)^2, \\
+                    {\rm s.t.}\           & \mu_1^2 + \mu_2^2
+                    \le 1.
+                \end{align*}
+                By Cauchy-Schwarz inequality, we have
+                \begin{align*}
+                    (\mu_1 b_1 + \mu_2 b_2)^2 & \le \left(\mu_1^2 + \mu_2^2\right)\left(b_1^2 + b_2^2\right) \le b_1^2 + b_2^2.
+                \end{align*}
+                where the equality holds if and only if $\mu_1 = \frac{b_1}{\sqrt{b_1^2 + b_2^2}}$ and $\mu_2 = \frac{b_2}{\sqrt{b_1^2 + b_2^2}}$. That is, the maximum over all distances of the origin from planes that contain the line is $\sqrt{b_1^2 + b_2^2}$, equal to the minimum distance of the origin from the line.
+            \end{solution}
+
+
+    \end{enumerate}
+\end{exercise}
+\clearpage
+
+
+
+
+\begin{exercise}[Some Network Layers, Linear Transformation and Gradient ({\bf Optional})]
+    In this exercise, we explore several kinds of network layers in the view of linear transformation.
+    \begin{enumerate}
+        \item \textbf{1-dimensional convolutional layer.} Suppose we have an input $\mb{x}\in\mathbb{R}^n$ and filter $\mb{w}\in\mathbb{R}^k$ ($n>k$). We can compute the convolution of $\mb{x}\ast \mb{w}$ as follows:
+            \begin{itemize}
+                \item Take the convolutional filter $\mb{w}$ and align it with the beginning of $\mb{x}$. Take the dot product of $\mb{w}$ and the $\mb{x}[0 : k -1]$ and assign that as the first entry of the output.
+                \item Suppose we have stride $s$. Shift the filter down by $s$ indices, and now take the dot product of $\mb{w}$ and $\mb{x}[s : k - 1 +s]$ and assign to the next entry of your output.
+                \item Repeat until we run out of entries in $\mb{x}$.
+            \end{itemize}
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.6\textwidth]{img/1dimensioal_convolution}
+                \caption{1-dimensional convolutional layer.}
+            \end{figure}
+
+            Now we set the stride $s$ to be 1:
+            \begin{align*}
+                \mb{y}=\mb{x}\ast \mb{w}=\left(\sum_{i=1}^kw_ix_i,\sum_{i=1}^kw_ix_{i+1},\cdots, \sum_{i=1}^kw_ix_{i+n-k}\right)\in\mathbb{R}^{n-k+1}.
+            \end{align*}
+            Is the 1-dimensional convolutional operation a linear transformation? If so, please find the transformation matrix, then write down the gradient with respective to $\mb{x}$.
+
+            \begin{solution}
+                Yes, it is. The transformation matrix $\mb{W} = (W_{ij}) \in \mathbb{R}^{(n-k+1) \times n}$ satisfies $\mb{y} = \mb{W}\mb{x}$, so
+                \begin{align*}
+                    W_{ij} = \begin{cases}
+                                 w_{j-i+1} & \text{if } i \le j \le i + k - 1, \\
+                                 0         & \text{otherwise}.
+                             \end{cases}
+                \end{align*}
+                The gradient of $\mb{y}$ with respect to $\mb{x}$ is $\mb{W}^\top = (W_{ji})\in \mathbb{R}^{n \times (n-k+1)}$.
+            \end{solution}
+
+
+        \item \textbf{$1\times1$ convolutional layer.} Convolutional operations are linear transformations. We study a simple case, $1\times1$ convolutional operation, in this question. Suppose a convolutional layer takes as inputs the RGB $3\times28\times28$ images $\mb{X}=(x_{ijk})\in\mathbb{R}^{3\times28\times28}$. Suppose that the convolutional layer has three $3\times1\times1$ filters where the $i^{\rm th}$ filter is denoted by $\mb{w}_{i}\in\mathbb{R}^3$. We set $\text{stride}=1$ and $\text{padding}=0$.
+
+            Specifically, we denote the output by $\mb{Y}=(y_{ijk})\in\mathbb{R}^{3\times28\times28}$, then
+            \begin{align*}
+                y_{ijk}=\sum_{t=1}^3w_{it}x_{tjk}, \quad i\in\{1,2,3\}, j,k\in\{1,\cdots,28\}.
+            \end{align*}
+
+            \begin{figure}[H]
+                \centering
+                \includegraphics[width=0.6\textwidth]{img/1x1convolution}
+                \caption{$1\times1$ convolutional layer.}
+            \end{figure}
+
+            Now we flatten the output $\mb{Y}$ to attain a $3\times28\times28$-dimensional vector,
+            \begin{align*}
+                \mb{y}=(y_{1,1,1},y_{1,1,2},\cdots, y_{1,1,28},y_{1,2,1},y_{1,2,2},
+                \cdots,y_{1,28,28},y_{2,1,1},y_{2,1,2},\cdots, y_{3,28,28}).
+            \end{align*}
+            We can also flatten $\mb{X}$ to attain a $3\times28\times28$-dimensional vector $\mb{x}$.
+            \begin{enumerate}
+                \item Is the $1\times1$ convolutional operation a linear transformation? If so, Please find the transformation matrix.
+                \item Please show that the $1\times1$ convolutional operation is  invertible if and only if the matrix $(\mb{w}_1,\mb{w}_2,\mb{w}_3)$ is invertible.
+
+                    \textbf{Hint}: let $A=\left(a_{i j}\right)_{m \times m}$, $B\in\mathbb{R}^{n \times n}$, then the $m n \times m n$ matrix
+                    \begin{align*}
+                        \left(\begin{array}{cccc}
+                                  a_{11} B  & a_{12} B  & \cdots & a_{1 m} B \\
+                                  a_{21} B  & a_{22} B  & \cdots & a_{2 m} B \\
+                                  \vdots    & \vdots    & \cdots & \vdots    \\
+                                  a_{m 1} B & a_{m 2} B & \cdots & a_{m m} B
+                              \end{array}\right)
+                    \end{align*}
+                    is called the Kronecker product of $A$ and $B$, denoted by $ A \otimes B$. Furthermore, $\operatorname{det}(A \otimes B)=(\operatorname{det}(A))^{n}(\operatorname{det}(B))^{m}$.
+
+                \item Suppose $\mb{x}$ is sampled from a standard Gaussian $\mathcal{N}(\mb{0},\mb{I})$, please find the density function of $\mb{y}$ if the $1\times1$ convolutional operation is  invertible.
+
+            \end{enumerate}
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item Yes.
+                    \item
+                    \item
+                        \qedhere
+                \end{enumerate}
+            \end{solution}
+
+        \item \textbf{Pooling layer.} We know that average pooling and overlapping pooling are linear transformations, but not the max pooling.
+            \begin{enumerate}
+                \item Suppose an average pooling layer has window size $2\times2$ and stride 2, as illustrated in the following picture. The pooling layer takes as inputs the $4\times4 $ matrices.  Please find the transformation matrix of the average pooling layer.
+                    \begin{figure}[H]
+                        \centering
+                        \includegraphics[width=0.6\textwidth]{img/pooling.png}
+                        \caption{average pooling.}
+                    \end{figure}
+
+                \item Max pooling is generally not linear transformation. Consider the following example we studied in this course. The max pooling layer has window size $2\times2$ and stride 2, as illustrated in the following picture. The pooling layer takes as inputs the $4\times4 $ matrices. Please find the subgradient of the max pooling operation. Then give an explanation of the ``gradient" we studied in our course.
+                    \begin{figure}[H]
+                        \centering
+                        \includegraphics[width=0.6\textwidth]{img/max_pooling.png}
+                        \caption{max pooling.}
+                    \end{figure}
+            \end{enumerate}
+
+            \begin{solution}
+                \begin{enumerate}
+                    \item []
+                    \item
+                    \item
+                        \qedhere
+                \end{enumerate}
+            \end{solution}
+
+    \end{enumerate}
+
+\end{exercise}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
