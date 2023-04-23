@@ -36,9 +36,9 @@ This repository includes:
 
 #### Spring 2023
 
-- [Intro to Algorithms ~ 算法分析与设计](./Course/Algorithms)
-- [Knowledge Engineering ~ 知识工程](./Course/Knowledge%20Engineering)
-- [Game Theory ~ 博弈论基础](./Course/Game%20Theory)
+- [Intro to Algorithms ~ 算法分析与设计](./Courses/Intro%20to%20Algorithms/)
+- [Knowledge Engineering ~ 知识工程](./Courses/Knowledge%20Engineering)
+- [Game Theory ~ 博弈论基础](./Courses/Game%20Theory)
 
 ### 🔨 Miscellaneous
 
