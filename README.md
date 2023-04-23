@@ -5,8 +5,8 @@
 
 This repository includes:
 
-1.  Lab reports, homework solutions and review notes of my undergraduate courses at Univ. of Sci. & Tech. of China.
-2.  Tools, apps and other tiny stuffs I made for my own use during my undergraduate study.
+1.  Lab reports, homework solutions and review notes of my undergraduate courses.
+2.  Tools, apps and other tiny stuffs for my own use during my undergraduate study.
 
 ## Table of Contents
 
@@ -34,9 +34,16 @@ This repository includes:
 - [Intro to Artificial Intelligence ~ 人工智能导论](./Courses/Intro%20to%20Artificial%20Intelligence/)
 - [Machine Learning ~ 机器学习](./Courses/Machine%20Learning/)
 
+#### Spring 2023
+
+- [Intro to Algorithms ~ 算法分析与设计](./Course/Algorithms)
+- [Knowledge Engineering ~ 知识工程](./Course/Knowledge%20Engineering)
+- [Game Theory ~ 博弈论基础](./Course/Game%20Theory)
+
 ### 🔨 Miscellaneous
 
-- [A HTML / Markdown to PDF converter](https://github.com/HasiNed/htmlolo)
+- [My academic portfolio](https://github.com/HasiNed/aboutme)
+- [A HTML / Markdown to PDF converter](https://github.com/HasiNed/onepagepdf)
 - [A front-end love letter](./Misc/vue3%20kokuhaku/)
 - [An incomplete 3D engine](./Misc/opengl%20learning/)
 

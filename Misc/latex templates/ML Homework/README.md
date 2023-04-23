@@ -6,3 +6,4 @@ This directory contains my LaTeX template for Machine Learning homework, modifie
 
 - 2022-10-28: Initialized
 - 2022-11-18: Updated after midterm exam
+- 2023-03-02: Updated after final exam

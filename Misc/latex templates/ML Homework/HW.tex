@@ -5,13 +5,13 @@
 \usepackage{pdfpages}
 \usepackage{enumitem}
 \usepackage{algorithm}
-\usepackage{algorithmic}
+\usepackage[noend]{algorithmic}
 \renewcommand{\headrulewidth}{1.5pt}
 \renewcommand{\footrulewidth}{1.5pt}
 \usepackage[framemethod=TikZ]{mdframed}
 \usepackage{amssymb,amsmath}
 \usepackage{amsthm}
-\usepackage{bm}
+\usepackage{bm, mathtools}
 \usepackage{thmtools}
 \usepackage{caption,subcaption}
 \usepackage[breakable,skins]{tcolorbox}
@@ -21,6 +21,7 @@
 {}{\PassOptionsToPackage{outputdir=\theabsdir}{minted}}
 \usepackage{minted}
 \setminted{autogobble,breaklines,fontsize=\small}
+\usepackage{booktabs,multirow}
 % \usemintedstyle{bw}
 \setlength{\topmargin}{-2pt}
 \setlength{\textheight}{9in}
@@ -90,7 +91,7 @@
 
 
 \newcommand{\proj}[2]{\Pi_{#2} \left(#1\right)}
-\newcommand{\rank}[1]{ \textbf{rank} \left(#1\right) }
+\newcommand{\rank}[1]{ \operatorname{rank} \left(#1\right) }
 \newcommand{\tr}{ \operatorname{tr} }
 \newcommand{\diag}{ \operatorname{diag} }
 \newcommand{\adj}{ \operatorname{adj} }
@@ -98,8 +99,16 @@
 \newcommand{\sgn}{ \operatorname{sgn} }
 \newcommand{\Var}[1]{ \operatorname{Var} \left(#1\right) }
 \newcommand{\Cov}[1]{ \operatorname{Cov} \left(#1\right) }
+\newcommand{\amin}{ \mathop{\arg\min} }
+\newcommand{\amax}{ \mathop{\arg\max} }
+\newcommand{\prox}{ \operatorname{prox} }
+\newcommand{\softmax}{ \operatorname{softmax} }
+\newcommand{\sigmoid}{ \operatorname{sigmoid} }
+\newcommand{\logit}{ \operatorname{logit} }
 
 \newcommand{\mb}[1]{\mathbf{#1}}
+\newcommand{\mc}[1]{\mathcal{#1}}
+\newcommand{\R}{\mathbb{R}}
 \newcommand{\diff}{\text{d}}
 
 \DeclareMathOperator*{\argmin}{\bf argmin\,}
