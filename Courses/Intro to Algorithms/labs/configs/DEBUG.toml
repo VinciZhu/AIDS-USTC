@@ -1,0 +1,15 @@
+seed = 42
+num_items = 50
+group_size = 50
+item_dim = 32
+key_dim = 16
+num_heads = 4
+hidden_dim = 64
+num_layers = 2
+logit_limit = 10.0
+train_steps = 5
+batch_size = 64
+num_epochs = 200
+optimizer = 'adam'
+learning_rate = 8e-5
+weight_decay = 1e-7
