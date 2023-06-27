@@ -5,8 +5,8 @@
 
 This repository includes:
 
-1.  Lab reports, homework solutions and review notes of my undergraduate courses.
-2.  Tools, apps and other tiny stuffs for my own use during my undergraduate study.
+1.  Lab reports, homework solutions and review notes from my undergraduate courses.
+2.  Tools, apps and other tiny stuffs for my own use throughout my undergraduate studies.
 
 ## Table of Contents
 
@@ -36,9 +36,10 @@ This repository includes:
 
 #### Spring 2023
 
-- [Intro to Algorithms ~ 算法分析与设计](./Courses/Intro%20to%20Algorithms/)
-- [Knowledge Engineering ~ 知识工程](./Courses/Knowledge%20Engineering)
-- [Game Theory ~ 博弈论基础](./Courses/Game%20Theory)
+- [Intro to Algorithms ~ 算法分析与设计](./Courses/Intro%20to%20Algorithms/) (New)
+- [Knowledge Engineering ~ 知识工程](./Courses/Knowledge%20Engineering) (TBD)
+- [Game Theory ~ 博弈论基础](./Courses/Game%20Theory) (New)
+- [Pattern Recognition ~ 模式识别](./Courses/Pattern%20Recognition) (TBD)
 
 ### 🔨 Miscellaneous
 
@@ -49,6 +50,6 @@ This repository includes:
 
 ## Disclaimer
 
-This repository is for learning purposes only. Plagiarism is not encouraged.
+This repository is intended solely for learning purposes, and we strongly discourage plagiarism.
 
-Please feel free to contact me if you find any mistakes or have any suggestions.
+If you come across any errors or have any suggestions, please don't hesitate to reach out to me.

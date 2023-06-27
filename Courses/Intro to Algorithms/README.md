@@ -10,4 +10,4 @@
   - Backtracking
   - Branch and Bound
   - Monte Carlo (Simulated Annealing)
-  - :star2: Deep Reinfocement Learning [[1]](https://openreview.net/forum?id=ByxBFsRqYm) [[2]](https://proceedings.neurips.cc/paper_files/paper/2020/hash/f231f2107df69eab0a3862d50018a9b2-Abstract.html)
+  - Deep Reinfocement Learning: An attention-based REINFORCE agent [[1]](https://openreview.net/forum?id=ByxBFsRqYm) [[2]](https://proceedings.neurips.cc/paper_files/paper/2020/hash/f231f2107df69eab0a3862d50018a9b2-Abstract.html) :star2:

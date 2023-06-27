@@ -1,0 +1,305 @@
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage{silence}
+\WarningFilter{fontspec}{Font 'SimSun' does not contain requested}
+
+\usepackage{geometry} 
+\geometry{
+  paper=a4paper, 
+  margin=2cm, 
+}
+\linespread{1.15}
+
+\usepackage[AutoFakeBold]{xeCJK} 
+\setCJKmainfont{SimSun} 
+
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\usepackage{enumitem}
+\setlist{itemsep=2pt,topsep=2pt}
+\usepackage{indentfirst}
+\usepackage{titlesec}
+\titlespacing{\section}{0pt}{\dimexpr\baselineskip-4pt}{4pt}
+\titlespacing{\subsection}{0pt}{\dimexpr\baselineskip-4pt}{4pt}
+
+\usepackage{natbib}
+\usepackage{hyperref} % Required for hyperlinking
+
+% Configure hyperlinks
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue,
+}
+
+\title{网约车平台动态定价的鲁棒机制设计解}
+\author{PB20061372 \quad\quad 朱云沁 \quad\quad June 28, 2023}
+\date{}
+
+\makeatletter
+\def\maketitle{
+  \twocolumn[
+    \begin{@twocolumnfalse}
+      \maketitleheader
+      \vspace{0.5cm} 
+      \hrule
+      \vspace{0.5cm} 
+    \end{@twocolumnfalse}
+  ]
+}
+\def\maketitleheader{
+  \centering
+  {\LARGE\bfseries\@title\par}
+  \vspace{0.5cm} 
+  {\large\@author\par}
+}
+\makeatother
+
+\begin{document}
+
+\maketitle
+
+网约车 (ridesharing) 是一种通过移动应用程序提供的出租车服务. 通常, 网约车平台使用动态定价策略来平衡供需, 将司机和乘客匹配到行程中, 从而实现高效的资源分配. 在本文中, 我们研究了离散空间, 离散时间, 完全信息有限博弈情况下, 网约车平台的动态定价的机制设计问题. 基于竞争均衡下乘客与司机联盟博弈的核心结构, 我们给出了占优策略激励相容的静态机制和子博弈完美激励相容的动态机制, 并在课程知识范畴内对部分关键结论进行了证明. 最后, 我们从动态机制中提炼出管理学洞见.
+
+\section{问题定义}
+
+考虑一个时间, 空间均离散的城市环境, 记规划时段内的所有时间点为 $[T] = \{0, 1, \dots, T\}$, 位置集合 $\mathcal{L} = \{A, B, \dots\}$. 对任意两个位置 $o,d\in \mathcal{L}$, 定义距离 $\delta(o,d)\in \mathbb{N}^+$ 为车辆从 $o$ 移动到 $d$ 所花费的时间. 特别地, 约定 $\delta(\ell, \ell) = 1, \forall \ell \in \mathcal{L}$, 即在同一个离散位置内移动花费 $1$ 单位时间. 假设信息是完全且完美的, 即: 乘客和司机的类型, 司机的行动路径均是公开的; 局中人集, 行动空间, 效用函数\footnote{为避免歧义, 我们使用 “效用” 而非 “支付” 一词.} 是共同知识, 不存在私人信息.
+
+\subsection{行程}
+
+定义三元组 $(o, d, \tau)$ 为一个行程 (trip), 其中 $o\in \mathcal{L}$ 为出发地, $d\in \mathcal{L}$ 为目的地, $\tau\in [T]$ 为出发时间. 记所有行程构成集合 $\Xi$, 行程 $\xi\in\Xi$ 的成本为 $c_\xi$, 由司机承担; 价格为 $p_\xi$, 由平台制定. 每次接单, 平台从顾客处获得 $p_\xi$, 并支付给司机等价报酬.
+
+\subsection{乘客}
+
+记乘客 (rider) 集合为 $\mathcal{R}$. 任意乘客 $j\in\mathcal{R}$ 具有类型 $(\xi_j, v_j)$. 其中, $\xi_j\in \Xi$ 为其需求的行程, $v_j\ge 0$ 为对行程的估值, 反映了乘客的支付意愿 (willingness to pay). 称决策变量 $x_j\in \{0, 1\}$ 为乘客 $j$ 的分配 (allocation), 表示其行程是否被司机接受. 于是, 乘客 $j$ 的效用函数可写为 $u_j = x_j (v_j - p_{\xi_j})$.
+
+\subsection{司机}
+
+记司机 (driver) 集合为 $\mathcal{D}$. 任意司机 $i\in\mathcal{D}$ 具有类型 $(\ell_i, \underline{\tau}_i, \overline{\tau}_i)$. 其中, $\ell_i\in \mathcal{L}$ 为司机的初始位置, $\underline{\tau}_i\in [T]$ 为司机开始接单的时间, $\overline{\tau}_i\in [T]$ 为司机停止接单的最晚时间. 对每个时间点 $t\in [T]$, 记司机 $i$ 正在进行的行程为状态 $s_{i,t}$. 特别地, $s_{i,t} = \varnothing$ 表示当前没有行程. 初始状态下, 所有司机没有行程. 司机 $i$ 的可行行动集合 $\mathcal{A}_{i,t}$ 分为三种情况:
+
+\begin{enumerate}[label=(\arabic*)]
+  \item (未开始接单或已停止接单) 若 $s_{i,t} = \varnothing$ 且 $t \ne \underline{\tau}_i$, 则 $a_{i,t} = (\varnothing, \varnothing)$, $s_{i, t+1} = \varnothing$;
+  \item (当前行程未完成) 若 $s_{i,t} = (o, d, \tau)$ 且 $t < \tau + \delta(o, d)$, 则 $a_{i,t} = (\varnothing, \varnothing)$, $s_{i, t+1} = s_{i,t}$;
+  \item (当前行程已完成; 或开始接单) 若 $s_{i,t} = (o, d, \tau)$ 且 $t = \tau + \delta(o, d)$, 令 $o' = d$; 或 $t = \underline{\tau}_i$, 令 $o' = \ell_i$. 此时, 可行行动及状态转移为:
+    \begin{enumerate}
+      \item (停止接单) $a_{i, t} = (\varnothing, \varnothing)$, $s_{i, t+1} = \varnothing$;
+      \item (移动至另一位置) $a_{i, t} = ((o', d', t), \varnothing)$, $d'\in \mathcal{L}$, $t + \delta(o', d') \le \overline{\tau}_i$, $s_{i, t+1} = (o', d', t)$;
+      \item (接受乘客 $j$ 的行程) $a_{i, t} = ((o', d_j, t), j)$, $j\in \mathcal{R}$, $o_j = o'$, $\tau_j = t$, $t + \delta(o', d_j) \le \overline{\tau}_i$, $s_{i, t+1} = (o', d_j, t)$.
+    \end{enumerate}
+\end{enumerate}
+
+进一步, 定义行动路径 $Z_{i} = (z_{i,l})^{|Z_{i}|}_{l=1}$, 构造过程如下: (1) 若 $a_{i,\underline{\tau}_i} = (\varnothing, \varnothing)$, 则 $Z_{i}$ 为空序列; 否则, $z_{i, 1} = a_{i,\underline{\tau}_i}$; (2) 若 $z_{i, l} = (o, d, t)$, $a_{i, t+\delta(o, d)} = \varnothing$, 则 $|Z_{i}| = l$; 否则, $z_{i, l+1} = a_{i, t+\delta(o, d)}$. 直觉上讲, $Z_{i}$ 为司机 $i$ 驶过的行程序列. 记所有可行路径构成集合 $\mathcal{Z}_i = \{Z_{i,1}, \dots, Z_{i,|\mathcal{Z}_i|}\}$, 其中第 $k$ 个可行路径的总成本 $\kappa_{i,k} = \sum_{(\xi, j)\in Z_{i,k}} c_\xi$, 总报酬 $\pi_{i,k} = \sum_{(\xi, j)\in Z_{i,k}, j\ne \varnothing} p_\xi$.
+
+司机 $i$ 的决策变量可简化为 $\mathbf{y}_i \in \{0,1\}^{|\mathcal{Z}_i|}$, 其中 $y_{i,k} = 1$ 当且仅当 $Z_i = Z_{i,k}$. 记可行分配集合 $\mathcal{Y}_i = \{\mathbf{y}_i \in \{0,1\}^{|\mathcal{Z}_i|} \mid \sum_{k=1}^{|\mathcal{Z}_i|} y_{i,k} = 1\}$. 于是, 效用函数可写为 $r_i = \sum_{k=1}^{|\mathcal{Z}_i|} y_{i,k} (\pi_{i,k}-\kappa_{i,k})$.
+
+\subsection{平台}
+
+网约车平台的机制设计者\footnote{从委托-代理理论的角度, 平台是委托人 (principal), 司机和乘客是代理人 (agents).}可能具有两种目标: (1) 社会福利最大化; (2) 利润最大化. 本文中, 我们考虑前者, 故平台的效用函数为 $w = \sum_{j\in\mathcal{R}} u_j + \sum_{i\in\mathcal{D}} r_i = \sum_{j\in\mathcal{R}} x_j v_j - \sum_{i\in\mathcal{D}}\sum_{k=1}^{|\mathcal{Z}_i|} y_{i,k} \kappa_{i,k}$. 平台的决策变量包括: (1) 乘客的分配 $(x_j)_{j\in\mathcal{R}}$; (2) 司机的分配 $(\mathbf{y}_i)_{i\in\mathcal{D}}$; (3) 行程的价格 $(p_\xi)_{\xi\in\Xi}$. 三者定义了如下机制:
+
+\begin{enumerate}[label=(\arabic*)]
+  \item 派遣规则 (dispatch rule): 对每个司机 $i\in\mathcal{D}$, 若 $y_{i,k} = 1$, 则限制 $i$ 的行动空间 --- 仅当 $(\xi_j, j) \in Z_{i,k}$ 时, 司机 $i$ 才能接受乘客 $j$ 的行程;
+  \item 支付规则 (payment rule): 从乘客 $j\in\mathcal{R}$ 收取金钱 $x_j p_{\xi_j}$, 向司机 $i\in\mathcal{D}$ 支付金钱 $\sum_{k=1}^{|\mathcal{Z}_i|} y_{i,k} \pi_{i,k}$.
+\end{enumerate}
+
+可见, 不同机制下, 乘客与司机有不同的行动空间和效用函数. 平台意图通过机制控制乘客和司机的行为; 然而, 乘客和司机并不一定会按照平台的意愿行事. 给定价格 $(p_\xi)_{\xi\in\Xi}$, 支付规则诱导出一个完全信息静态博弈: 乘客选择是否乘车, 司机选择行动路径, 从而使得各自效用最大化. 从直觉上讲, 只有当 $(x_j)$ 和 $(\mathbf{y}_i)$ 为该博弈的均衡解时, 理性的乘客和司机才有可能与平台合作. 下面, 我们给出该均衡的正式定义.
+
+\section{竞争均衡}
+
+首先, 对于网约车平台而言, 最大化社会福利意味着机制有\textbf{分配效率} (allocation efficiency)\footnote{拟线性环境下, 该条件等价于 Pareto 效率.}:
+$$
+  w = \max_{(x'_j), (\mathbf{y}'_i)} \sum_{j\in\mathcal{R}} x'_j v_j - \sum_{i\in\mathcal{D}}\sum_{k=1}^{|\mathcal{Z}_i|} y'_{i,k} \kappa_{i,k}
+$$
+
+在此基础上, 我们令机制可在占优策略均衡中实施:
+\begin{align}
+  \label{eq:dominant-1}
+   & u_j = \max_{x'_j\in \{0,1\}} x'_j(v_j - p_{\xi_j}),                                                         & \forall j\in\mathcal{R} \\
+  \label{eq:dominant-2}
+   & r_i = \max_{\mathbf{y}'_i\in \mathcal{Y}_i} \sum_{k=1}^{|\mathcal{Z}_i|} y'_{i,k} (\pi_{i,k}-\kappa_{i,k}), & \forall i\in\mathcal{D}
+\end{align}
+
+该条件有两重意义: (1) 根据占优策略均衡的显示原理, 机制是占优策略\textbf{激励相容} (incentive-compatible) 的, 乘客和司机没有理由隐瞒自己的类型, 从而完全信息的假设是合理的; (2) 机制是\textbf{强无嫉妒} (strong envy-free) 的, 乘客和司机总是有最优反应, 不会对其他相同类型局中人的效用水平感到不满.
+
+可行的机制还应满足如下约束条件
+
+\begin{enumerate}
+  \item \textbf{市场出清} (market clearance): $$x_j = \sum_{i\in\mathcal{D}}\sum_{k=1}^{|\mathcal{Z}_i|} y_{i,j} \mathbb{I}\{(\xi, j)\in Z_{i,k}\}, \forall j\in\mathcal{R}.$$ 该条件意味着供需平衡, 每个乘客的行程只能被一个司机接受.
+
+  \item \textbf{个体理性} (individual rationality):
+    $$
+      \begin{aligned}
+         & u_j = x_j (v_j - p_{\xi_j}) \ge 0,                                         &  & \forall j\in\mathcal{R}  \\
+         & r_i = \sum_{k=1}^{|\mathcal{Z}_i|} y_{i,k} (\pi_{i,k}-\kappa_{i,k}) \ge 0, &  & \forall i\in\mathcal{D}.
+      \end{aligned}
+    $$
+    该条件意味着各主体的效用水平不会下降 (消费者/生产者剩余), 因此理性的乘客和司机自愿参与机制. 由于 $u_j = 0$ 和 $r_i = 0$ 是可行的效用, 分配效率已经蕴含了个体理性.
+
+  \item \textbf{预算平衡} (budget balance): $$\sum_{j\in\mathcal{R}} x_j p_{\xi_j} - \sum_{i\in\mathcal{D}} \sum_{k=1}^{|\mathcal{Z}_i|} y_{i,k} \pi_{i,k} \ge 0.$$ 该条件意味着平台的收入不小于支出. 在本文中, 由于每个乘客支付的货币等于接受其行程的司机获得的货币, 预算平衡自动满足.
+\end{enumerate}
+
+注意到如下事实: 行程的价格由平台制定, 乘客和司机均为价格的接受者, 不具有定价权. 如果将乘客, 司机, 平台分别视为消费者, 生产者, 市场, 上述条件实际上定义了一个完全竞争市场的均衡解. 我们称三元组 $((x_j), (\mathbf{y}_i), (\mathbf{p}_\xi))$ 为\textbf{竞争均衡} (competitive equilibrium).
+
+\subsection{存在性}
+
+正式地, 均衡分配 $(x_j), (\mathbf{y}_i)$ 是如下整数线性规划的最优解
+$$
+  \begin{aligned}
+    \max_{(\mathbf{x}_j), (\mathbf{y}_i)} & \sum_{j\in\mathcal{R}} x_j v_j - \sum_{i\in\mathcal{D}}\sum_{k=1}^{|\mathcal{Z}_i|} y_{i,k} \kappa_{i,k}                           \\
+    \text{s.t.} \quad                     & x_j = \sum_{i\in\mathcal{D}}\sum_{k=1}^{|\mathcal{Z}_i|} y_{i,j} \mathbb{I}\{(\xi_j, j)\in Z_{i,k}\},    & \forall j\in\mathcal{R} \\
+                                          & x_j \in \{0,1\},                                                                                         & \forall j\in\mathcal{R} \\
+                                          & \mathbf{y}_i \in \mathcal{Y}_i                                                                           & \forall i\in\mathcal{D}
+  \end{aligned}
+$$
+
+均衡价格 $(\mathbf{p}_\xi)$ 和均衡效用为放宽整数约束后对偶问题的最优解. 该部分超出了本文范畴. \citet{ma_spatio-temporal_2022} 通过将问题转换为最小代价流, 并结合互补松弛 (complementary slackness) 条件, 证明了该问题存在整数最优解, 且原问题和对偶问题的解满足占优策略均衡条件 \eqref{eq:dominant-1} \eqref{eq:dominant-2}. 该结论保证了竞争均衡的存在性.
+
+\subsection{核心等价性}
+
+特别地, 我们证明竞争均衡 $(x_j), (\mathbf{y}_i), (\mathbf{p}_\xi)$ 对应的效用组合 $(u_j), (\mathbf{r}_i)$ 位于合作博弈的核心中. 记 $w(\tilde{\mathcal{R}}, \tilde{\mathcal{D}})$ 为乘客子集 $\tilde{\mathcal{R}}\subseteq\mathcal{R}$ 和司机子集 $\tilde{\mathcal{D}}\subseteq\mathcal{D}$ 组成的联盟所能达到的最大社会福利. 由课件中定理 6.1, 只需证明对任意 $\tilde{\mathcal{R}}$ 和 $\tilde{\mathcal{D}}$, 有
+$$
+  \sum_{j\in\tilde{\mathcal{R}}} u_j + \sum_{i\in\tilde{\mathcal{D}}} r_i \ge w(\tilde{\mathcal{R}}, \tilde{\mathcal{D}}).
+$$
+
+令 $(\tilde{x}_j), (\tilde{Z}_{i})$ 为联盟 $(\tilde{\mathcal{R}}, \tilde{\mathcal{D}})$ 所能达到的乘客最优分配和司机最优路径, 此时的效用组合为 $(\tilde{u}_j), (\tilde{\mathbf{r}}_i)$. 只需证明对任意乘客 $j\in\tilde{\mathcal{R}}$ 和司机 $i\in\tilde{\mathcal{D}}$, 有 $\tilde{u}_j \le u_j$ 和 $\tilde{\mathbf{r}}_i \le r_i$. 由于 $u_j$ 和 $r_i$ 为占优策略的效用组合, 有
+$$
+  \begin{aligned}
+     & u_j = \max_{x'_j\in \{0,1\}} x'_j(v_j - p_{\xi_j}) \ge \tilde{x}_j(v_j - p_{\xi_j}) = \tilde{u}_j,                                                                            \\
+     & \begin{aligned}
+         r_i & = \max_{Z \in \mathcal{Z}_i} \left\{\sum_{(\xi, j)\in Z} p_\xi \mathbb{I}\{j\in \mathcal{R}\} - \sum_{(\xi, j)\in Z} c_\xi\right\} \\
+             & \ge \sum_{(\xi, j)\in \tilde{Z}} p_\xi\mathbb{I}\{j\in \tilde{\mathcal{R}}\} - \sum_{(\xi, j)\in \tilde{Z}} c_\xi = \tilde{r}_i.
+       \end{aligned}
+  \end{aligned}
+$$
+换言之, 竞争均衡的效用组合不被优超, 具有\textbf{社会稳定性} (social stability), 故为核心元素.
+
+事实上, 逆命题也成立, 即给定任意核心元素, 我们可以构造出竞争均衡. 篇幅限制, 此处不予证明. 我们称上述性质为\textbf{核心等价性} (core equivalence).
+
+\subsection{核心结构}
+
+我们不加证明地给出如下重要结论\citep{ma_spatio-temporal_2022}:
+
+\begin{enumerate}[label=(\arabic*)]
+  \item 定义核心内任意司机效用组合 $(r_i)$, $(r'_i)$ 的交 (join) 和并 (meet) 分别为
+    $$
+      \begin{aligned}
+        (r_i)\vee(r'_i)   & = (\max\{r_i, r'_i\})_{i\in \mathcal{D}} \\
+        (r_i)\wedge(r'_i) & = (\min\{r_i, r'_i\})_{i\in \mathcal{D}}
+      \end{aligned}
+    $$
+    则核心内所有司机效用组合形成一个格 $(L, \vee, \wedge)$. 因此, 存在一个最优组合 $(\overline{r}_i)\in L$ 和一个最劣组合 $(\underline{r}_i)\in L$, 使得 $\forall (r_i)\in L, \forall i\in \mathcal{D}, \underline{r}_i \le r_i \le \overline{r}_i$.
+
+  \item 对任意司机 $i\in \mathcal{D}$, 核心中的最优效用 $\overline{r}_i$ 等于 $i$ 离开联盟造成的福利损失
+    $$\overline{r}_i = w(\mathcal{R}, \mathcal{D}) - w(\mathcal{R}, \mathcal{D}\setminus\{i\}),$$
+    即 $i$ 对社会福利的边际贡献.
+
+  \item 对任意司机 $i\in \mathcal{D}$, 令某个新司机 $i'\not\in\mathcal{D}$ 与其有相同类型, 则核心中的最劣效用等于 $i'$ 加入联盟造成的福利增益
+    $$\underline{r}_i = w(\mathcal{R}, \mathcal{D}\cup\{i'\}) - w(\mathcal{R}, \mathcal{D}).$$
+    或者说, 复制 $i$ 所带来的福利增益.
+
+  \item 记某个类型为 $\{\ell, \underline{\tau}, \overline{\tau}\}$ 的司机 $i'$ 加入联盟 $\mathcal{D}$ 带来的福利变化
+    $$
+      \Delta_{\ell, \underline{\tau}, \overline{\tau}}(\mathcal{R}. \mathcal{D}) = w(\mathcal{R}, \mathcal{D}\cup\{i'\}) - w(\mathcal{R}, \mathcal{D}),
+    $$
+    若 $\mathcal{D}$ 中已经存在类型为 $\{\ell, \underline{\tau}, \overline{\tau}\}$ 的司机 $i$, 则 $\underline{r}_i = \Delta_{\ell, \underline{\tau}, \overline{\tau}}(\mathcal{R},\mathcal{D}) = \Delta_{\ell, \underline{\tau}, T}(\mathcal{R},\mathcal{D})$.
+\end{enumerate}
+
+以上结论为设计鲁棒的动态机制提供了重要基础.
+
+\section{动态机制设计}
+
+至此, 我们始终假设乘客和司机是理性的, 环境是确定的, 机制在竞争均衡中可实施, 乘客和司机始终采取平台所预想的行动. 然而, 现实情况往往并非如此. 例如: (1) 司机经验不足, 造成行动的失误; (2) 司机存在特质偏好 (idiosyncratic preferences)\footnote{例如, 不耐心, 即贴现因子小于 1}; (3) 由于突发事件, 司机未能采取规定的行动\footnote{例如, 交通堵塞, 导致到达时间延迟}.
+
+在本节中, 我们假设乘客仍然是理性的, 但司机有可能偏离 (deviate) 平台派遣的行动路径. 此时, 网约车平台在如下有限序贯博弈中最大化社会福利:
+
+\begin{enumerate}[label=(\arabic*)]
+  \item $t\gets 0$, 平台出手, 计算竞争均衡, 派遣司机 $i$ 执行行动序列 $(a^*_{i,t})_{t=0}^T$;
+  \item 然后, 所有司机 $i\in \mathcal{D}$ 同时出手, 选择遵循派遣的行动 $a^*_{i,t}$, 或重新定位, 或停止接单;
+  \item $t\gets t+1$, 若存在 $a_{i,t-1} \ne a^*_{i,t-1}$, 即 $t-1$ 时刻司机 $i$ 偏离平台派遣的行动, 则平台重新计算竞争均衡; 否则, 平台不出手.
+  \item 重复步骤 (2) (3), 直至 $t=T$.
+\end{enumerate}
+
+\subsection{子博弈完美均衡}
+
+不难发现, 对 $t$ 时刻开始的子博弈进行时移, 得到的新博弈与原博弈有类似结构: 定义司机集合 $\mathcal{D}^{(t)}=\{i\in\mathcal{D} \mid s_{i,t} \ne \varnothing \text{ or } t \le \underline{\tau}_i\}$, 乘客集合 $\mathcal{R}^{(t)} = \{j\in\mathcal{R} \mid \xi_j = (o,d,\tau) \text { s.t. } \tau\ge t\}$. 若司机 $i\in \mathcal{D}^{(t)}$ 且 $s_{i,t} = (o, d, \tau)$, 则令其新的类型为 $\theta_i^{(t)} = (d, \tau + \delta(o,d) - t, \overline{\tau}_i - t)$; 若司机 $i\in \mathcal{D}^{(t)}$ 且 $t \le \underline{\tau}_i$, 则令其新的类型为 $\theta_i^{(t)} = (\ell_i, \underline{\tau}_i - t, \overline{\tau}_i - t)$. 对每个乘客, 映射得到新的行程 $(o, d, \tau) \mapsto (o, d, \tau - t)$. 若 $t$ 时刻司机偏离, 平台只需计算新博弈的竞争均衡, 重新执行派遣与支付规则.
+
+然而, 这一动态机制并不保证司机会与平台合作. 哪怕在理性假设下, 司机仍有可能谎报自身的类型, 或是采取策略性行为, 通过偏离来触发平台的重新计算, 从而最大化自身效用.\footnote{乘客的最优策略是平凡的, 我们仅研究司机的策略性行为} 例如, 有经验的司机可能暂时拒绝接单, 故意移动至某一新位置, 迫使平台为其分配价格更高的行程.
+
+出现上述现象的本质原因是动态机制无法在子博弈完美均衡\footnote{考虑到司机的效用仅与自身行动有关, 称不上严格意义的博弈, 此处未使用 Nash 均衡一词}中实施. 记司机 $i$ 在 $t$ 时刻获得的效用为 $r_{i,t}(a_{i,t}) = p_\xi - c_\xi$, 其中 $a_{i,t} = (\xi, j)$. 对任意 $t\in [T]$, 一个子博弈完美激励相容的机制应当满足
+$$
+  \sum_{t'=t}^T r_{i,t'}(a^*_{i,t'}) \ge \sum_{t'=t}^T r_{i,t'}(a_{i,t'}), \forall a_{i,t'}\in \mathcal{A}_{i,t'}, \forall i\in \mathcal{D}.
+$$
+其中, $a^*_{i,t'}$ 为平台派遣给司机 $i$ 的行动, $a_{i,t'}$ 为司机 $i$ 的真实行动, 可行行动集合 $\mathcal{A}_{i,t'}$ 依赖于动态博弈的历史. 该条件意味着从任意时刻起, 司机均无法通过偏离来提高自身效用. 为了满足这一条件, 我们有必要对多重的竞争均衡进行精炼.
+
+\subsection{构造可实施机制}
+
+记 $\tilde{\Delta}^{(t)}_{\ell, \tau} = \Delta_{\ell, \tau-t, T-t}(\tilde{\mathcal{R}}^{(t)},\tilde{\mathcal{D}}^{(t)})$, 其中 $\tilde{\mathcal{R}}^{(t)},\tilde{\mathcal{D}}^{(t)}$ 为始终遵循派遣时, $t$ 时刻时移子博弈的乘客与司机. 类似地, 记 $\Delta^{(t)}_{\ell, \tau} = \Delta_{\ell, \tau-t, T-t}(\mathcal{R}^{(t)},\mathcal{D}^{(t)})$, 其中 $\mathcal{R}^{(t)},\mathcal{D}^{(t)}$ 为采取实际行动时, $t$ 时刻时移子博弈的乘客与司机.
+
+在 $t=0$ 时刻, 取定价格 $$p_{o,d,\tau} = \tilde{\Delta}^{(0)}_{o,\tau} - \tilde{\Delta}^{(0)}_{d,\tau+\delta(o,d)} + c_{o,d,\tau},$$ 则: (1) 在竞争均衡下, 每个司机 $i\in\mathcal{D}$ 均有核心中的最劣效用 $\underline{r}_i$. (2) 每当司机出现偏离, 以相同规则重新计算竞争均衡, 此时动态机制是子博弈完美激励相容的. 下面, 我们给予证明.
+
+假定 $a^*_{i,t}=((o,d,t),j)$. 从 $t$ 时刻起, 若始终遵循派遣, 司机 $i$ 的累积效用为
+\begin{align*}
+      & \sum_{t'=t}^T r_{i,t'}(a^*_{i,t'}) = \sum_{\substack{((o',d',\tau),j)\in Z^*_{i} \\ \tau \ge t}} (p_{o',d',\tau} - c_{o',d',\tau}) \\
+  =\  & \sum_{\substack{((o',d',\tau),j)\in Z^*_{i}                                      \\ \tau \ge t}}\left(\tilde{\Delta}^{(0)}_{o',\tau} - \tilde{\Delta}^{(0)}_{d',\tau+\delta(o',d')}\right) = \tilde{\Delta}^{(0)}_{o,\tau}
+\end{align*}
+进而 $\sum_{t=\underline{\tau}_i}^T r_{i,t}(a^*_{i,t}) = \tilde{\Delta}^{(0)}_{\ell_i,\underline{\tau}_i} = \underline{r}_i$, 第一条命题得证.
+
+由于时移性质, 我们只需考虑第一次偏离. 假设司机 $i$ 在 $t>0$ 时刻偏离了平台派遣的行动 $a^*_{i,t}$, 平台在 $t+1$ 时刻重新计算竞争均衡, 往后司机不再偏离. (1) 若实际行动 $a_{i,t} = (\varnothing, \varnothing)$, 司机停止接单, 行动路径 $Z_{i}$ 包含在可行路径集合 $\mathcal{Z}_{i}$ 中. 由竞争均衡知, 效用水平不会得到改善. (2) 若实际行动 $a_{i,t} = ((o, d, t), \varnothing)$, 司机重新定位. 记到达时间 $t' = t + \delta(o,d)$. 从 $t$ 时刻起, 若采取实际行动, 司机 $i$ 的累积效用为 $\Delta^{(t+1)}_{d, t'} - c_{o, d, t}$. 为了说明 $\tilde{\Delta}^{(0)}_{o, t} \ge \Delta^{(t+1)}_{d, t'} - c_{o, d, t}$, 我们观察到以下三个不等式成立:
+\begin{enumerate}[label=(\roman*)]
+  \item $\tilde{\Delta}^{(0)}_{o, t} \ge \tilde{\Delta}^{(t)}_{o, t}$
+    \begin{itemize}[leftmargin=*]
+      \item LHS: 新司机在初始时刻加入联盟;
+      \item RHS: 新司机在 $t$ 时刻加入联盟, 触发竞争均衡的重新计算.
+    \end{itemize}
+    LHS 的可行路径集合包含了 RHS 的行动路径, 由竞争均衡, LHS 达到的累积效用更大.
+  \item $\tilde{\Delta}^{(t)}_{o, t} \ge \tilde{\Delta}^{(t+1)}_{d, t'}-c_{o,d,t}$
+    \begin{itemize}[leftmargin=*]
+      \item LHS: 新司机在 $t$ 时刻加入联盟, 触发竞争均衡的重新计算;
+      \item RHS: 新司机在 $t$ 时刻由位置 $o$ 移动至 $d$, 在 $t+1$ 时刻加入联盟, 触发竞争均衡的重新计算.
+    \end{itemize}
+    LHS 的可行路径集合包含了 RHS 的行动路径. 由竞争均衡, LHS 达到的累积效用更大.
+  \item $\tilde{\Delta}^{(t+1)}_{d, t'} \ge \Delta^{(t+1)}_{d, t'}$
+    \begin{itemize}[leftmargin=*]
+      \item LHS: 原司机遵循派遣; 在 $t'$ 时刻, 新司机从 $d$ 出发, 开始接单.
+      \item RHS: 原司机偏离派遣, 在 $t'$ 时刻到达 $d$; 同时, 新司机从 $d$ 出发, 开始接单.
+    \end{itemize}
+    在 RHS 的情况下, 两个司机必定在相同时刻相同位置出现. 此时, 两个司机具有最强的替代关系, 每个司机对社会福利的边际贡献较小. 因此, 从直觉上讲, 不等式成立. 形式化证明涉及最小代价流的若干结论, 此处从略.
+\end{enumerate}
+
+综合以上三式, 得 $\tilde{\Delta}^{(0)}_{o, t} \ge \Delta^{(t+1)}_{d, t'} - c_{o, d, t}$. 这意味着司机无法通过偏离来提高累计效用, 第二条命题得证.
+
+\subsection{总结}
+
+至此, 我们构造并证明了子博弈完美激励相容的动态机制. 当 $t=0$ 或司机的行动发生偏离时, 该机制求解乘客与司机展开静态博弈所达到的竞争均衡 $(x_j), (\mathbf{y}_i), (\mathbf{p}_\xi)$, 基于该结果, 平台执行以下规则:
+\begin{enumerate}[label=(\arabic*)]
+  \item 派遣规则: 用于确定向每个司机 $i\in\mathcal{D}$ 派遣的行动序列 $(a^*)$. 若最优分配中 $y_{i,k} = 1$, 则选定最优行动路径为 $Z^*_{i} = Z_{i,k}$, 限制司机 $i$ 的行动空间 --- 仅当乘客 $j$ 的行程 $\xi_j$ 被最优行动路径 $Z^*_{i}$ 覆盖时, 司机 $i$ 才能接受乘客 $j$ 的行程;
+  \item 支付规则: 用于确定向每个司机 $i\in\mathcal{D}$ 和乘客 $j\in\mathcal{R}$ 支付的金钱数额. 首先, 对每个行程 $(o,d,\tau)\in \Xi$, 制定其价格 $$p_{o,d,\tau} = \tilde{\Delta}^{(0)}_{o,\tau} - \tilde{\Delta}^{(0)}_{d,\tau+\delta(o,d)} + c_{o,d,\tau}.$$ 该价格使得司机的效用组合在核心中最劣. 对每一对司机和乘客 $(i,j)\in\mathcal{D}\times\mathcal{R}$, 若在某时刻 $t$, 有 $a_{i,t} = a^*_{i,t} = (\xi_j, j)$, 则向乘客 $j$ 收取金钱 $p_{\xi_j}$, 向司机 $i\in\mathcal{D}$ 支付金钱 $p_{\xi_j}$. 若司机始终遵循派遣, 乘客 $j\in\mathcal{R}$ 支付的总钱数为 $x^*_j p_{\xi_j}$, 司机 $i\in\mathcal{D}$ 获得的总钱数为 $\sum_{k=1}^{|\mathcal{Z}_i|} y^*_{i,k} \pi_{i,k}$.
+\end{enumerate}
+
+\section{管理学洞见}
+
+\subsection{对机制设计的启示}
+
+以网约车平台的定价机制设计为例, 我们认识到机制设计的若干基本原则: (1) 有分配效率或 Pareto 效率; (2) 激励兼容, 可实施; (3) 满足预算平衡, 个体理性等可行性约束; (4) 公平公正, 体现在无嫉妒性与核心的稳定性. 我们还认识到, 为了使机制对违约行为具有鲁棒性, 可以将机制设计问题建模为序贯博弈, 在此基础上寻找子博弈完美可实施的动态机制.
+
+\subsection{对动态定价的启示}
+
+网约车平台的对行程 $(o,d,\tau)$ 的合理定价等于: 在出发地 $o$ 和出发时间 $\tau$ 增加一个额外司机带来的社会福利增益 $\tilde{\Delta}^{(0)}_{o,\tau}$, 减去在目的地 $d$ 和到达时间 $\tau+\delta(o,d)$ 增加一个额外司机带来的社会福利增益 $\tilde{\Delta}^{(0)}_{d,\tau+\delta(o,d)}$, 并加上车辆在两地间移动花费的成本 $c_{o,d,\tau}$.
+
+仅根据出发地和出发时间制定短视的高峰定价机制, 不能实现社会福利最大化. 司机移动到目的地后, 将导致目的地和到达时间下行程的供应量增多, 对系统施加了一定外部性 (externality). 因此, 合理的定价应当同时取决于出发地和目的地, 使得价格在时间和空间上平滑. 此外, 行程的价格应当随时空动态变化而始终不应低于行程成本, 确保司机的预算平衡.
+
+根据司机的策略性行为和实际路况, 行程的价格和分配应当在运营过程中动态调整, 从而鲁棒地应对司机的违约行为. 实践中, 定价的关键在于估计额外司机的福利贡献. 可能的途径有: (1) 计算机模拟. (2) 根据过往的次优数据自回归地进行预测.
+
+\subsection{对网约车司机的启示}
+
+追逐高峰期, “learning by doing” 以及一些其他策略性行为不一定会带来额外的收益. 从长期来看, 遵循平台派遣的任务可能会带来更高的回报.
+
+\renewcommand{\refname}{参考文献}
+\bibliographystyle{plainnat}
+\bibliography{ref}
+
+\end{document}
