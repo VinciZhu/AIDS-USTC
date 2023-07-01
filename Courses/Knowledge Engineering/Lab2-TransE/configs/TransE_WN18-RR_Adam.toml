@@ -1,0 +1,15 @@
+seed = 42
+
+dataset = 'WN18-RR'
+
+embed_dim = 50
+norm_ord = 1
+margin = 6.0
+
+optimizer = 'adam'
+n_epochs = 500
+n_batches = 100
+learning_rate = 0.001
+
+neg_sampler = 'bernoulli'
+n_neg_samples = 25

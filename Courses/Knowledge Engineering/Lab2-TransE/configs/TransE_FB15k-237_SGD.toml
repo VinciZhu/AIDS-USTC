@@ -1,0 +1,15 @@
+seed = 42
+
+dataset = 'FB15k-237'
+
+embed_dim = 200
+norm_ord = 1
+margin = 5.0
+
+optimizer = 'sgd'
+n_epochs = 500
+n_batches = 100
+learning_rate = 0.5
+
+neg_sampler = 'bernoulli'
+n_neg_samples = 25
