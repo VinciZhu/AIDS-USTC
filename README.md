@@ -34,12 +34,12 @@ This repository includes:
 - [Intro to Artificial Intelligence ~ 人工智能导论](./Courses/Intro%20to%20Artificial%20Intelligence/)
 - [Machine Learning ~ 机器学习](./Courses/Machine%20Learning/)
 
-#### Spring 2023
+#### Spring 2023 (New)
 
-- [Intro to Algorithms ~ 算法分析与设计](./Courses/Intro%20to%20Algorithms/) (New)
-- [Knowledge Engineering ~ 知识工程](./Courses/Knowledge%20Engineering) (New)
-- [Game Theory ~ 博弈论基础](./Courses/Game%20Theory) (New)
-- [Pattern Recognition ~ 模式识别](./Courses/Pattern%20Recognition) (TBD)
+- [Intro to Algorithms ~ 算法分析与设计](./Courses/Intro%20to%20Algorithms/)
+- [Knowledge Engineering ~ 知识工程](./Courses/Knowledge%20Engineering)
+- [Game Theory ~ 博弈论基础](./Courses/Game%20Theory)
+- [Pattern Recognition ~ 模式识别](./Courses/Pattern%20Recognition)
 
 ### 🔨 Miscellaneous
 
