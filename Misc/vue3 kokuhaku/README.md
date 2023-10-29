@@ -1,20 +1,18 @@
-# :heart: Kokuhaku
+# Kokuhaku
 
-Confess love to your crush with this online love letter.
+Share your heartfelt feelings with your crush through this online love letter.
 
-The original version was created in my sophomore year of college.
+This project originated during my sophomore year in college.
 
-> :warning: Warning: This is a front-end project without any encryption.
-
+> :warning: **Warning:** Please be aware that this is a front-end project and does not include encryption for data security.
 
 ## Live Demo
 
-Type `zyq` as your identity to see the following demo.
+To experience the app, enter `zyq` as your identity, and explore the following demo:
 
-[ned-kokuhaku.netlify.app/](https://ned-kokuhaku.netlify.app/)
-
+https://ned-kokuhaku.netlify.app/
 
 ## Change Log
 
-- 2021-10-05: Initialized
-- 2022-09-03: Updated for open source
+- **2021-10-05:** Project initialized.
+- **2022-09-03:** Updated for open-source release.

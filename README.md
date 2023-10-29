@@ -3,10 +3,10 @@
 [![github](https://img.shields.io/github/stars/HasiNed/my-ustc?style=social)](https://github.com/HasiNed/my-ustc)
 [![gitlab](https://img.shields.io/gitlab/stars/hasined/my-ustc?gitlab_url=https%3A%2F%2Fgit.lug.ustc.edu.cn%2F&style=social)](https://git.lug.ustc.edu.cn/hasined/my-ustc)
 
-This repository includes:
+This repository comprises the following:
 
-1.  Lab reports, homework solutions and review notes from my undergraduate courses.
-2.  Tools, apps and other tiny stuffs for my own use throughout my undergraduate studies.
+1. Lab reports, homework solutions, and review notes from my undergraduate courses.
+2. A collection of small utilities and resources I developed for personal use during my undergraduate studies.
 
 ## Table of Contents
 
@@ -34,22 +34,22 @@ This repository includes:
 - [Intro to Artificial Intelligence ~ 人工智能导论](./Courses/Intro%20to%20Artificial%20Intelligence/)
 - [Machine Learning ~ 机器学习](./Courses/Machine%20Learning/)
 
-#### Spring 2023 (New)
+#### Spring 2023
 
 - [Intro to Algorithms ~ 算法分析与设计](./Courses/Intro%20to%20Algorithms/)
 - [Knowledge Engineering ~ 知识工程](./Courses/Knowledge%20Engineering)
 - [Game Theory ~ 博弈论基础](./Courses/Game%20Theory)
 - [Pattern Recognition ~ 模式识别](./Courses/Pattern%20Recognition)
 
+#### Fall 2023 (In Progress)
+
 ### 🔨 Miscellaneous
 
 - [My academic portfolio](https://github.com/HasiNed/aboutme)
-- [A HTML / Markdown to PDF converter](https://github.com/HasiNed/onepagepdf)
+- [A HTML/Markdown to PDF converter](https://github.com/HasiNed/onepagepdf)
 - [A front-end love letter](./Misc/vue3%20kokuhaku/)
-- [An incomplete 3D engine](./Misc/opengl%20learning/)
+- [An experimental 3D engine](./Misc/opengl%20learning/)
 
 ## Disclaimer
 
-This repository is intended solely for learning purposes, and we strongly discourage plagiarism.
-
-If you come across any errors or have any suggestions, please don't hesitate to reach out to me.
+This repository is provided exclusively for educational purposes, and I firmly discourage any form of plagiarism. If you encounter any issues or wish to share your insights and suggestions, please feel free to get in touch with me. Your feedback is greatly appreciated.
