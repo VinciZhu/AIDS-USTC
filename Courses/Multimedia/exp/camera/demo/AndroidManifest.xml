@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+/*中国科学技术大学  信息科学技术学院  电子工程与信息科学系  2018.10*/
+/*本科生《多媒体技术》课程实验：Android手机上的视频捕捉*/
+
+原有《多媒体技术》课程的实验的各个项目都是在Microsoft Visual Studio的Visual C++ 6.0下开发，可以运行在Windows操作系统下。随着智能手机在诸多场合取代了PC机的作用，我们重新考虑原有课程实验项目设置的合理性。
+2018年尝试性将Android下多媒体技术开发的内容放入课程实验。
+示例代码仅用于教学，代码中对网络上已有代码引用时做了标注。
+cxh@ustc.edu.cn,20181007
+-->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="cn.edu.ustc.eeis.videocapture">
+
+    <!-- 授予该程序使用摄像头的权限 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ustc"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:hardwareAccelerated="true">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

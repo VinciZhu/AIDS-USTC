@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+/*中国科学技术大学  信息科学技术学院  电子工程与信息科学系  2018.10*/
+/*本科生《多媒体技术》课程实验：Android手机上的视频捕捉*/
+
+原有《多媒体技术》课程的实验的各个项目都是在Microsoft Visual Studio的Visual C++
+6.0下开发，可以运行在Windows操作系统下。随着智能手机在诸多场合取代了PC机的作用，我们重新考虑原有课程实验项目设置的合理性。
+2018年尝试性将Android下多媒体技术开发的内容放入课程实验。
+示例代码仅用于教学，代码中对网络上已有代码引用时做了标注。
+cxh@ustc.edu.cn,20181007
+-->
+
+<!--本示例参考
+https://blog.csdn.net/idea_however/article/details/78436470 -->
+<!--
+布局文件:
+TextureView 摄像头数据的预览，CXH20181007：调试例子的过程中发现 TextureView
+的尺寸如果和Android中支持的不一致时，无法生成预览，故在示例中手工强制设置为1280*720
+ImageView 显示抓拍的照片
+Button 点击按钮进行拍照
+-->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--TextureView在4.0(API
+    level 14)中引入。它可以将内容流直接投影到View中，可以用于实现Live preview等功能。
+    和SurfaceView不同，它不会在WMS中单独创建窗口，而是作为View hierachy中的一个普通View，
+    因此可以和其它普通View一样进行移动，旋转，缩放，动画等变化。
+
+    该控件的学习可参考 Android 5.0(Lollipop)中的SurfaceTexture，TextureView, SurfaceView和GLSurfaceView
+    https://blog.csdn.net/jinzhuojun/article/details/44062175
+    -->
+    <TextureView
+        android:id="@+id/textureView_camera"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!--ImageView，图像视图，直接继承自View类，它的主要功能是用于显示图片，
+    实际上它不仅仅可以用来显示图片，任何Drawable对象都可以使用ImageView来显示。
+    ImageView可以适用于任何布局中，并且Android为其提供了缩放和着色的一些操作。-->
+    <ImageView
+        android:id="@+id/imageview_picture_show"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:scaleType="centerCrop"
+        android:visibility="visible" />
+
+    <Button
+        android:id="@+id/button_take_picture"
+        android:layout_width="200dp"
+        android:layout_height="90dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp"
+        android:text="@string/button_text" />
+
+</RelativeLayout>
