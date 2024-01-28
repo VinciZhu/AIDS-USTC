@@ -1,0 +1,229 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{ctex}
+\usepackage{natbib}
+\usepackage{siunitx}
+\usepackage{footnote}
+\usepackage{booktabs}
+\usepackage{titletoc}
+\usepackage{titlesec}
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{subfigure}
+\usepackage{tabularray}
+\usepackage[left=3cm, right=3cm, top=3cm, bottom=3cm]{geometry}
+\UseTblrLibrary{booktabs}
+\UseTblrLibrary{siunitx}
+
+\input{math.tex}
+
+\setCJKmainfont{SimSun}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\thepage/\pageref{LastPage}}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+\begin{document}
+
+{
+\centering
+\vspace*{3cm}
+{\Huge\heiti\bfseries 脑机接口课程技术报告\par}
+\vspace{5cm}
+{\Large 用于脑电降噪的时频谱增强的混合卷积网络\\}
+{Spectrogram-Enhanced Hybrid Convolutional Network for EEG Denoising\par}
+\vfill
+{\large 朱云沁\\ PB20061372\par}
+\vspace{1cm}
+{\Large\fangsong 中国科学技术大学\\ 2024 年 1 月\par}
+
+}
+\newpage
+
+{
+    {\Large \centering\heiti\bfseries 摘要\par}
+    \vspace{1cm}
+    {\fangsong 从头皮采集的脑电图 (EEG) 极易受到各种生理伪迹的污染. 近年来, 基于深度学习的脑电降噪算法相较于传统方法展现出优异的性能. 以 NovelCNN 为代表, 卷积神经网络 (CNN) 能够有效地提取受污染脑电信号波形的局部特征, 还原出干净脑电信号. 然而, 大多数现有的卷积网络仅仅依赖于信号在时域中的波形特征, 忽视了其他变换域蕴含的丰富信息. 尽管一些研究尝试在频域进行非线性变换, 但是由于频谱和波形在维度上的孤立性, 两者难以有效对齐并融合, 可能导致性能受限. 在本文中, 我们首先复现 NovelCNN, 然后提出一种时频谱增强的混合卷积网络 — SpecNovelCNN. 该架构首先通过短时傅立叶变换 (STFT) 得到脑电信号的时频谱图, 然后将其输入 2D CNN 分支进行特征提取. 得到的时频谱特征与现有 1D CNN 分支的中间输出在时间维度上拼接, 从而有效融合时域、时频域的信息. 在半模拟的基准数据集上进行的实验证明, SpecNovelCNN 在肌电伪迹去除任务上优于 NovelCNN. 进一步分析发现, 该混合卷积网络能够一定程度地避免 1D CNN 的过拟合问题, 从而提高模型的泛化能力. 这些结果说明了在脑电降噪算法中引入变换域先验信息的重要性. \par}
+    \smallskip
+    {\heiti\bfseries 关键词:} 脑电时频谱, 卷积神经网络, 短时傅立叶变换, 肌电伪迹去除
+}
+\newpage
+
+\setcounter{tocdepth}{2}
+\titlecontents{section}[1.5em]{\vspace{0.5em}\fangsong}{\contentslabel{1.5em}}{}{\hspace{0.5em}\titlerule*[4pt]{.}\contentspage}
+\titlecontents{subsection}[5em]{\vspace{0.5em}\fangsong}{\contentslabel{2.5em}}{}{\hspace{0.5em}\titlerule*[4pt]{.}\contentspage}
+\renewcommand{\contentsname}{\centering\heiti\bfseries 目录}
+\tableofcontents
+\newpage
+
+\titleformat{\section}{\Large\fangsong}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\fangsong}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\fangsong}{\thesubsubsection}{1em}{}
+
+\section{导言}
+
+脑电图 (EEG) 记录了大脑活动产生的头皮上的电位, 广泛应用于认知神经科学和脑机接口. 在脑电图分析中, 原始的脑电图数据经常受到各种噪音尤其是生理伪迹的污染, 例如眼电 (EOG)、肌电 (EMG) 和心电 (ECG). 去除这些伪迹是应用脑电图技术的一个关键步骤. 传统方法使用盲源分离 (BSS), 例如独立分量分析 (ICA) \cite{jung_removing_2000}, 典型相关分析 (CCA) \cite{de_clercq_canonical_2006}, 独立向量分析 (IVA) \cite{liu_state-dependent_2021} 等, 但存在通道数量限制. 混合方法, 例如总体经验模态分 (EEMD) 与 IVA 结合 \cite{sweeney_use_2013}, 可以突破这一限制. 然而, 传统方法通常涉及大量专家知识, 并且依赖于伪迹类型.
+
+近年来, 深度学习在脑电去噪中表现出更好的性能, 例如卷积神经网络 \cite{sun_novel_2020,zhang_novel_2021}、循环神经网络 \cite{zhang_eegdenoisenet_2021,zhang_two-stage_2022}、Transformer \cite{yin_gan_2023} 等. 其中, 卷积神经网络 (CNN) 因其高效的局部特征提取能力而受到广泛关注. 以 NovelCNN \cite{sun_novel_2020} 为代表, CNN 能够有效地提取受污染脑电信号波形的局部特征, 还原出干净脑电信号. 然而, 大多数现有的卷积网络仅仅依赖于信号在时域中的波形特征, 忽视了其他变换域蕴含的丰富信息. 尽管一些研究尝试将脑电信号在频域进行非线性变换 \cite{yin_frequency_2022} 并与现有卷积网络结合, 但是由于频谱和波形在维度上的孤立性, 两者难以有效对齐并融合, 因此可能导致性能受限.
+
+在本文中, 我们首先复现 NovelCNN, 随后提出了一种时频谱增强的混合卷积网络 — SpecNovelCNN. 该架构首先通过短时傅立叶变换（STFT）获取脑电信号的时频谱图, 然后将其输入到 2D CNN 分支进行特征提取. 时频谱特征与现有的 1D CNN 分支的中间输出在时间维度上进行拼接, 从而有效融合时域和时频域的信息. 在半模拟基准数据集 EEGdenoiseNet 上进行的实验证明, SpecNovelCNN 在去除肌电伪迹的任务上优于 NovelCNN. 进一步的分析显示, 通过引入额外的时频域信息, 这种混合卷积网络在一定程度上能够避免 1D CNN 的过拟合问题, 从而提高模型的泛化能力. 这些结果强调了在脑电降噪算法中引入变换域先验信息的重要性.
+
+\section{方法}
+
+一个受污染的脑电信号可以表示为 $\vy = \vx + \lambda \vn$, 其中 $\vx \in \mathbb{R}^N$ 表示干净的脑电信号, $\vy \in \mathbb{R}^N$ 表示受污染的脑电信号, $\vn \in \mathbb{R}^N$ 表示噪音, $\lambda$ 是噪音的强度, $T$ 是信号的长度. 例如, 对于一个持续时间为 1 秒、采样频率为 512 Hz 的脑电信号, 其长度 $N = 512$. 为了去除噪音, 我们的目标是学习一个映射 $\hat{\vx} = f(\vy)$, 使得 $\hat{\vx}$ 尽可能接近 $\vx$. 在本节中, 我们将首先介绍 NovelCNN, 随后提出 SpecNovelCNN.
+
+\subsection{(复现) NovelCNN}
+
+Zhang 等人 \cite{zhang_novel_2021} 提出 NovelCNN 用于肌电伪迹去除. 该网络包含 7 个类似的块, 每个块中卷积层的通道数按 2 的指数从 32 增加到 2048, 从而逐渐提取高维特征. 在前 6 个块中, 输入首先经过 2 个具有小的 $1\times 3$ 核、1 步幅和 ReLU 激活函数的 1D 卷积层, 然后进入池化大小为 2 的 1D 平均池化层, 用于下采样以减小信号长度. 第 7 个块计算结束后, 信号特征被展平, 通过一个全连接层映射为长度为 $N$ 的输出波形. 以 $N=512$ 为例, NovelCNN 的网络结构如图 \ref{fig:my-model} 所示 (黄色部分). 作为 1D CNN, 该网络仅捕捉了信号在时域中的局部波形特征.
+
+\subsection{(创新) SpecNovelCNN}
+
+我们希望从变换域中提取脑电信号的额外特征, 以弥补时域 1D CNN 的不足. 为了能够与波形特征在时间维度上对齐并融合, 我们主张使用短时傅立叶变换 (STFT) 将脑电信号转换为时频谱, 从而分析时变脑电信号的瞬时频率特性.
+
+\subsubsection{预处理: 多分辨率脑电时频谱}
+
+与常规的傅立叶变换不同, STFT 将信号分成多个长度为 $L$、步长为 $R$ 的时间窗口, 并在每个窗口上计算频谱. 给定一个长度为 $N$ 的离散信号 $\vy$, 其 STFT 是一个二维函数 $Y(n, f)$, 其中 $n$ 表示时间, $f$ 表示频率. 具体来说, STFT 的计算公式如下:
+\begin{equation}
+    Y(n, f) = \sum_{m=0}^{N-1} y(m) w(m - n) e^{-j2\pi mf/N},
+\end{equation}
+其中 $w(m - n)$ 是平移后的窗函数. 在本文中, 我们选用 Hann 窗, 其定义为
+\begin{equation}
+    w(n) = \left\{{\begin{array}{ccl}{\tfrac {1}{L}}\left({\tfrac {1}{2}}+{\tfrac {1}{2}}\cos \left({\frac {2\pi n}{L}}\right)\right)={\tfrac {1}{L}}\cos ^{2}\left({\frac {\pi n}{L}}\right),\quad &\left|n\right|\leq L/2\\0,\quad &\left|n\right|>L/2\end{array}}\right\}.
+\end{equation}
+通常, 取 STFT 的幅值 $|Y(n, f)|$ 为 STFT 的时频谱 (Spectrogram). 在实际应用中, 我们使用 FFT 算法计算 STFT 在 $n=rR, r=0,1,\ldots,\lfloor \frac{N}{R} \rfloor$, $f = 0, 1, \ldots, \lfloor \frac{L}{2} \rfloor$ 的值, 得到离散化的二维矩阵表示 $Y \in \mathbb{C}^{\lfloor \frac{N}{R} \rfloor \times \lfloor \frac{L}{2} \rfloor}$, 进而通过线性插值得到缺失值.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../output/stft-sample.pdf}
+    \caption{示例脑电信号及其在不同分辨率下的时频谱.}\label{fig:stft-sample}
+\end{figure}
+
+根据窗长的不同, STFT 可以提供不同的时间分辨率和频率分辨率, 如图 \ref{fig:stft-sample} 所示. 窄带时频谱 (窗长较大) 具有较高的频率分辨率, 但较低的时间分辨率, 适用于分析高频信号. 相反, 宽带时频谱 (窗长较小) 具有较高的时间分辨率, 但较低的频率分辨率, 适用于分析低频信号. 由于脑电信号中通常包含多种频率的成分, 为了兼顾时间分辨率和频率分辨率, 我们使用 4 个不同窗长的 STFT, 并将它们的结果拼接起来, 以类似于多通道图像的形式作为模型的额外输入.
+
+\subsubsection{特征提取: 2D CNN 分支}
+
+为了提取时频谱特征, 我们首先将不同分辨率的时频谱统一缩放为 $64\time 64$ 的大小, 并在一个新的通道维度上进行拼接. 拼接后的多分辨率时频谱在频率、时间及通道维度上均存在局部相关性, 可以采用类似于图像卷积网络的方法进行特征提取.
+
+在我们的 2D CNN 分支中, 每个卷积块采取与现有 NovelCNN 1D 分支类似的结构: 2 个具有 $3\times 3$ 核、1 步幅和 ReLU 激活函数的 2D 卷积层, 用于提取时频谱的局部特征. 为了减小特征图的大小, 我们在每个卷积块之后添加一个 $2\times 2$ 的平均池化层. 区别于 NovelCNN, 我们不对通道进行升维, 而是始终保持 4 个通道. 于是, 三个卷积块的输出特征图大小分别为 $(32, 32, 4)$, $(16, 16, 4)$ 和 $(8, 8, 4)$. 将最后两个维度合并后, 大小依次为 $(32, 128)$, $(16, 64)$ 和 $(8, 32)$. 变形后的特征图在时间维度上分别与 NovelCNN 第 4, 5, 6 个 1D 卷积块的输出长度相同, 从而可以进行拼接. 我们将增加 2D CNN 分支后的模型称作 SpecNovelCNN, 如图 \ref{fig:my-model} 所示.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{../output/my-model.pdf}
+    \caption{NovelCNN 及 SpecNovelCNN 模型架构.}\label{fig:my-model}
+\end{figure}
+
+\section{实验}
+
+\subsection{实验设置}
+
+\subsubsection{数据集}
+
+我们使用来自 EEGdenoiseNet \cite{zhang_eegdenoisenet_2021} 的基准数据合成干净和带噪声的脑电信号对 $(\vx,\vy)$, 用于训练和测试基线模型 NovelCNN 以及所提出的 SpecNovelCNN. 具体而言, 我们使用了 4514 个脑电时段和 5598 个肌电时段来模拟带有肌电伪迹的脑电信号. 每个时段长度为 1 秒, 采样率为 512, 因此有 $N=512$. 我们将其脑电与肌电样本分别按照 8:1:2 的比例划分为训练集、验证集和测试集. 得到训练集中含有 3159 个脑电时段和 3918 个肌电时段, 验证集中含有 452 个脑电时段和 560 个肌电时段, 测试集中含有 903 个脑电时段和 1120 个肌电时段. 受 \cite{cui_dual-branch_2024} 指导, 我们设定带噪声的脑电信号的信噪比范围为 $(-5, 5)$ 分贝. 每次合成一个新数据对, 我们首先随机选取一对脑电和肌电时段 $(\vx, \vn)$. 然后从 $(-5,5)$ 内随机均匀选取一个信噪比 ${\rm SNR}$, 计算噪声强度 $\lambda$:
+\begin{equation}
+    \lambda = \frac{\|\vx\|_2}{\|\vn\|_2} \cdot 10^{-\frac{\rm SNR}{20}},
+\end{equation}
+进而根据方程 $\vy = \vx + \lambda \vn$ 计算带噪声的脑电信号 $\vy$. 我们将 $\vx$ 和 $\vy$ 分别作为干净和带噪声的脑电信号对加入数据集. 对于验证集和测试集, 我们人为设定样本对的总数分别为 $2800$ 和 $5600$, 采样后得到相应的脑电和肌电时段. 对于训练集, 我们总是实时且随机地合成样本对.
+
+作为示例, 我们在图 \ref{fig:sample} 中展示了两个合成样本对及其对应的时频谱. 可以发现, 干净脑电、肌电及合成信号具有差异显著的时频谱, 暗示了时频谱特征的潜在优势.
+
+\begin{figure}
+    \centering
+    \subfigure[脑电信号对]{
+        \includegraphics[width=0.95\textwidth]{../output/synthetic-signal.pdf}
+    }
+    \subfigure[脑电信号对的时频谱]{
+        \includegraphics[width=0.95\textwidth]{../output/synthetic-spectrogram.pdf}
+    }
+    \caption{示例合成样本对及其时频谱.}\label{fig:sample}
+\end{figure}
+
+\subsubsection{评价指标}
+
+我们使用相关系数 (CC), 相对根均方误差 (RRMSE), 信噪比 (SNR) 三个指标来评估脑电降噪模型的性能, 其定义分别为
+\begin{equation}
+    {\rm CC} = \frac{\langle \vx-\bar{x}, \hat{\vx}-\bar{\hat{x}} \rangle}{\|\vx-\bar{x}\|_2 \|\hat{\vx}-\bar{\hat{x}}\|_2},
+\end{equation}
+\begin{equation}
+    {\rm RRMSE} = \frac{\|\vx-\hat{\vx}\|_2}{\|\vx\|_2},
+\end{equation}
+\begin{equation}
+    {\rm SNR} = 20 \log_{10} \frac{\|\vx\|_2}{\|\vx-\hat{\vx}\|_2},
+\end{equation}
+其中, $\hat{\vx}$ 表示模型的输出, $\bar{x}, \bar{\hat{x}}$ 分别表示 $\vx, \hat{\vx}$ 的均值.
+
+\subsubsection{超参数}
+
+我们采用 NovelCNN 的默认超参数, 并类比得到 SpecNovelCNN 2D 分支的超参数. 对于短时傅立叶变换, 我们选取窗口大小为 $L=16, 32, 64, 128$, 步长为 $R=\frac{L}{2}$. 为了避免过拟合, 在 1D CNN 分支的后 4 个块、2D CNN 分支的所有 3 个块的池化层前添加了概率为 0.5 的 Dropout. 我们使用 Adam 优化器, 学习率始终为 $5\times 10^{-5}$, 不使用权重衰减. 我们规定每一批训练数据含有 256 个随机合成的样本对, 每一轮训练含有 200 个批次 (51200 个样本对), 至多训练 200 轮. 我们在每一轮结束后使用验证集评估模型的性能, 并保存在验证集上 SNR 最高的模型. 当连续 20 轮验证集上的 SNR 都没有提升时, 我们提前终止训练.
+
+两个模型均采用 Tensorflow + Keras 实现, 在一块 RTX 3080 Ti GPU 上训练.
+
+\subsection{性能比较}
+
+两个模型在测试集上的性能比较如表 \ref{tab:performance} 所示. 我们可以看到, SpecNovelCNN 在所有指标上均优于 NovelCNN. 其中, SNR 的提升最为显著, 达到了 4.45\%. 这说明所提出的时频谱增强的混合卷积网络能够有效地利用脑电信号的时频谱特征, 从而提高脑电降噪的性能.
+
+\begin{table}[h]
+    \centering\small
+    \caption{不同模型肌电伪迹移除的性能比较.}\label{tab:performance}
+    \bigskip
+    \begin{tblr}{
+            width=0.8\textwidth,
+            colspec={l*{3}{X[c]}}}
+        \toprule
+        Model        & CC$\uparrow$    & RRMSE$\downarrow$ & SNR$\uparrow$    \\
+        \midrule
+        NovelCNN     & 0.9200          & 0.3505            & 10.5157          \\
+        SpecNovelCNN & \textbf{0.9235} & \textbf{0.3382}   & \textbf{10.9835} \\
+        \midrule
+        Improvement  & 0.38\%          & 3.51\%            & 4.45\%           \\
+        \bottomrule
+    \end{tblr}
+\end{table}
+
+\subsection{训练曲线}
+
+我们在图 \ref{fig:training-curves} 中展示了 NovelCNN 和 SpecNovelCNN 在训练过程中验证集指标的变化. 我们可以看到, 两个模型的 CC 都在不断提高, 但 NovelCNN 的 RRMSE 和 SNR 在大约 70 轮后就开始变差. 相反, SpecNovelCNN 的所有指标始终保持变好的趋势, 直至收敛. 我们猜测, 出现这种现象可能是由于多分辨率的时频谱为脑电降噪提供了更加鲁棒、更加丰富的特征, 因此能够避免 1D CNN 在时域波形上的过拟合. 这一结果进一步说明了在脑电降噪算法中引入变换域先验信息的重要性.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{../output/training-curves.pdf}
+    \caption{不同模型训练过程中验证集指标变化.}\label{fig:training-curves}
+\end{figure}
+
+\subsection{可视化}
+
+为了直观地感受 SpecNovelCNN 带来的改进, 我们随机采样了若干个合成样本, 比对 NovelCNN 和 SpecNovelCNN 的输出. 以图 \ref{fig:denoised-signal} 和图 \ref{fig:denoised-psd} 为例, 我们可以看到, SpecNovelCNN 在一些区域地取得了肉眼可见的改进.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../output/denoised-signal.pdf}
+    \caption{不同模型肌电移除结果示例 (波形). 我们用蓝框标出部分取得改进的区域.}\label{fig:denoised-signal}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.95\textwidth]{../output/denoised-psd.pdf}
+    \caption{不同模型肌电移除结果示例 (功率谱). 我们用蓝框标出部分取得改进的区域.}\label{fig:denoised-psd}
+\end{figure}
+
+\section{总结和讨论}
+
+在本文中, 我们首先复现了 NovelCNN, 随后提出了一种时频谱增强的混合卷积网络 — SpecNovelCNN. 该方法有效融合时域、时频域的信息, 在半模拟的基准数据集上进行的肌电伪迹去除性能优于 NovelCNN. 分析显示, 引入时频域先验信息可能有助于避免 1D CNN 在时域波形上的过拟合, 从而提高模型的泛化能力.
+
+我们对时频谱的处理方法具有普适性, 类似的思想容易推广到其他用于脑电降噪的 1D 网络中, 可以作为未来完善的方向. 此外, 在肌电伪迹去除以外的其他任务上, 例如眼电伪迹去除, 时频谱增强的混合卷积网络也可能取得更好的性能, 由于时间关系, 留给未来的工作. 最后, 许多脑机接口应用场景涉及多通道脑电, 如何将多通道脑电的时域、频域、时频域特征有效融合, 提升脑电降噪的性能, 也是亟待解决的问题.
+
+\clearpage
+\bibliographystyle{unsrt}
+\bibliography{refs}
+
+\end{document}
