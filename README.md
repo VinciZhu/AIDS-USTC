@@ -41,12 +41,17 @@ This repository comprises the following:
 - [Game Theory ~ 博弈论基础](./Courses/Game%20Theory)
 - [Pattern Recognition ~ 模式识别](./Courses/Pattern%20Recognition)
 
-#### Fall 2023 (In Progress)
+#### Fall 2023
 
 - [Multimedia Technology ~ 多媒体技术基础](./Courses/Multimedia)
 - [Speech Signal Processing ~ 语音信号处理基础](./Courses/Speech%20Processing)
 - [Brain-Computer Interface ~ 脑机接口](./Courses/Brain-Computer%20Interface)
 - [AI Experiments ~ 人工智能实践](./Courses/AI%20Experiments)
+
+#### Spring 2024
+
+- [Mathematical Modeling ~ 数学建模](./Courses/Mathematical%20Modeling/) (TA)
+- [Bachelor Thesis ~ 毕业设计](./Courses/Bachelor%20Thesis/)
 
 ### 🔨 Miscellaneous
 
