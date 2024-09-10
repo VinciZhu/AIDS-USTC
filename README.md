@@ -1,16 +1,8 @@
-# 🎓 My USTC
+# AIDS@USTC
 
-[![github](https://img.shields.io/github/stars/HasiNed/my-ustc?style=social)](https://github.com/HasiNed/my-ustc)
-[![gitlab](https://img.shields.io/gitlab/stars/hasined/my-ustc?gitlab_url=https%3A%2F%2Fgit.lug.ustc.edu.cn%2F&style=social)](https://git.lug.ustc.edu.cn/hasined/my-ustc)
-
-This repository comprises the following:
-
-1. Lab reports, homework solutions, and review notes from my undergraduate courses.
-2. A collection of small utilities and resources I developed for personal use during my undergraduate studies.
+Assignments, notes, and resources from my undergraduate studies at the University of Science and Technology of China (USTC).
 
 ## Table of Contents
-
-### 📚 Courses
 
 #### Spring 2021
 
@@ -50,16 +42,8 @@ This repository comprises the following:
 
 #### Spring 2024
 
-- [Mathematical Modeling ~ 数学建模](./Courses/Mathematical%20Modeling/) (TA)
-- [Bachelor Thesis ~ 毕业设计](./Courses/Bachelor%20Thesis/)
-
-### 🔨 Miscellaneous
-
-- [My academic portfolio](https://github.com/HasiNed/aboutme)
-- [A HTML/Markdown to PDF converter](https://github.com/HasiNed/onepagepdf)
-- [A front-end love letter](./Misc/vue3%20kokuhaku/)
-- [An experimental 3D engine](./Misc/opengl%20learning/)
+- [Bachelor Thesis ~ 毕业设计](https://github.com/HasiNed/GiffCF)
 
 ## Disclaimer
 
-This repository is provided exclusively for educational purposes, and I firmly discourage any form of plagiarism. If you encounter any issues or wish to share your insights and suggestions, please feel free to get in touch with me. Your feedback is greatly appreciated.
+All materials are for reference only. Please do not copy or distribute any content without permission.

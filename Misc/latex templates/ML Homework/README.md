@@ -1,9 +1,9 @@
 # LaTeX Template: Machine Learning Homework
 
-This directory contains my LaTeX template for Machine Learning homework, modified from the original template by [MIRA Lab](https://miralab.ai/course/ml_2022fall/).
+This folder contains my customized LaTeX template for Machine Learning homework, based on the original [MIRA Lab template](https://miralab.ai/course/ml_2022fall/).
 
-## Change Log
+## Changelog
 
-- 2022-10-28: Initialized
-- 2022-11-18: Updated after midterm exam
-- 2023-03-02: Updated after final exam
+- **2022-10-28:** Template initialized.
+- **2022-11-18:** Updated post-midterm.
+- **2023-03-02:** Updated post-final exam.
